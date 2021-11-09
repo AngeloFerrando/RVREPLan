@@ -1,0 +1,400 @@
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  1 [shape=box, label="1 : Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  2 [shape=box, label="2 : Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  3 [shape=box, label="3 : act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  4 [shape=box, label="4 : act_up(r,x,y)"]
+  5 [shape=box, label="5 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y))"]
+  8 [shape=box, label="8 : !not_robot_at(r,x) S robot_at(r,x)"]
+  9 [shape=box, label="9 : !not_robot_at(r,x)"]
+  10 [shape=box, label="10 : not_robot_at(r,x)"]
+  9 -> 10
+  11 [shape=box, label="11 : robot_at(r,x)"]
+  8 -> 9
+  8 -> 11
+  12 [shape=box, label="12 : !not_up(x,y) S up(x,y)"]
+  13 [shape=box, label="13 : !not_up(x,y)"]
+  14 [shape=box, label="14 : not_up(x,y)"]
+  13 -> 14
+  15 [shape=box, label="15 : up(x,y)"]
+  12 -> 13
+  12 -> 15
+  7 -> 8
+  7 -> 12
+  16 [shape=box, label="16 : !not_empty(y) S empty(y)"]
+  17 [shape=box, label="17 : !not_empty(y)"]
+  18 [shape=box, label="18 : not_empty(y)"]
+  17 -> 18
+  19 [shape=box, label="19 : empty(y)"]
+  16 -> 17
+  16 -> 19
+  6 -> 7
+  6 -> 16
+  20 [shape=box, label="20 : !radiation(y) S not_radiation(y)"]
+  21 [shape=box, label="21 : !radiation(y)"]
+  22 [shape=box, label="22 : radiation(y)"]
+  21 -> 22
+  23 [shape=box, label="23 : not_radiation(y)"]
+  20 -> 21
+  20 -> 23
+  5 -> 6
+  5 -> 20
+  3 -> 4
+  3 -> 5
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  1 [shape=box, label="1 : Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  2 [shape=box, label="2 : Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  3 [shape=box, label="3 : act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  4 [shape=box, label="4 : act_down(r,x,y)"]
+  5 [shape=box, label="5 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y))"]
+  8 [shape=box, label="8 : !not_robot_at(r,x) S robot_at(r,x)"]
+  9 [shape=box, label="9 : !not_robot_at(r,x)"]
+  10 [shape=box, label="10 : not_robot_at(r,x)"]
+  9 -> 10
+  11 [shape=box, label="11 : robot_at(r,x)"]
+  8 -> 9
+  8 -> 11
+  12 [shape=box, label="12 : !not_down(x,y) S down(x,y)"]
+  13 [shape=box, label="13 : !not_down(x,y)"]
+  14 [shape=box, label="14 : not_down(x,y)"]
+  13 -> 14
+  15 [shape=box, label="15 : down(x,y)"]
+  12 -> 13
+  12 -> 15
+  7 -> 8
+  7 -> 12
+  16 [shape=box, label="16 : !not_empty(y) S empty(y)"]
+  17 [shape=box, label="17 : !not_empty(y)"]
+  18 [shape=box, label="18 : not_empty(y)"]
+  17 -> 18
+  19 [shape=box, label="19 : empty(y)"]
+  16 -> 17
+  16 -> 19
+  6 -> 7
+  6 -> 16
+  20 [shape=box, label="20 : !radiation(y) S not_radiation(y)"]
+  21 [shape=box, label="21 : !radiation(y)"]
+  22 [shape=box, label="22 : radiation(y)"]
+  21 -> 22
+  23 [shape=box, label="23 : not_radiation(y)"]
+  20 -> 21
+  20 -> 23
+  5 -> 6
+  5 -> 20
+  3 -> 4
+  3 -> 5
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  1 [shape=box, label="1 : Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  2 [shape=box, label="2 : Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  3 [shape=box, label="3 : act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  4 [shape=box, label="4 : act_right(r,x,y)"]
+  5 [shape=box, label="5 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y))"]
+  8 [shape=box, label="8 : !not_robot_at(r,x) S robot_at(r,x)"]
+  9 [shape=box, label="9 : !not_robot_at(r,x)"]
+  10 [shape=box, label="10 : not_robot_at(r,x)"]
+  9 -> 10
+  11 [shape=box, label="11 : robot_at(r,x)"]
+  8 -> 9
+  8 -> 11
+  12 [shape=box, label="12 : !not_right(x,y) S right(x,y)"]
+  13 [shape=box, label="13 : !not_right(x,y)"]
+  14 [shape=box, label="14 : not_right(x,y)"]
+  13 -> 14
+  15 [shape=box, label="15 : right(x,y)"]
+  12 -> 13
+  12 -> 15
+  7 -> 8
+  7 -> 12
+  16 [shape=box, label="16 : !not_empty(y) S empty(y)"]
+  17 [shape=box, label="17 : !not_empty(y)"]
+  18 [shape=box, label="18 : not_empty(y)"]
+  17 -> 18
+  19 [shape=box, label="19 : empty(y)"]
+  16 -> 17
+  16 -> 19
+  6 -> 7
+  6 -> 16
+  20 [shape=box, label="20 : !radiation(y) S not_radiation(y)"]
+  21 [shape=box, label="21 : !radiation(y)"]
+  22 [shape=box, label="22 : radiation(y)"]
+  21 -> 22
+  23 [shape=box, label="23 : not_radiation(y)"]
+  20 -> 21
+  20 -> 23
+  5 -> 6
+  5 -> 20
+  3 -> 4
+  3 -> 5
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  1 [shape=box, label="1 : Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  2 [shape=box, label="2 : Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  3 [shape=box, label="3 : act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  4 [shape=box, label="4 : act_left(r,x,y)"]
+  5 [shape=box, label="5 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y))"]
+  8 [shape=box, label="8 : !not_robot_at(r,x) S robot_at(r,x)"]
+  9 [shape=box, label="9 : !not_robot_at(r,x)"]
+  10 [shape=box, label="10 : not_robot_at(r,x)"]
+  9 -> 10
+  11 [shape=box, label="11 : robot_at(r,x)"]
+  8 -> 9
+  8 -> 11
+  12 [shape=box, label="12 : !not_left(x,y) S left(x,y)"]
+  13 [shape=box, label="13 : !not_left(x,y)"]
+  14 [shape=box, label="14 : not_left(x,y)"]
+  13 -> 14
+  15 [shape=box, label="15 : left(x,y)"]
+  12 -> 13
+  12 -> 15
+  7 -> 8
+  7 -> 12
+  16 [shape=box, label="16 : !not_empty(y) S empty(y)"]
+  17 [shape=box, label="17 : !not_empty(y)"]
+  18 [shape=box, label="18 : not_empty(y)"]
+  17 -> 18
+  19 [shape=box, label="19 : empty(y)"]
+  16 -> 17
+  16 -> 19
+  6 -> 7
+  6 -> 16
+  20 [shape=box, label="20 : !radiation(y) S not_radiation(y)"]
+  21 [shape=box, label="21 : !radiation(y)"]
+  22 [shape=box, label="22 : radiation(y)"]
+  21 -> 22
+  23 [shape=box, label="23 : not_radiation(y)"]
+  20 -> 21
+  20 -> 23
+  5 -> 6
+  5 -> 20
+  3 -> 4
+  3 -> 5
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  1 [shape=box, label="1 : Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  2 [shape=box, label="2 : Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  3 [shape=box, label="3 : Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  4 [shape=box, label="4 : act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  5 [shape=box, label="5 : act_inspect_up(r,x,y,t)"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y))"]
+  8 [shape=box, label="8 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))"]
+  9 [shape=box, label="9 : !not_robot_at(r,x) S robot_at(r,x)"]
+  10 [shape=box, label="10 : !not_robot_at(r,x)"]
+  11 [shape=box, label="11 : not_robot_at(r,x)"]
+  10 -> 11
+  12 [shape=box, label="12 : robot_at(r,x)"]
+  9 -> 10
+  9 -> 12
+  13 [shape=box, label="13 : !not_tank_at(t,y) S tank_at(t,y)"]
+  14 [shape=box, label="14 : !not_tank_at(t,y)"]
+  15 [shape=box, label="15 : not_tank_at(t,y)"]
+  14 -> 15
+  16 [shape=box, label="16 : tank_at(t,y)"]
+  13 -> 14
+  13 -> 16
+  8 -> 9
+  8 -> 13
+  17 [shape=box, label="17 : !not_up(x,y) S up(x,y)"]
+  18 [shape=box, label="18 : !not_up(x,y)"]
+  19 [shape=box, label="19 : not_up(x,y)"]
+  18 -> 19
+  20 [shape=box, label="20 : up(x,y)"]
+  17 -> 18
+  17 -> 20
+  7 -> 8
+  7 -> 17
+  21 [shape=box, label="21 : !inspected(t) S not_inspected(t)"]
+  22 [shape=box, label="22 : !inspected(t)"]
+  23 [shape=box, label="23 : inspected(t)"]
+  22 -> 23
+  24 [shape=box, label="24 : not_inspected(t)"]
+  21 -> 22
+  21 -> 24
+  6 -> 7
+  6 -> 21
+  4 -> 5
+  4 -> 6
+  3 -> 4
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  1 [shape=box, label="1 : Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  2 [shape=box, label="2 : Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  3 [shape=box, label="3 : Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  4 [shape=box, label="4 : act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  5 [shape=box, label="5 : act_inspect_down(r,x,y,t)"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y))"]
+  8 [shape=box, label="8 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))"]
+  9 [shape=box, label="9 : !not_robot_at(r,x) S robot_at(r,x)"]
+  10 [shape=box, label="10 : !not_robot_at(r,x)"]
+  11 [shape=box, label="11 : not_robot_at(r,x)"]
+  10 -> 11
+  12 [shape=box, label="12 : robot_at(r,x)"]
+  9 -> 10
+  9 -> 12
+  13 [shape=box, label="13 : !not_tank_at(t,y) S tank_at(t,y)"]
+  14 [shape=box, label="14 : !not_tank_at(t,y)"]
+  15 [shape=box, label="15 : not_tank_at(t,y)"]
+  14 -> 15
+  16 [shape=box, label="16 : tank_at(t,y)"]
+  13 -> 14
+  13 -> 16
+  8 -> 9
+  8 -> 13
+  17 [shape=box, label="17 : !not_down(x,y) S down(x,y)"]
+  18 [shape=box, label="18 : !not_down(x,y)"]
+  19 [shape=box, label="19 : not_down(x,y)"]
+  18 -> 19
+  20 [shape=box, label="20 : down(x,y)"]
+  17 -> 18
+  17 -> 20
+  7 -> 8
+  7 -> 17
+  21 [shape=box, label="21 : !inspected(t) S not_inspected(t)"]
+  22 [shape=box, label="22 : !inspected(t)"]
+  23 [shape=box, label="23 : inspected(t)"]
+  22 -> 23
+  24 [shape=box, label="24 : not_inspected(t)"]
+  21 -> 22
+  21 -> 24
+  6 -> 7
+  6 -> 21
+  4 -> 5
+  4 -> 6
+  3 -> 4
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  1 [shape=box, label="1 : Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  2 [shape=box, label="2 : Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  3 [shape=box, label="3 : Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  4 [shape=box, label="4 : act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  5 [shape=box, label="5 : act_inspect_right(r,x,y,t)"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y))"]
+  8 [shape=box, label="8 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))"]
+  9 [shape=box, label="9 : !not_robot_at(r,x) S robot_at(r,x)"]
+  10 [shape=box, label="10 : !not_robot_at(r,x)"]
+  11 [shape=box, label="11 : not_robot_at(r,x)"]
+  10 -> 11
+  12 [shape=box, label="12 : robot_at(r,x)"]
+  9 -> 10
+  9 -> 12
+  13 [shape=box, label="13 : !not_tank_at(t,y) S tank_at(t,y)"]
+  14 [shape=box, label="14 : !not_tank_at(t,y)"]
+  15 [shape=box, label="15 : not_tank_at(t,y)"]
+  14 -> 15
+  16 [shape=box, label="16 : tank_at(t,y)"]
+  13 -> 14
+  13 -> 16
+  8 -> 9
+  8 -> 13
+  17 [shape=box, label="17 : !not_right(x,y) S right(x,y)"]
+  18 [shape=box, label="18 : !not_right(x,y)"]
+  19 [shape=box, label="19 : not_right(x,y)"]
+  18 -> 19
+  20 [shape=box, label="20 : right(x,y)"]
+  17 -> 18
+  17 -> 20
+  7 -> 8
+  7 -> 17
+  21 [shape=box, label="21 : !inspected(t) S not_inspected(t)"]
+  22 [shape=box, label="22 : !inspected(t)"]
+  23 [shape=box, label="23 : inspected(t)"]
+  22 -> 23
+  24 [shape=box, label="24 : not_inspected(t)"]
+  21 -> 22
+  21 -> 24
+  6 -> 7
+  6 -> 21
+  4 -> 5
+  4 -> 6
+  3 -> 4
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
+digraph G {
+  0 [shape=octagon, color=red, label="0 : Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  1 [shape=box, label="1 : Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  2 [shape=box, label="2 : Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  3 [shape=box, label="3 : Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  4 [shape=box, label="4 : act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  5 [shape=box, label="5 : act_inspect_left(r,x,y,t)"]
+  6 [shape=box, label="6 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))"]
+  7 [shape=box, label="7 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y))"]
+  8 [shape=box, label="8 : (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))"]
+  9 [shape=box, label="9 : !not_robot_at(r,x) S robot_at(r,x)"]
+  10 [shape=box, label="10 : !not_robot_at(r,x)"]
+  11 [shape=box, label="11 : not_robot_at(r,x)"]
+  10 -> 11
+  12 [shape=box, label="12 : robot_at(r,x)"]
+  9 -> 10
+  9 -> 12
+  13 [shape=box, label="13 : !not_tank_at(t,y) S tank_at(t,y)"]
+  14 [shape=box, label="14 : !not_tank_at(t,y)"]
+  15 [shape=box, label="15 : not_tank_at(t,y)"]
+  14 -> 15
+  16 [shape=box, label="16 : tank_at(t,y)"]
+  13 -> 14
+  13 -> 16
+  8 -> 9
+  8 -> 13
+  17 [shape=box, label="17 : !not_left(x,y) S left(x,y)"]
+  18 [shape=box, label="18 : !not_left(x,y)"]
+  19 [shape=box, label="19 : not_left(x,y)"]
+  18 -> 19
+  20 [shape=box, label="20 : left(x,y)"]
+  17 -> 18
+  17 -> 20
+  7 -> 8
+  7 -> 17
+  21 [shape=box, label="21 : !inspected(t) S not_inspected(t)"]
+  22 [shape=box, label="22 : !inspected(t)"]
+  23 [shape=box, label="23 : inspected(t)"]
+  22 -> 23
+  24 [shape=box, label="24 : not_inspected(t)"]
+  21 -> 22
+  21 -> 24
+  6 -> 7
+  6 -> 21
+  4 -> 5
+  4 -> 6
+  3 -> 4
+  2 -> 3
+  1 -> 2
+  0 -> 1
+}
