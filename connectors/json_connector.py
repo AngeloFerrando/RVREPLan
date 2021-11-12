@@ -15,8 +15,11 @@ class JsonConnector(abstract_connector.AbstractConnector):
     def _on_message(ws, message):
         if self.callback:
             propositions_dict = json.loads(message)
-            pass # Parse the dictionary into a set of Proposition objects (called props). Then, call self.callback(props) to update snapshot and monitor
-
+            props = set()
+            for prop in propositions_dict:
+                props.add(Proposition(prop['truth'], prop['functor'], prop['args']))
+            self.callback(props)
+            
     def _on_error(ws, error):
         print(error)
 
