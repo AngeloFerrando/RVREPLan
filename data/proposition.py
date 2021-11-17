@@ -1,3 +1,5 @@
+import json
+
 class Proposition(object):
     def __init__(self, truth, functor, args):
         self._truth = truth

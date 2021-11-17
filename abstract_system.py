@@ -1,13 +1,14 @@
 from connectors import *
 from mappers import *
 from data.action import *
+from data.snapshot import *
 import sys
 import time
 import os
 import argparse
 
 def main(args):
-    global actions, DEJAVU_PATH, connector
+    global actions, DEJAVU_PATH, connector, snapshot
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -35,7 +36,9 @@ def main(args):
     os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
 
     # Create snapshot
-    createSnapshot(args.problem_file)
+    # createSnapshot(args.problem_file)
+
+    snapshot = Snapshot(args.problem_file)
 
     # Connector instantiation
     # connector = JsonConnector() # Domain dependent: With another system, we may use another connector
@@ -48,12 +51,13 @@ def callbackNewProps(props):
     monitor_outcome = '0 errors detected!'
     if not actions:
         os.system('rm *.class')
+        print(snapshot)
         return
     action = Action.fromStrToAction(actions.pop(0))
     with open('./out/trace.csv', 'a') as monitor_input:
         if props:
             # Update the snapshot
-            updateSnapshot(props)
+            snapshot.update(props)
             # update the failure handling monitor
             for prop in props:
                 monitor_input.write(str(prop) + '\n')
@@ -63,12 +67,6 @@ def callbackNewProps(props):
         pass # replan
     else:
         connector.perform(action, callbackNewProps)
-
-def createSnapshot(problem):
-    pass
-
-def updateSnapshot(props):
-    pass
 
 if __name__ == '__main__':
     main(sys.argv)
