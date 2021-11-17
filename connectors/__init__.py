@@ -1,2 +1,3 @@
 from .abstract_connector import AbstractConnector
-from .ros_connector import ROSConnector
+from .json_connector import JsonConnector
+from .raw_connector import RawConnector

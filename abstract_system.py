@@ -1,11 +1,13 @@
 from connectors import *
+from mappers import *
+from data.action import *
 import sys
 import time
 import os
 import argparse
 
 def main(args):
-    global actions, DEJAVU_PATH
+    global actions, DEJAVU_PATH, connector
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -36,24 +38,26 @@ def main(args):
     createSnapshot(args.problem_file)
 
     # Connector instantiation
-    connector = JsonConnector() # Domain dependent: With another system, we may use another connector
+    # connector = JsonConnector() # Domain dependent: With another system, we may use another connector
+    connector = raw_connector.RawConnector(raw_mapper.RawMapper())
     with open(args.plan_file, 'r') as plan:
         actions = plan.readlines()
-    callbackNewProps([])
+    callbackNewProps(set())
 
 def callbackNewProps(props):
     monitor_outcome = '0 errors detected!'
     if not actions:
+        os.system('rm *.class')
         return
-    action = actions.pop(0)
+    action = Action.fromStrToAction(actions.pop(0))
     with open('./out/trace.csv', 'a') as monitor_input:
         if props:
             # Update the snapshot
             updateSnapshot(props)
             # update the failure handling monitor
             for prop in props:
-                monitor_input.write(prop + '\n')
-        monitor_input.write(action)
+                monitor_input.write(str(prop) + '\n')
+        monitor_input.write(str(action))
     monitor_outcome = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ./out/trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
     if '0 errors detected!' not in monitor_outcome:
         pass # replan
