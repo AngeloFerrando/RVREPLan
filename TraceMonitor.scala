@@ -1155,7 +1155,7 @@ abstract class Formula(val monitor: Monitor) {
 
 
 /*
-  prop fo_ltl_0 : Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y)) 
+  prop fo_ltl_0 : Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
 */
 
 class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
@@ -1169,8 +1169,9 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
       now(15) = build("up")(V("x"),V("y"))
       now(18) = build("not_empty")(V("y"))
       now(19) = build("empty")(V("y"))
-      now(22) = build("radiation")(V("y"))
-      now(23) = build("not_radiation")(V("y"))
+      now(23) = build("radiation")(V("y"))
+      now(24) = build("not_radiation")(V("y"))
+      now(29) = build("radiation")(V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1183,8 +1184,13 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
       now(17) = now(18).not()
       now(16) = now(19).or(now(17).and(pre(16)))
       now(6) = now(7).and(now(16))
-      now(21) = now(22).not()
-      now(20) = now(23).or(now(21).and(pre(20)))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(28) = now(29).not()
+      now(27) = now(28).not()
+      now(26) = now(27).or(pre(26))
+      now(25) = now(26).not()
+      now(20) = now(21).or(now(25))
       now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
       now(2) = now(3).forAll(var_y.quantvar)
@@ -1205,18 +1211,18 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(20,16,12,8)
+  val indices: List[Int] = List(26,21,16,12,8)
 
-  pre = Array.fill(24)(bddGenerator.False)
-  now = Array.fill(24)(bddGenerator.False)
+  pre = Array.fill(30)(bddGenerator.False)
+  now = Array.fill(30)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+    "Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "act_up(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1231,10 +1237,16 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
       "!not_empty(y)",
       "not_empty(y)",
       "empty(y)",
+      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
       "!radiation(y) S not_radiation(y)",
       "!radiation(y)",
       "radiation(y)",
-      "not_radiation(y)"
+      "not_radiation(y)",
+      "!P !(!radiation(y))",
+      "P !(!radiation(y))",
+      "!(!radiation(y))",
+      "!radiation(y)",
+      "radiation(y)"
   )
 
   debugMonitorState()
@@ -1242,7 +1254,7 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_1 : Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y)) 
+  prop fo_ltl_1 : Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
 */
 
 class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
@@ -1256,8 +1268,9 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
       now(15) = build("down")(V("x"),V("y"))
       now(18) = build("not_empty")(V("y"))
       now(19) = build("empty")(V("y"))
-      now(22) = build("radiation")(V("y"))
-      now(23) = build("not_radiation")(V("y"))
+      now(23) = build("radiation")(V("y"))
+      now(24) = build("not_radiation")(V("y"))
+      now(29) = build("radiation")(V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1270,8 +1283,13 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
       now(17) = now(18).not()
       now(16) = now(19).or(now(17).and(pre(16)))
       now(6) = now(7).and(now(16))
-      now(21) = now(22).not()
-      now(20) = now(23).or(now(21).and(pre(20)))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(28) = now(29).not()
+      now(27) = now(28).not()
+      now(26) = now(27).or(pre(26))
+      now(25) = now(26).not()
+      now(20) = now(21).or(now(25))
       now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
       now(2) = now(3).forAll(var_y.quantvar)
@@ -1292,18 +1310,18 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(20,16,12,8)
+  val indices: List[Int] = List(26,21,16,12,8)
 
-  pre = Array.fill(24)(bddGenerator.False)
-  now = Array.fill(24)(bddGenerator.False)
+  pre = Array.fill(30)(bddGenerator.False)
+  now = Array.fill(30)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+    "Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "act_down(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1318,10 +1336,16 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
       "!not_empty(y)",
       "not_empty(y)",
       "empty(y)",
+      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
       "!radiation(y) S not_radiation(y)",
       "!radiation(y)",
       "radiation(y)",
-      "not_radiation(y)"
+      "not_radiation(y)",
+      "!P !(!radiation(y))",
+      "P !(!radiation(y))",
+      "!(!radiation(y))",
+      "!radiation(y)",
+      "radiation(y)"
   )
 
   debugMonitorState()
@@ -1329,7 +1353,7 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_2 : Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y)) 
+  prop fo_ltl_2 : Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
 */
 
 class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
@@ -1343,8 +1367,9 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
       now(15) = build("right")(V("x"),V("y"))
       now(18) = build("not_empty")(V("y"))
       now(19) = build("empty")(V("y"))
-      now(22) = build("radiation")(V("y"))
-      now(23) = build("not_radiation")(V("y"))
+      now(23) = build("radiation")(V("y"))
+      now(24) = build("not_radiation")(V("y"))
+      now(29) = build("radiation")(V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1357,8 +1382,13 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
       now(17) = now(18).not()
       now(16) = now(19).or(now(17).and(pre(16)))
       now(6) = now(7).and(now(16))
-      now(21) = now(22).not()
-      now(20) = now(23).or(now(21).and(pre(20)))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(28) = now(29).not()
+      now(27) = now(28).not()
+      now(26) = now(27).or(pre(26))
+      now(25) = now(26).not()
+      now(20) = now(21).or(now(25))
       now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
       now(2) = now(3).forAll(var_y.quantvar)
@@ -1379,18 +1409,18 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(20,16,12,8)
+  val indices: List[Int] = List(26,21,16,12,8)
 
-  pre = Array.fill(24)(bddGenerator.False)
-  now = Array.fill(24)(bddGenerator.False)
+  pre = Array.fill(30)(bddGenerator.False)
+  now = Array.fill(30)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+    "Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "act_right(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1405,10 +1435,16 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
       "!not_empty(y)",
       "not_empty(y)",
       "empty(y)",
+      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
       "!radiation(y) S not_radiation(y)",
       "!radiation(y)",
       "radiation(y)",
-      "not_radiation(y)"
+      "not_radiation(y)",
+      "!P !(!radiation(y))",
+      "P !(!radiation(y))",
+      "!(!radiation(y))",
+      "!radiation(y)",
+      "radiation(y)"
   )
 
   debugMonitorState()
@@ -1416,7 +1452,7 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_3 : Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y)) 
+  prop fo_ltl_3 : Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
 */
 
 class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
@@ -1430,8 +1466,9 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
       now(15) = build("left")(V("x"),V("y"))
       now(18) = build("not_empty")(V("y"))
       now(19) = build("empty")(V("y"))
-      now(22) = build("radiation")(V("y"))
-      now(23) = build("not_radiation")(V("y"))
+      now(23) = build("radiation")(V("y"))
+      now(24) = build("not_radiation")(V("y"))
+      now(29) = build("radiation")(V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1444,8 +1481,13 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
       now(17) = now(18).not()
       now(16) = now(19).or(now(17).and(pre(16)))
       now(6) = now(7).and(now(16))
-      now(21) = now(22).not()
-      now(20) = now(23).or(now(21).and(pre(20)))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(28) = now(29).not()
+      now(27) = now(28).not()
+      now(26) = now(27).or(pre(26))
+      now(25) = now(26).not()
+      now(20) = now(21).or(now(25))
       now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
       now(2) = now(3).forAll(var_y.quantvar)
@@ -1466,18 +1508,18 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(20,16,12,8)
+  val indices: List[Int] = List(26,21,16,12,8)
 
-  pre = Array.fill(24)(bddGenerator.False)
-  now = Array.fill(24)(bddGenerator.False)
+  pre = Array.fill(30)(bddGenerator.False)
+  now = Array.fill(30)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
-      "act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+    "Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
+      "act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "act_left(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & (!radiation(y) S not_radiation(y))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1492,10 +1534,16 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
       "!not_empty(y)",
       "not_empty(y)",
       "empty(y)",
+      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
       "!radiation(y) S not_radiation(y)",
       "!radiation(y)",
       "radiation(y)",
-      "not_radiation(y)"
+      "not_radiation(y)",
+      "!P !(!radiation(y))",
+      "P !(!radiation(y))",
+      "!(!radiation(y))",
+      "!radiation(y)",
+      "radiation(y)"
   )
 
   debugMonitorState()
@@ -1503,7 +1551,7 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_4 : Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t)) 
+  prop fo_ltl_4 : Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
 */
 
 class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
@@ -1517,8 +1565,9 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
       now(16) = build("tank_at")(V("t"),V("y"))
       now(19) = build("not_up")(V("x"),V("y"))
       now(20) = build("up")(V("x"),V("y"))
-      now(23) = build("inspected")(V("t"))
-      now(24) = build("not_inspected")(V("t"))
+      now(24) = build("inspected")(V("t"))
+      now(25) = build("not_inspected")(V("t"))
+      now(30) = build("inspected")(V("t"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1531,8 +1580,13 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
       now(18) = now(19).not()
       now(17) = now(20).or(now(18).and(pre(17)))
       now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
+      now(23) = now(24).not()
+      now(22) = now(25).or(now(23).and(pre(22)))
+      now(29) = now(30).not()
+      now(28) = now(29).not()
+      now(27) = now(28).or(pre(27))
+      now(26) = now(27).not()
+      now(21) = now(22).or(now(26))
       now(6) = now(7).and(now(21))
       now(4) = now(5).not().or(now(6))
       now(3) = now(4).forAll(var_t.quantvar)
@@ -1554,19 +1608,19 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(21,17,13,9)
+  val indices: List[Int] = List(27,22,17,13,9)
 
-  pre = Array.fill(25)(bddGenerator.False)
-  now = Array.fill(25)(bddGenerator.False)
+  pre = Array.fill(31)(bddGenerator.False)
+  now = Array.fill(31)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
-      "act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
+    "Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "act_inspect_up(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & (!inspected(t) S not_inspected(t))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1581,10 +1635,16 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
       "!not_up(x,y)",
       "not_up(x,y)",
       "up(x,y)",
+      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
       "!inspected(t) S not_inspected(t)",
       "!inspected(t)",
       "inspected(t)",
-      "not_inspected(t)"
+      "not_inspected(t)",
+      "!P !(!inspected(t))",
+      "P !(!inspected(t))",
+      "!(!inspected(t))",
+      "!inspected(t)",
+      "inspected(t)"
   )
 
   debugMonitorState()
@@ -1592,7 +1652,7 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_5 : Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t)) 
+  prop fo_ltl_5 : Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
 */
 
 class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
@@ -1606,8 +1666,9 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
       now(16) = build("tank_at")(V("t"),V("y"))
       now(19) = build("not_down")(V("x"),V("y"))
       now(20) = build("down")(V("x"),V("y"))
-      now(23) = build("inspected")(V("t"))
-      now(24) = build("not_inspected")(V("t"))
+      now(24) = build("inspected")(V("t"))
+      now(25) = build("not_inspected")(V("t"))
+      now(30) = build("inspected")(V("t"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1620,8 +1681,13 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
       now(18) = now(19).not()
       now(17) = now(20).or(now(18).and(pre(17)))
       now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
+      now(23) = now(24).not()
+      now(22) = now(25).or(now(23).and(pre(22)))
+      now(29) = now(30).not()
+      now(28) = now(29).not()
+      now(27) = now(28).or(pre(27))
+      now(26) = now(27).not()
+      now(21) = now(22).or(now(26))
       now(6) = now(7).and(now(21))
       now(4) = now(5).not().or(now(6))
       now(3) = now(4).forAll(var_t.quantvar)
@@ -1643,19 +1709,19 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(21,17,13,9)
+  val indices: List[Int] = List(27,22,17,13,9)
 
-  pre = Array.fill(25)(bddGenerator.False)
-  now = Array.fill(25)(bddGenerator.False)
+  pre = Array.fill(31)(bddGenerator.False)
+  now = Array.fill(31)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
-      "act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
+    "Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "act_inspect_down(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & (!inspected(t) S not_inspected(t))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1670,10 +1736,16 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
       "!not_down(x,y)",
       "not_down(x,y)",
       "down(x,y)",
+      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
       "!inspected(t) S not_inspected(t)",
       "!inspected(t)",
       "inspected(t)",
-      "not_inspected(t)"
+      "not_inspected(t)",
+      "!P !(!inspected(t))",
+      "P !(!inspected(t))",
+      "!(!inspected(t))",
+      "!inspected(t)",
+      "inspected(t)"
   )
 
   debugMonitorState()
@@ -1681,7 +1753,7 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_6 : Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t)) 
+  prop fo_ltl_6 : Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
 */
 
 class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
@@ -1695,8 +1767,9 @@ class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
       now(16) = build("tank_at")(V("t"),V("y"))
       now(19) = build("not_right")(V("x"),V("y"))
       now(20) = build("right")(V("x"),V("y"))
-      now(23) = build("inspected")(V("t"))
-      now(24) = build("not_inspected")(V("t"))
+      now(24) = build("inspected")(V("t"))
+      now(25) = build("not_inspected")(V("t"))
+      now(30) = build("inspected")(V("t"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1709,8 +1782,13 @@ class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
       now(18) = now(19).not()
       now(17) = now(20).or(now(18).and(pre(17)))
       now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
+      now(23) = now(24).not()
+      now(22) = now(25).or(now(23).and(pre(22)))
+      now(29) = now(30).not()
+      now(28) = now(29).not()
+      now(27) = now(28).or(pre(27))
+      now(26) = now(27).not()
+      now(21) = now(22).or(now(26))
       now(6) = now(7).and(now(21))
       now(4) = now(5).not().or(now(6))
       now(3) = now(4).forAll(var_t.quantvar)
@@ -1732,19 +1810,19 @@ class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(21,17,13,9)
+  val indices: List[Int] = List(27,22,17,13,9)
 
-  pre = Array.fill(25)(bddGenerator.False)
-  now = Array.fill(25)(bddGenerator.False)
+  pre = Array.fill(31)(bddGenerator.False)
+  now = Array.fill(31)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
-      "act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
+    "Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "act_inspect_right(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & (!inspected(t) S not_inspected(t))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1759,10 +1837,16 @@ class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
       "!not_right(x,y)",
       "not_right(x,y)",
       "right(x,y)",
+      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
       "!inspected(t) S not_inspected(t)",
       "!inspected(t)",
       "inspected(t)",
-      "not_inspected(t)"
+      "not_inspected(t)",
+      "!P !(!inspected(t))",
+      "P !(!inspected(t))",
+      "!(!inspected(t))",
+      "!inspected(t)",
+      "inspected(t)"
   )
 
   debugMonitorState()
@@ -1770,7 +1854,7 @@ class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_7 : Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t)) 
+  prop fo_ltl_7 : Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
 */
 
 class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
@@ -1784,8 +1868,9 @@ class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
       now(16) = build("tank_at")(V("t"),V("y"))
       now(19) = build("not_left")(V("x"),V("y"))
       now(20) = build("left")(V("x"),V("y"))
-      now(23) = build("inspected")(V("t"))
-      now(24) = build("not_inspected")(V("t"))
+      now(24) = build("inspected")(V("t"))
+      now(25) = build("not_inspected")(V("t"))
+      now(30) = build("inspected")(V("t"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1798,8 +1883,13 @@ class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
       now(18) = now(19).not()
       now(17) = now(20).or(now(18).and(pre(17)))
       now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
+      now(23) = now(24).not()
+      now(22) = now(25).or(now(23).and(pre(22)))
+      now(29) = now(30).not()
+      now(28) = now(29).not()
+      now(27) = now(28).or(pre(27))
+      now(26) = now(27).not()
+      now(21) = now(22).or(now(26))
       now(6) = now(7).and(now(21))
       now(4) = now(5).not().or(now(6))
       now(3) = now(4).forAll(var_t.quantvar)
@@ -1821,19 +1911,19 @@ class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
   val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(21,17,13,9)
+  val indices: List[Int] = List(27,22,17,13,9)
 
-  pre = Array.fill(25)(bddGenerator.False)
-  now = Array.fill(25)(bddGenerator.False)
+  pre = Array.fill(31)(bddGenerator.False)
+  now = Array.fill(31)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
-      "Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
-      "act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
+    "Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
+      "act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "act_inspect_left(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & (!inspected(t) S not_inspected(t))",
+      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y))",
       "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
       "!not_robot_at(r,x) S robot_at(r,x)",
@@ -1848,10 +1938,16 @@ class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
       "!not_left(x,y)",
       "not_left(x,y)",
       "left(x,y)",
+      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
       "!inspected(t) S not_inspected(t)",
       "!inspected(t)",
       "inspected(t)",
-      "not_inspected(t)"
+      "not_inspected(t)",
+      "!P !(!inspected(t))",
+      "P !(!inspected(t))",
+      "!(!inspected(t))",
+      "!inspected(t)",
+      "inspected(t)"
   )
 
   debugMonitorState()

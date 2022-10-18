@@ -39,7 +39,7 @@ def parameterisedMonitor(domain_file_name):
                     vars.append(precondition_list[p_i][index+1:].replace(')', '').replace(',', '').strip())
                 index = index1
             if precondition_list[p_i].startswith('!'):
-                fo_ltl = fo_ltl + '(!' + precondition_list[p_i].replace('?', '')[1:] + ' S ' + 'not_' + precondition_list[p_i].replace('?', '')[1:] + ')'
+                fo_ltl = fo_ltl + '((!' + precondition_list[p_i].replace('?', '')[1:] + ' S ' + 'not_' + precondition_list[p_i].replace('?', '')[1:] + ') | (H (!' + precondition_list[p_i].replace('?', '')[1:] + ')))'
             else:
                 fo_ltl = fo_ltl + '(!' + 'not_' + precondition_list[p_i].replace('?', '') + ' S ' + precondition_list[p_i].replace('?', '') + ')'
         fo_ltl_list.append(fo_ltl)
