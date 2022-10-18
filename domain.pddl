@@ -3,8 +3,8 @@
 (:types robot cell tank - object)
 
 (:predicates
-	(robot-at ?r - robot ?x - cell)
-	(tank-at ?t - tank ?x - cell)
+	(robot_at ?r - robot ?x - cell)
+	(tank_at ?t - tank ?x - cell)
 	(up ?x - cell ?y - cell)
 	(down ?x - cell ?y - cell)
 	(right ?x - cell ?y - cell)
@@ -15,62 +15,62 @@
 )
 
 ; Robot movements
-(:action up
+(:action act_up
   :parameters (?r - robot ?x - cell ?y - cell)
-  :precondition (and (robot-at ?r ?x) (up ?x ?y) (empty ?y) (not (radiation ?y)))
-  :effect (and (robot-at ?r ?y) (not (robot-at ?r ?x))
+  :precondition (and (robot_at ?r ?x) (up ?x ?y) (empty ?y) (not (radiation ?y)))
+  :effect (and (robot_at ?r ?y) (not (robot_at ?r ?x))
                (empty ?x) (not (empty ?y))
             )
 )
 
-(:action down
+(:action act_down
   :parameters (?r - robot ?x - cell ?y - cell)
-  :precondition (and (robot-at ?r ?x) (down ?x ?y) (empty ?y) (not (radiation ?y)))
-  :effect (and (robot-at ?r ?y) (not (robot-at ?r ?x))
+  :precondition (and (robot_at ?r ?x) (down ?x ?y) (empty ?y) (not (radiation ?y)))
+  :effect (and (robot_at ?r ?y) (not (robot_at ?r ?x))
                (empty ?x) (not (empty ?y))
             )
 )
 
-(:action right
+(:action act_right
   :parameters (?r - robot ?x - cell ?y - cell)
-  :precondition (and (robot-at ?r ?x) (right ?x ?y) (empty ?y) (not (radiation ?y)))
-  :effect (and (robot-at ?r ?y) (not (robot-at ?r ?x))
+  :precondition (and (robot_at ?r ?x) (right ?x ?y) (empty ?y) (not (radiation ?y)))
+  :effect (and (robot_at ?r ?y) (not (robot_at ?r ?x))
                (empty ?x) (not (empty ?y))
 	     )
 )
 
-(:action left
+(:action act_left
   :parameters (?r - robot ?x - cell ?y - cell)
-  :precondition (and (robot-at ?r ?x) (left ?x ?y) (empty ?y) (not (radiation ?y)))
-  :effect (and (robot-at ?r ?y) (not (robot-at ?r ?x))
+  :precondition (and (robot_at ?r ?x) (left ?x ?y) (empty ?y) (not (radiation ?y)))
+  :effect (and (robot_at ?r ?y) (not (robot_at ?r ?x))
                (empty ?x) (not (empty ?y))
             )
 )
 
-(:action inspect-up
+(:action act_inspect_up
   :parameters (?r - robot ?x - cell ?y - cell ?t - tank)
-  :precondition (and (robot-at ?r ?x) (tank-at ?t ?y) (up ?x ?y) (not (inspected ?t)))
+  :precondition (and (robot_at ?r ?x) (tank_at ?t ?y) (up ?x ?y) (not (inspected ?t)))
   :effect (and (inspected ?t)
             )
 )
 
-(:action inspect-down
+(:action act_inspect_down
   :parameters (?r - robot ?x - cell ?y - cell ?t - tank)
-  :precondition (and (robot-at ?r ?x) (tank-at ?t ?y) (down ?x ?y) (not (inspected ?t)))
+  :precondition (and (robot_at ?r ?x) (tank_at ?t ?y) (down ?x ?y) (not (inspected ?t)))
   :effect (and (inspected ?t)
             )
 )
 
-(:action inspect-right
+(:action act_inspect_right
   :parameters (?r - robot ?x - cell ?y - cell ?t - tank)
-  :precondition (and (robot-at ?r ?x) (tank-at ?t ?y) (right ?x ?y) (not (inspected ?t)))
+  :precondition (and (robot_at ?r ?x) (tank_at ?t ?y) (right ?x ?y) (not (inspected ?t)))
   :effect (and (inspected ?t)
             )
 )
 
-(:action inspect-left
+(:action act_inspect_left
   :parameters (?r - robot ?x - cell ?y - cell ?t - tank)
-  :precondition (and (robot-at ?r ?x) (tank-at ?t ?y) (left ?x ?y) (not (inspected ?t)))
+  :precondition (and (robot_at ?r ?x) (tank_at ?t ?y) (left ?x ?y) (not (inspected ?t)))
   :effect (and (inspected ?t)
             )
 )

@@ -29,6 +29,9 @@ class JsonConnector(abstract_connector.AbstractConnector):
     def _on_open(ws):
         print('### open ###')
 
+    def get_initial_propositions(self):
+        return set()
+
     def perform(self, action, callback):
         ws.send(self._mapper.mapActionToCommand(action).toJSON())
         self._callback = callback

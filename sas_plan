@@ -1,0 +1,7 @@
+(act_left rover cell4 cell3)
+(act_down rover cell3 cell6)
+(act_down rover cell6 cell9)
+(act_right rover cell9 cell10)
+(act_right rover cell10 cell11)
+(act_inspect_up rover cell11 cell8 tank2)
+; cost = 6 (unit cost)

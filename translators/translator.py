@@ -77,7 +77,7 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
     ltl_list = []
     count = 0
     for p in plan_list:
-        p[0] = 'act_' + p[0]
+        # p[0] = 'act_' + p[0]
         act_def = domain_dict[p[0].replace('-', '_')]
         ltl = 'H(' + p[0].replace('-', '_') + '('
         for p_i in range(1, len(p)):
@@ -102,7 +102,8 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
     return ltl_list
 
 def extract_info(domain_text, act, par, pre, eff, next_act):
-    action = 'act_' + domain_text[act+7:par].replace('\n', '').replace('-', '_').strip()
+    # action = 'act_' + domain_text[act+7:par].replace('\n', '').replace('-', '_').strip()
+    action = domain_text[act+7:par].replace('\n', '').replace('-', '_').strip()
     parameters = domain_text[par+11:pre].replace('\n', '').strip()
     precondition = domain_text[pre+13:eff].replace('\n', '').replace('and', '').strip()
     if next_act != -1:
