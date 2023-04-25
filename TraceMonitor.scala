@@ -1155,47 +1155,46 @@ abstract class Formula(val monitor: Monitor) {
 
 
 /*
-  prop fo_ltl_0 : Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
+  prop fo_ltl_0 : Forall obj . Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc)) 
 */
 
 class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("act_up")(V("r"),V("x"),V("y"))
-      now(10) = build("not_robot_at")(V("r"),V("x"))
-      now(11) = build("robot_at")(V("r"),V("x"))
-      now(14) = build("not_up")(V("x"),V("y"))
-      now(15) = build("up")(V("x"),V("y"))
-      now(18) = build("not_empty")(V("y"))
-      now(19) = build("empty")(V("y"))
-      now(23) = build("radiation")(V("y"))
-      now(24) = build("not_radiation")(V("y"))
-      now(29) = build("radiation")(V("y"))
+      now(4) = build("load_truck")(V("obj"),V("truck"),V("loc"))
+      now(11) = build("not_package")(V("obj"))
+      now(12) = build("package")(V("obj"))
+      now(15) = build("not_truck")(V("truck"))
+      now(16) = build("truck")(V("truck"))
+      now(19) = build("not_location")(V("loc"))
+      now(20) = build("location")(V("loc"))
+      now(23) = build("not_at")(V("truck"),V("loc"))
+      now(24) = build("at")(V("truck"),V("loc"))
+      now(27) = build("not_at")(V("obj"),V("loc"))
+      now(28) = build("at")(V("obj"),V("loc"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(9) = now(10).not()
-      now(8) = now(11).or(now(9).and(pre(8)))
-      now(13) = now(14).not()
-      now(12) = now(15).or(now(13).and(pre(12)))
-      now(7) = now(8).and(now(12))
-      now(17) = now(18).not()
-      now(16) = now(19).or(now(17).and(pre(16)))
-      now(6) = now(7).and(now(16))
+      now(10) = now(11).not()
+      now(9) = now(12).or(now(10).and(pre(9)))
+      now(14) = now(15).not()
+      now(13) = now(16).or(now(14).and(pre(13)))
+      now(8) = now(9).and(now(13))
+      now(18) = now(19).not()
+      now(17) = now(20).or(now(18).and(pre(17)))
+      now(7) = now(8).and(now(17))
       now(22) = now(23).not()
       now(21) = now(24).or(now(22).and(pre(21)))
-      now(28) = now(29).not()
-      now(27) = now(28).not()
-      now(26) = now(27).or(pre(26))
-      now(25) = now(26).not()
-      now(20) = now(21).or(now(25))
-      now(5) = now(6).and(now(20))
+      now(6) = now(7).and(now(21))
+      now(26) = now(27).not()
+      now(25) = now(28).or(now(26).and(pre(25)))
+      now(5) = now(6).and(now(25))
       now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
+      now(2) = now(3).forAll(var_loc.quantvar)
+      now(1) = now(2).forAll(var_truck.quantvar)
+      now(0) = now(1).forAll(var_obj.quantvar)
 
     debugMonitorState()
 
@@ -1208,45 +1207,44 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
+  val var_obj :: var_truck :: var_loc :: Nil = declareVariables(("obj",false), ("truck",false), ("loc",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(26,21,16,12,8)
+  val indices: List[Int] = List(25,21,17,13,9)
 
-  pre = Array.fill(30)(bddGenerator.False)
-  now = Array.fill(30)(bddGenerator.False)
+  pre = Array.fill(29)(bddGenerator.False)
+  now = Array.fill(29)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall x . Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall y . act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_up(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_up(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y)) & (!not_empty(y) S empty(y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_up(x,y) S up(x,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_up(x,y) S up(x,y)",
-      "!not_up(x,y)",
-      "not_up(x,y)",
-      "up(x,y)",
-      "!not_empty(y) S empty(y)",
-      "!not_empty(y)",
-      "not_empty(y)",
-      "empty(y)",
-      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
-      "!radiation(y) S not_radiation(y)",
-      "!radiation(y)",
-      "radiation(y)",
-      "not_radiation(y)",
-      "!P !(!radiation(y))",
-      "P !(!radiation(y))",
-      "!(!radiation(y))",
-      "!radiation(y)",
-      "radiation(y)"
+    "Forall obj . Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "load_truck(obj,truck,loc)",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck))",
+      "!not_package(obj) S package(obj)",
+      "!not_package(obj)",
+      "not_package(obj)",
+      "package(obj)",
+      "!not_truck(truck) S truck(truck)",
+      "!not_truck(truck)",
+      "not_truck(truck)",
+      "truck(truck)",
+      "!not_location(loc) S location(loc)",
+      "!not_location(loc)",
+      "not_location(loc)",
+      "location(loc)",
+      "!not_at(truck,loc) S at(truck,loc)",
+      "!not_at(truck,loc)",
+      "not_at(truck,loc)",
+      "at(truck,loc)",
+      "!not_at(obj,loc) S at(obj,loc)",
+      "!not_at(obj,loc)",
+      "not_at(obj,loc)",
+      "at(obj,loc)"
   )
 
   debugMonitorState()
@@ -1254,47 +1252,46 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_1 : Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
+  prop fo_ltl_1 : Forall obj . Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc)) 
 */
 
 class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("act_down")(V("r"),V("x"),V("y"))
-      now(10) = build("not_robot_at")(V("r"),V("x"))
-      now(11) = build("robot_at")(V("r"),V("x"))
-      now(14) = build("not_down")(V("x"),V("y"))
-      now(15) = build("down")(V("x"),V("y"))
-      now(18) = build("not_empty")(V("y"))
-      now(19) = build("empty")(V("y"))
-      now(23) = build("radiation")(V("y"))
-      now(24) = build("not_radiation")(V("y"))
-      now(29) = build("radiation")(V("y"))
+      now(4) = build("load_airplane")(V("obj"),V("airplane"),V("loc"))
+      now(11) = build("not_package")(V("obj"))
+      now(12) = build("package")(V("obj"))
+      now(15) = build("not_airplane")(V("airplane"))
+      now(16) = build("airplane")(V("airplane"))
+      now(19) = build("not_location")(V("loc"))
+      now(20) = build("location")(V("loc"))
+      now(23) = build("not_at")(V("obj"),V("loc"))
+      now(24) = build("at")(V("obj"),V("loc"))
+      now(27) = build("not_at")(V("airplane"),V("loc"))
+      now(28) = build("at")(V("airplane"),V("loc"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(9) = now(10).not()
-      now(8) = now(11).or(now(9).and(pre(8)))
-      now(13) = now(14).not()
-      now(12) = now(15).or(now(13).and(pre(12)))
-      now(7) = now(8).and(now(12))
-      now(17) = now(18).not()
-      now(16) = now(19).or(now(17).and(pre(16)))
-      now(6) = now(7).and(now(16))
+      now(10) = now(11).not()
+      now(9) = now(12).or(now(10).and(pre(9)))
+      now(14) = now(15).not()
+      now(13) = now(16).or(now(14).and(pre(13)))
+      now(8) = now(9).and(now(13))
+      now(18) = now(19).not()
+      now(17) = now(20).or(now(18).and(pre(17)))
+      now(7) = now(8).and(now(17))
       now(22) = now(23).not()
       now(21) = now(24).or(now(22).and(pre(21)))
-      now(28) = now(29).not()
-      now(27) = now(28).not()
-      now(26) = now(27).or(pre(26))
-      now(25) = now(26).not()
-      now(20) = now(21).or(now(25))
-      now(5) = now(6).and(now(20))
+      now(6) = now(7).and(now(21))
+      now(26) = now(27).not()
+      now(25) = now(28).or(now(26).and(pre(25)))
+      now(5) = now(6).and(now(25))
       now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
+      now(2) = now(3).forAll(var_loc.quantvar)
+      now(1) = now(2).forAll(var_airplane.quantvar)
+      now(0) = now(1).forAll(var_obj.quantvar)
 
     debugMonitorState()
 
@@ -1307,45 +1304,44 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
+  val var_obj :: var_airplane :: var_loc :: Nil = declareVariables(("obj",false), ("airplane",false), ("loc",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(26,21,16,12,8)
+  val indices: List[Int] = List(25,21,17,13,9)
 
-  pre = Array.fill(30)(bddGenerator.False)
-  now = Array.fill(30)(bddGenerator.False)
+  pre = Array.fill(29)(bddGenerator.False)
+  now = Array.fill(29)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall x . Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall y . act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_down(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_down(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y)) & (!not_empty(y) S empty(y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_down(x,y) S down(x,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_down(x,y) S down(x,y)",
-      "!not_down(x,y)",
-      "not_down(x,y)",
-      "down(x,y)",
-      "!not_empty(y) S empty(y)",
-      "!not_empty(y)",
-      "not_empty(y)",
-      "empty(y)",
-      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
-      "!radiation(y) S not_radiation(y)",
-      "!radiation(y)",
-      "radiation(y)",
-      "not_radiation(y)",
-      "!P !(!radiation(y))",
-      "P !(!radiation(y))",
-      "!(!radiation(y))",
-      "!radiation(y)",
-      "radiation(y)"
+    "Forall obj . Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "load_airplane(obj,airplane,loc)",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane))",
+      "!not_package(obj) S package(obj)",
+      "!not_package(obj)",
+      "not_package(obj)",
+      "package(obj)",
+      "!not_airplane(airplane) S airplane(airplane)",
+      "!not_airplane(airplane)",
+      "not_airplane(airplane)",
+      "airplane(airplane)",
+      "!not_location(loc) S location(loc)",
+      "!not_location(loc)",
+      "not_location(loc)",
+      "location(loc)",
+      "!not_at(obj,loc) S at(obj,loc)",
+      "!not_at(obj,loc)",
+      "not_at(obj,loc)",
+      "at(obj,loc)",
+      "!not_at(airplane,loc) S at(airplane,loc)",
+      "!not_at(airplane,loc)",
+      "not_at(airplane,loc)",
+      "at(airplane,loc)"
   )
 
   debugMonitorState()
@@ -1353,47 +1349,46 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_2 : Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
+  prop fo_ltl_2 : Forall obj . Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck)) 
 */
 
 class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("act_right")(V("r"),V("x"),V("y"))
-      now(10) = build("not_robot_at")(V("r"),V("x"))
-      now(11) = build("robot_at")(V("r"),V("x"))
-      now(14) = build("not_right")(V("x"),V("y"))
-      now(15) = build("right")(V("x"),V("y"))
-      now(18) = build("not_empty")(V("y"))
-      now(19) = build("empty")(V("y"))
-      now(23) = build("radiation")(V("y"))
-      now(24) = build("not_radiation")(V("y"))
-      now(29) = build("radiation")(V("y"))
+      now(4) = build("unload_truck")(V("obj"),V("truck"),V("loc"))
+      now(11) = build("not_package")(V("obj"))
+      now(12) = build("package")(V("obj"))
+      now(15) = build("not_truck")(V("truck"))
+      now(16) = build("truck")(V("truck"))
+      now(19) = build("not_location")(V("loc"))
+      now(20) = build("location")(V("loc"))
+      now(23) = build("not_at")(V("truck"),V("loc"))
+      now(24) = build("at")(V("truck"),V("loc"))
+      now(27) = build("not_in")(V("obj"),V("truck"))
+      now(28) = build("in")(V("obj"),V("truck"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(9) = now(10).not()
-      now(8) = now(11).or(now(9).and(pre(8)))
-      now(13) = now(14).not()
-      now(12) = now(15).or(now(13).and(pre(12)))
-      now(7) = now(8).and(now(12))
-      now(17) = now(18).not()
-      now(16) = now(19).or(now(17).and(pre(16)))
-      now(6) = now(7).and(now(16))
+      now(10) = now(11).not()
+      now(9) = now(12).or(now(10).and(pre(9)))
+      now(14) = now(15).not()
+      now(13) = now(16).or(now(14).and(pre(13)))
+      now(8) = now(9).and(now(13))
+      now(18) = now(19).not()
+      now(17) = now(20).or(now(18).and(pre(17)))
+      now(7) = now(8).and(now(17))
       now(22) = now(23).not()
       now(21) = now(24).or(now(22).and(pre(21)))
-      now(28) = now(29).not()
-      now(27) = now(28).not()
-      now(26) = now(27).or(pre(26))
-      now(25) = now(26).not()
-      now(20) = now(21).or(now(25))
-      now(5) = now(6).and(now(20))
+      now(6) = now(7).and(now(21))
+      now(26) = now(27).not()
+      now(25) = now(28).or(now(26).and(pre(25)))
+      now(5) = now(6).and(now(25))
       now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
+      now(2) = now(3).forAll(var_loc.quantvar)
+      now(1) = now(2).forAll(var_truck.quantvar)
+      now(0) = now(1).forAll(var_obj.quantvar)
 
     debugMonitorState()
 
@@ -1406,45 +1401,44 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
+  val var_obj :: var_truck :: var_loc :: Nil = declareVariables(("obj",false), ("truck",false), ("loc",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(26,21,16,12,8)
+  val indices: List[Int] = List(25,21,17,13,9)
 
-  pre = Array.fill(30)(bddGenerator.False)
-  now = Array.fill(30)(bddGenerator.False)
+  pre = Array.fill(29)(bddGenerator.False)
+  now = Array.fill(29)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall x . Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall y . act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_right(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_right(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y)) & (!not_empty(y) S empty(y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_right(x,y) S right(x,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_right(x,y) S right(x,y)",
-      "!not_right(x,y)",
-      "not_right(x,y)",
-      "right(x,y)",
-      "!not_empty(y) S empty(y)",
-      "!not_empty(y)",
-      "not_empty(y)",
-      "empty(y)",
-      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
-      "!radiation(y) S not_radiation(y)",
-      "!radiation(y)",
-      "radiation(y)",
-      "not_radiation(y)",
-      "!P !(!radiation(y))",
-      "P !(!radiation(y))",
-      "!(!radiation(y))",
-      "!radiation(y)",
-      "radiation(y)"
+    "Forall obj . Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
+      "Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
+      "Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
+      "unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
+      "unload_truck(obj,truck,loc)",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc))",
+      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck))",
+      "!not_package(obj) S package(obj)",
+      "!not_package(obj)",
+      "not_package(obj)",
+      "package(obj)",
+      "!not_truck(truck) S truck(truck)",
+      "!not_truck(truck)",
+      "not_truck(truck)",
+      "truck(truck)",
+      "!not_location(loc) S location(loc)",
+      "!not_location(loc)",
+      "not_location(loc)",
+      "location(loc)",
+      "!not_at(truck,loc) S at(truck,loc)",
+      "!not_at(truck,loc)",
+      "not_at(truck,loc)",
+      "at(truck,loc)",
+      "!not_in(obj,truck) S in(obj,truck)",
+      "!not_in(obj,truck)",
+      "not_in(obj,truck)",
+      "in(obj,truck)"
   )
 
   debugMonitorState()
@@ -1452,23 +1446,238 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_3 : Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))) 
+  prop fo_ltl_3 : Forall obj . Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc)) 
 */
 
 class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("act_left")(V("r"),V("x"),V("y"))
-      now(10) = build("not_robot_at")(V("r"),V("x"))
-      now(11) = build("robot_at")(V("r"),V("x"))
-      now(14) = build("not_left")(V("x"),V("y"))
-      now(15) = build("left")(V("x"),V("y"))
-      now(18) = build("not_empty")(V("y"))
-      now(19) = build("empty")(V("y"))
-      now(23) = build("radiation")(V("y"))
-      now(24) = build("not_radiation")(V("y"))
-      now(29) = build("radiation")(V("y"))
+      now(4) = build("unload_airplane")(V("obj"),V("airplane"),V("loc"))
+      now(11) = build("not_package")(V("obj"))
+      now(12) = build("package")(V("obj"))
+      now(15) = build("not_airplane")(V("airplane"))
+      now(16) = build("airplane")(V("airplane"))
+      now(19) = build("not_location")(V("loc"))
+      now(20) = build("location")(V("loc"))
+      now(23) = build("not_in")(V("obj"),V("airplane"))
+      now(24) = build("in")(V("obj"),V("airplane"))
+      now(27) = build("not_at")(V("airplane"),V("loc"))
+      now(28) = build("at")(V("airplane"),V("loc"))
+    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
+    // assignments3 (rule calls):
+    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
+    // assignments5 (main formula excluding leaf nodes):
+      now(10) = now(11).not()
+      now(9) = now(12).or(now(10).and(pre(9)))
+      now(14) = now(15).not()
+      now(13) = now(16).or(now(14).and(pre(13)))
+      now(8) = now(9).and(now(13))
+      now(18) = now(19).not()
+      now(17) = now(20).or(now(18).and(pre(17)))
+      now(7) = now(8).and(now(17))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(6) = now(7).and(now(21))
+      now(26) = now(27).not()
+      now(25) = now(28).or(now(26).and(pre(25)))
+      now(5) = now(6).and(now(25))
+      now(3) = now(4).not().or(now(5))
+      now(2) = now(3).forAll(var_loc.quantvar)
+      now(1) = now(2).forAll(var_airplane.quantvar)
+      now(0) = now(1).forAll(var_obj.quantvar)
+
+    debugMonitorState()
+
+    val error = now(0).isZero
+    if (error) monitor.recordResult()
+    tmp = now
+    now = pre
+    pre = tmp
+    touchedByLastEvent = emptyTouchedSet
+    !error
+  }
+
+  val var_obj :: var_airplane :: var_loc :: Nil = declareVariables(("obj",false), ("airplane",false), ("loc",false))(0)
+
+  varsInRelations = Set()
+  val indices: List[Int] = List(25,21,17,13,9)
+
+  pre = Array.fill(29)(bddGenerator.False)
+  now = Array.fill(29)(bddGenerator.False)
+
+  txt = Array(
+    "Forall obj . Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "unload_airplane(obj,airplane,loc)",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc))",
+      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane))",
+      "!not_package(obj) S package(obj)",
+      "!not_package(obj)",
+      "not_package(obj)",
+      "package(obj)",
+      "!not_airplane(airplane) S airplane(airplane)",
+      "!not_airplane(airplane)",
+      "not_airplane(airplane)",
+      "airplane(airplane)",
+      "!not_location(loc) S location(loc)",
+      "!not_location(loc)",
+      "not_location(loc)",
+      "location(loc)",
+      "!not_in(obj,airplane) S in(obj,airplane)",
+      "!not_in(obj,airplane)",
+      "not_in(obj,airplane)",
+      "in(obj,airplane)",
+      "!not_at(airplane,loc) S at(airplane,loc)",
+      "!not_at(airplane,loc)",
+      "not_at(airplane,loc)",
+      "at(airplane,loc)"
+  )
+
+  debugMonitorState()
+}
+        
+
+/*
+  prop fo_ltl_4 : Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city)) 
+*/
+
+class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
+          
+  override def evaluate(): Boolean = {
+    // assignments1 (leaf nodes that are not rule calls):
+      now(5) = build("drive_truck")(V("truck"),V("loc_from"),V("loc_to"),V("city"))
+      now(14) = build("not_truck")(V("truck"))
+      now(15) = build("truck")(V("truck"))
+      now(18) = build("not_location")(V("loc_from"))
+      now(19) = build("location")(V("loc_from"))
+      now(22) = build("not_location")(V("loc_to"))
+      now(23) = build("location")(V("loc_to"))
+      now(26) = build("not_city")(V("city"))
+      now(27) = build("city")(V("city"))
+      now(30) = build("not_at")(V("truck"),V("loc_from"))
+      now(31) = build("at")(V("truck"),V("loc_from"))
+      now(34) = build("not_in_city")(V("loc_from"),V("city"))
+      now(35) = build("in_city")(V("loc_from"),V("city"))
+      now(38) = build("not_in_city")(V("loc_to"),V("city"))
+      now(39) = build("in_city")(V("loc_to"),V("city"))
+    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
+    // assignments3 (rule calls):
+    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
+    // assignments5 (main formula excluding leaf nodes):
+      now(13) = now(14).not()
+      now(12) = now(15).or(now(13).and(pre(12)))
+      now(17) = now(18).not()
+      now(16) = now(19).or(now(17).and(pre(16)))
+      now(11) = now(12).and(now(16))
+      now(21) = now(22).not()
+      now(20) = now(23).or(now(21).and(pre(20)))
+      now(10) = now(11).and(now(20))
+      now(25) = now(26).not()
+      now(24) = now(27).or(now(25).and(pre(24)))
+      now(9) = now(10).and(now(24))
+      now(29) = now(30).not()
+      now(28) = now(31).or(now(29).and(pre(28)))
+      now(8) = now(9).and(now(28))
+      now(33) = now(34).not()
+      now(32) = now(35).or(now(33).and(pre(32)))
+      now(7) = now(8).and(now(32))
+      now(37) = now(38).not()
+      now(36) = now(39).or(now(37).and(pre(36)))
+      now(6) = now(7).and(now(36))
+      now(4) = now(5).not().or(now(6))
+      now(3) = now(4).forAll(var_city.quantvar)
+      now(2) = now(3).forAll(var_loc_to.quantvar)
+      now(1) = now(2).forAll(var_loc_from.quantvar)
+      now(0) = now(1).forAll(var_truck.quantvar)
+
+    debugMonitorState()
+
+    val error = now(0).isZero
+    if (error) monitor.recordResult()
+    tmp = now
+    now = pre
+    pre = tmp
+    touchedByLastEvent = emptyTouchedSet
+    !error
+  }
+
+  val var_truck :: var_loc_from :: var_loc_to :: var_city :: Nil = declareVariables(("truck",false), ("loc_from",false), ("loc_to",false), ("city",false))(0)
+
+  varsInRelations = Set()
+  val indices: List[Int] = List(36,32,28,24,20,16,12)
+
+  pre = Array.fill(40)(bddGenerator.False)
+  now = Array.fill(40)(bddGenerator.False)
+
+  txt = Array(
+    "Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "drive_truck(truck,loc_from,loc_to,city)",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city))",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from))",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city))",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to))",
+      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from))",
+      "!not_truck(truck) S truck(truck)",
+      "!not_truck(truck)",
+      "not_truck(truck)",
+      "truck(truck)",
+      "!not_location(loc_from) S location(loc_from)",
+      "!not_location(loc_from)",
+      "not_location(loc_from)",
+      "location(loc_from)",
+      "!not_location(loc_to) S location(loc_to)",
+      "!not_location(loc_to)",
+      "not_location(loc_to)",
+      "location(loc_to)",
+      "!not_city(city) S city(city)",
+      "!not_city(city)",
+      "not_city(city)",
+      "city(city)",
+      "!not_at(truck,loc_from) S at(truck,loc_from)",
+      "!not_at(truck,loc_from)",
+      "not_at(truck,loc_from)",
+      "at(truck,loc_from)",
+      "!not_in_city(loc_from,city) S in_city(loc_from,city)",
+      "!not_in_city(loc_from,city)",
+      "not_in_city(loc_from,city)",
+      "in_city(loc_from,city)",
+      "!not_in_city(loc_to,city) S in_city(loc_to,city)",
+      "!not_in_city(loc_to,city)",
+      "not_in_city(loc_to,city)",
+      "in_city(loc_to,city)"
+  )
+
+  debugMonitorState()
+}
+        
+
+/*
+  prop fo_ltl_5 : Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from)) 
+*/
+
+class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
+          
+  override def evaluate(): Boolean = {
+    // assignments1 (leaf nodes that are not rule calls):
+      now(4) = build("fly_airplane")(V("airplane"),V("loc_from"),V("loc_to"))
+      now(10) = build("not_airplane")(V("airplane"))
+      now(11) = build("airplane")(V("airplane"))
+      now(14) = build("not_airport")(V("loc_from"))
+      now(15) = build("airport")(V("loc_from"))
+      now(18) = build("not_airport")(V("loc_to"))
+      now(19) = build("airport")(V("loc_to"))
+      now(22) = build("not_at")(V("airplane"),V("loc_from"))
+      now(23) = build("at")(V("airplane"),V("loc_from"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1481,18 +1690,13 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
       now(17) = now(18).not()
       now(16) = now(19).or(now(17).and(pre(16)))
       now(6) = now(7).and(now(16))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
-      now(28) = now(29).not()
-      now(27) = now(28).not()
-      now(26) = now(27).or(pre(26))
-      now(25) = now(26).not()
-      now(20) = now(21).or(now(25))
+      now(21) = now(22).not()
+      now(20) = now(23).or(now(21).and(pre(20)))
       now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
+      now(2) = now(3).forAll(var_loc_to.quantvar)
+      now(1) = now(2).forAll(var_loc_from.quantvar)
+      now(0) = now(1).forAll(var_airplane.quantvar)
 
     debugMonitorState()
 
@@ -1505,449 +1709,39 @@ class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_r :: var_x :: var_y :: Nil = declareVariables(("r",false), ("x",false), ("y",false))(0)
+  val var_airplane :: var_loc_from :: var_loc_to :: Nil = declareVariables(("airplane",false), ("loc_from",false), ("loc_to",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(26,21,16,12,8)
+  val indices: List[Int] = List(20,16,12,8)
 
-  pre = Array.fill(30)(bddGenerator.False)
-  now = Array.fill(30)(bddGenerator.False)
-
-  txt = Array(
-    "Forall r . Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall x . Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "Forall y . act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_left(r,x,y) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "act_left(r,x,y)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (!P !(!radiation(y))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y)) & (!not_empty(y) S empty(y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_left(x,y) S left(x,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_left(x,y) S left(x,y)",
-      "!not_left(x,y)",
-      "not_left(x,y)",
-      "left(x,y)",
-      "!not_empty(y) S empty(y)",
-      "!not_empty(y)",
-      "not_empty(y)",
-      "empty(y)",
-      "(!radiation(y) S not_radiation(y)) | (!P !(!radiation(y)))",
-      "!radiation(y) S not_radiation(y)",
-      "!radiation(y)",
-      "radiation(y)",
-      "not_radiation(y)",
-      "!P !(!radiation(y))",
-      "P !(!radiation(y))",
-      "!(!radiation(y))",
-      "!radiation(y)",
-      "radiation(y)"
-  )
-
-  debugMonitorState()
-}
-        
-
-/*
-  prop fo_ltl_4 : Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
-*/
-
-class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
-          
-  override def evaluate(): Boolean = {
-    // assignments1 (leaf nodes that are not rule calls):
-      now(5) = build("act_inspect_up")(V("r"),V("x"),V("y"),V("t"))
-      now(11) = build("not_robot_at")(V("r"),V("x"))
-      now(12) = build("robot_at")(V("r"),V("x"))
-      now(15) = build("not_tank_at")(V("t"),V("y"))
-      now(16) = build("tank_at")(V("t"),V("y"))
-      now(19) = build("not_up")(V("x"),V("y"))
-      now(20) = build("up")(V("x"),V("y"))
-      now(24) = build("inspected")(V("t"))
-      now(25) = build("not_inspected")(V("t"))
-      now(30) = build("inspected")(V("t"))
-    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
-    // assignments3 (rule calls):
-    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
-    // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(23) = now(24).not()
-      now(22) = now(25).or(now(23).and(pre(22)))
-      now(29) = now(30).not()
-      now(28) = now(29).not()
-      now(27) = now(28).or(pre(27))
-      now(26) = now(27).not()
-      now(21) = now(22).or(now(26))
-      now(6) = now(7).and(now(21))
-      now(4) = now(5).not().or(now(6))
-      now(3) = now(4).forAll(var_t.quantvar)
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
-
-    debugMonitorState()
-
-    val error = now(0).isZero
-    if (error) monitor.recordResult()
-    tmp = now
-    now = pre
-    pre = tmp
-    touchedByLastEvent = emptyTouchedSet
-    !error
-  }
-
-  val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
-
-  varsInRelations = Set()
-  val indices: List[Int] = List(27,22,17,13,9)
-
-  pre = Array.fill(31)(bddGenerator.False)
-  now = Array.fill(31)(bddGenerator.False)
+  pre = Array.fill(24)(bddGenerator.False)
+  now = Array.fill(24)(bddGenerator.False)
 
   txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall x . Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall y . Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall t . act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_up(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_up(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_up(x,y) S up(x,y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_tank_at(t,y) S tank_at(t,y)",
-      "!not_tank_at(t,y)",
-      "not_tank_at(t,y)",
-      "tank_at(t,y)",
-      "!not_up(x,y) S up(x,y)",
-      "!not_up(x,y)",
-      "not_up(x,y)",
-      "up(x,y)",
-      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
-      "!inspected(t) S not_inspected(t)",
-      "!inspected(t)",
-      "inspected(t)",
-      "not_inspected(t)",
-      "!P !(!inspected(t))",
-      "P !(!inspected(t))",
-      "!(!inspected(t))",
-      "!inspected(t)",
-      "inspected(t)"
-  )
-
-  debugMonitorState()
-}
-        
-
-/*
-  prop fo_ltl_5 : Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
-*/
-
-class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
-          
-  override def evaluate(): Boolean = {
-    // assignments1 (leaf nodes that are not rule calls):
-      now(5) = build("act_inspect_down")(V("r"),V("x"),V("y"),V("t"))
-      now(11) = build("not_robot_at")(V("r"),V("x"))
-      now(12) = build("robot_at")(V("r"),V("x"))
-      now(15) = build("not_tank_at")(V("t"),V("y"))
-      now(16) = build("tank_at")(V("t"),V("y"))
-      now(19) = build("not_down")(V("x"),V("y"))
-      now(20) = build("down")(V("x"),V("y"))
-      now(24) = build("inspected")(V("t"))
-      now(25) = build("not_inspected")(V("t"))
-      now(30) = build("inspected")(V("t"))
-    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
-    // assignments3 (rule calls):
-    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
-    // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(23) = now(24).not()
-      now(22) = now(25).or(now(23).and(pre(22)))
-      now(29) = now(30).not()
-      now(28) = now(29).not()
-      now(27) = now(28).or(pre(27))
-      now(26) = now(27).not()
-      now(21) = now(22).or(now(26))
-      now(6) = now(7).and(now(21))
-      now(4) = now(5).not().or(now(6))
-      now(3) = now(4).forAll(var_t.quantvar)
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
-
-    debugMonitorState()
-
-    val error = now(0).isZero
-    if (error) monitor.recordResult()
-    tmp = now
-    now = pre
-    pre = tmp
-    touchedByLastEvent = emptyTouchedSet
-    !error
-  }
-
-  val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
-
-  varsInRelations = Set()
-  val indices: List[Int] = List(27,22,17,13,9)
-
-  pre = Array.fill(31)(bddGenerator.False)
-  now = Array.fill(31)(bddGenerator.False)
-
-  txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall x . Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall y . Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall t . act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_down(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_down(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_down(x,y) S down(x,y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_tank_at(t,y) S tank_at(t,y)",
-      "!not_tank_at(t,y)",
-      "not_tank_at(t,y)",
-      "tank_at(t,y)",
-      "!not_down(x,y) S down(x,y)",
-      "!not_down(x,y)",
-      "not_down(x,y)",
-      "down(x,y)",
-      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
-      "!inspected(t) S not_inspected(t)",
-      "!inspected(t)",
-      "inspected(t)",
-      "not_inspected(t)",
-      "!P !(!inspected(t))",
-      "P !(!inspected(t))",
-      "!(!inspected(t))",
-      "!inspected(t)",
-      "inspected(t)"
-  )
-
-  debugMonitorState()
-}
-        
-
-/*
-  prop fo_ltl_6 : Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
-*/
-
-class Formula_fo_ltl_6(monitor: Monitor) extends Formula(monitor) {
-          
-  override def evaluate(): Boolean = {
-    // assignments1 (leaf nodes that are not rule calls):
-      now(5) = build("act_inspect_right")(V("r"),V("x"),V("y"),V("t"))
-      now(11) = build("not_robot_at")(V("r"),V("x"))
-      now(12) = build("robot_at")(V("r"),V("x"))
-      now(15) = build("not_tank_at")(V("t"),V("y"))
-      now(16) = build("tank_at")(V("t"),V("y"))
-      now(19) = build("not_right")(V("x"),V("y"))
-      now(20) = build("right")(V("x"),V("y"))
-      now(24) = build("inspected")(V("t"))
-      now(25) = build("not_inspected")(V("t"))
-      now(30) = build("inspected")(V("t"))
-    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
-    // assignments3 (rule calls):
-    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
-    // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(23) = now(24).not()
-      now(22) = now(25).or(now(23).and(pre(22)))
-      now(29) = now(30).not()
-      now(28) = now(29).not()
-      now(27) = now(28).or(pre(27))
-      now(26) = now(27).not()
-      now(21) = now(22).or(now(26))
-      now(6) = now(7).and(now(21))
-      now(4) = now(5).not().or(now(6))
-      now(3) = now(4).forAll(var_t.quantvar)
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
-
-    debugMonitorState()
-
-    val error = now(0).isZero
-    if (error) monitor.recordResult()
-    tmp = now
-    now = pre
-    pre = tmp
-    touchedByLastEvent = emptyTouchedSet
-    !error
-  }
-
-  val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
-
-  varsInRelations = Set()
-  val indices: List[Int] = List(27,22,17,13,9)
-
-  pre = Array.fill(31)(bddGenerator.False)
-  now = Array.fill(31)(bddGenerator.False)
-
-  txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall x . Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall y . Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall t . act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_right(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_right(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_right(x,y) S right(x,y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_tank_at(t,y) S tank_at(t,y)",
-      "!not_tank_at(t,y)",
-      "not_tank_at(t,y)",
-      "tank_at(t,y)",
-      "!not_right(x,y) S right(x,y)",
-      "!not_right(x,y)",
-      "not_right(x,y)",
-      "right(x,y)",
-      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
-      "!inspected(t) S not_inspected(t)",
-      "!inspected(t)",
-      "inspected(t)",
-      "not_inspected(t)",
-      "!P !(!inspected(t))",
-      "P !(!inspected(t))",
-      "!(!inspected(t))",
-      "!inspected(t)",
-      "inspected(t)"
-  )
-
-  debugMonitorState()
-}
-        
-
-/*
-  prop fo_ltl_7 : Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))) 
-*/
-
-class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
-          
-  override def evaluate(): Boolean = {
-    // assignments1 (leaf nodes that are not rule calls):
-      now(5) = build("act_inspect_left")(V("r"),V("x"),V("y"),V("t"))
-      now(11) = build("not_robot_at")(V("r"),V("x"))
-      now(12) = build("robot_at")(V("r"),V("x"))
-      now(15) = build("not_tank_at")(V("t"),V("y"))
-      now(16) = build("tank_at")(V("t"),V("y"))
-      now(19) = build("not_left")(V("x"),V("y"))
-      now(20) = build("left")(V("x"),V("y"))
-      now(24) = build("inspected")(V("t"))
-      now(25) = build("not_inspected")(V("t"))
-      now(30) = build("inspected")(V("t"))
-    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
-    // assignments3 (rule calls):
-    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
-    // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(23) = now(24).not()
-      now(22) = now(25).or(now(23).and(pre(22)))
-      now(29) = now(30).not()
-      now(28) = now(29).not()
-      now(27) = now(28).or(pre(27))
-      now(26) = now(27).not()
-      now(21) = now(22).or(now(26))
-      now(6) = now(7).and(now(21))
-      now(4) = now(5).not().or(now(6))
-      now(3) = now(4).forAll(var_t.quantvar)
-      now(2) = now(3).forAll(var_y.quantvar)
-      now(1) = now(2).forAll(var_x.quantvar)
-      now(0) = now(1).forAll(var_r.quantvar)
-
-    debugMonitorState()
-
-    val error = now(0).isZero
-    if (error) monitor.recordResult()
-    tmp = now
-    now = pre
-    pre = tmp
-    touchedByLastEvent = emptyTouchedSet
-    !error
-  }
-
-  val var_r :: var_x :: var_y :: var_t :: Nil = declareVariables(("r",false), ("x",false), ("y",false), ("t",false))(0)
-
-  varsInRelations = Set()
-  val indices: List[Int] = List(27,22,17,13,9)
-
-  pre = Array.fill(31)(bddGenerator.False)
-  now = Array.fill(31)(bddGenerator.False)
-
-  txt = Array(
-    "Forall r . Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall x . Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall y . Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "Forall t . act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_left(r,x,y,t) -> (!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "act_inspect_left(r,x,y,t)",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y)) & ((!inspected(t) S not_inspected(t)) | (!P !(!inspected(t))))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y)) & (!not_left(x,y) S left(x,y))",
-      "(!not_robot_at(r,x) S robot_at(r,x)) & (!not_tank_at(t,y) S tank_at(t,y))",
-      "!not_robot_at(r,x) S robot_at(r,x)",
-      "!not_robot_at(r,x)",
-      "not_robot_at(r,x)",
-      "robot_at(r,x)",
-      "!not_tank_at(t,y) S tank_at(t,y)",
-      "!not_tank_at(t,y)",
-      "not_tank_at(t,y)",
-      "tank_at(t,y)",
-      "!not_left(x,y) S left(x,y)",
-      "!not_left(x,y)",
-      "not_left(x,y)",
-      "left(x,y)",
-      "(!inspected(t) S not_inspected(t)) | (!P !(!inspected(t)))",
-      "!inspected(t) S not_inspected(t)",
-      "!inspected(t)",
-      "inspected(t)",
-      "not_inspected(t)",
-      "!P !(!inspected(t))",
-      "P !(!inspected(t))",
-      "!(!inspected(t))",
-      "!inspected(t)",
-      "inspected(t)"
+    "Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
+      "Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
+      "Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
+      "fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
+      "fly_airplane(airplane,loc_from,loc_to)",
+      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
+      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to))",
+      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from))",
+      "!not_airplane(airplane) S airplane(airplane)",
+      "!not_airplane(airplane)",
+      "not_airplane(airplane)",
+      "airplane(airplane)",
+      "!not_airport(loc_from) S airport(loc_from)",
+      "!not_airport(loc_from)",
+      "not_airport(loc_from)",
+      "airport(loc_from)",
+      "!not_airport(loc_to) S airport(loc_to)",
+      "!not_airport(loc_to)",
+      "not_airport(loc_to)",
+      "airport(loc_to)",
+      "!not_at(airplane,loc_from) S at(airplane,loc_from)",
+      "!not_at(airplane,loc_from)",
+      "not_at(airplane,loc_from)",
+      "at(airplane,loc_from)"
   )
 
   debugMonitorState()
@@ -1956,9 +1750,9 @@ class Formula_fo_ltl_7(monitor: Monitor) extends Formula(monitor) {
 /* The specialized Monitor for the provided properties. */
 
 class PropertyMonitor extends Monitor {
-  def eventsInSpec: Set[String] = Set("not_empty","radiation","robot_at","not_tank_at","up","act_down","act_inspect_down","act_inspect_right","not_down","tank_at","not_up","act_right","act_up","right","empty","act_inspect_up","not_left","left","not_right","inspected","down","act_inspect_left","not_inspected","act_left","not_robot_at","not_radiation")
+  def eventsInSpec: Set[String] = Set("location","load_truck","not_in_city","not_at","in_city","unload_truck","unload_airplane","in","not_airplane","airport","at","not_in","not_package","package","not_city","not_airport","fly_airplane","not_location","city","drive_truck","not_truck","load_airplane","airplane","truck")
 
-  formulae ++= List(new Formula_fo_ltl_0(this),new Formula_fo_ltl_1(this),new Formula_fo_ltl_2(this),new Formula_fo_ltl_3(this),new Formula_fo_ltl_4(this),new Formula_fo_ltl_5(this),new Formula_fo_ltl_6(this),new Formula_fo_ltl_7(this))
+  formulae ++= List(new Formula_fo_ltl_0(this),new Formula_fo_ltl_1(this),new Formula_fo_ltl_2(this),new Formula_fo_ltl_3(this),new Formula_fo_ltl_4(this),new Formula_fo_ltl_5(this))
 }
       
 object TraceMonitor {

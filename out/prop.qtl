@@ -1,24 +1,18 @@
 prop fo_ltl_0 :
-	Forall r . Forall x . Forall y . act_up(r, x, y) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_up(x, y) S up(x, y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (H (!radiation(y))))
+	Forall obj . Forall truck . Forall loc . load_truck(obj, truck, loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck, loc) S at(truck, loc)) & (!not_at(obj, loc) S at(obj, loc))
 
 prop fo_ltl_1 :
-	Forall r . Forall x . Forall y . act_down(r, x, y) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_down(x, y) S down(x, y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (H (!radiation(y))))
+	Forall obj . Forall airplane . Forall loc . load_airplane(obj, airplane, loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj, loc) S at(obj, loc)) & (!not_at(airplane, loc) S at(airplane, loc))
 
 prop fo_ltl_2 :
-	Forall r . Forall x . Forall y . act_right(r, x, y) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_right(x, y) S right(x, y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (H (!radiation(y))))
+	Forall obj . Forall truck . Forall loc . unload_truck(obj, truck, loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck, loc) S at(truck, loc)) & (!not_in(obj, truck) S in(obj, truck))
 
 prop fo_ltl_3 :
-	Forall r . Forall x . Forall y . act_left(r, x, y) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_left(x, y) S left(x, y)) & (!not_empty(y) S empty(y)) & ((!radiation(y) S not_radiation(y)) | (H (!radiation(y))))
+	Forall obj . Forall airplane . Forall loc . unload_airplane(obj, airplane, loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj, airplane) S in(obj, airplane)) & (!not_at(airplane, loc) S at(airplane, loc))
 
 prop fo_ltl_4 :
-	Forall r . Forall x . Forall y . Forall t . act_inspect_up(r, x, y, t) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_tank_at(t, y) S tank_at(t, y)) & (!not_up(x, y) S up(x, y)) & ((!inspected(t) S not_inspected(t)) | (H (!inspected(t))))
+	Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck, loc_from, loc_to, city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck, loc_from) S at(truck, loc_from)) & (!not_in_city(loc_from, city) S in_city(loc_from, city)) & (!not_in_city(loc_to, city) S in_city(loc_to, city))
 
 prop fo_ltl_5 :
-	Forall r . Forall x . Forall y . Forall t . act_inspect_down(r, x, y, t) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_tank_at(t, y) S tank_at(t, y)) & (!not_down(x, y) S down(x, y)) & ((!inspected(t) S not_inspected(t)) | (H (!inspected(t))))
-
-prop fo_ltl_6 :
-	Forall r . Forall x . Forall y . Forall t . act_inspect_right(r, x, y, t) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_tank_at(t, y) S tank_at(t, y)) & (!not_right(x, y) S right(x, y)) & ((!inspected(t) S not_inspected(t)) | (H (!inspected(t))))
-
-prop fo_ltl_7 :
-	Forall r . Forall x . Forall y . Forall t . act_inspect_left(r, x, y, t) -> (!not_robot_at(r, x) S robot_at(r, x)) & (!not_tank_at(t, y) S tank_at(t, y)) & (!not_left(x, y) S left(x, y)) & ((!inspected(t) S not_inspected(t)) | (H (!inspected(t))))
+	Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane, loc_from, loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane, loc_from) S at(airplane, loc_from))
 

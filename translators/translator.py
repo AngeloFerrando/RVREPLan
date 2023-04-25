@@ -113,15 +113,31 @@ def extract_info(domain_text, act, par, pre, eff, next_act):
 
     p_start = 0
     parameters_list = []
+    # if '-' in parameters:
+    #     while parameters.find('?', p_start) != -1:
+    #         i = parameters.find('?', p_start)
+    #         j = parameters.find('-', p_start)
+    #         if j != -1:
+    #             parameters_list.append(parameters[i:j].replace('-', '_').strip())
+    #             p_start = j+1
+    #         else:
+    #             parameters_list.append(parameters[i:len(parameters)-1].replace('-', '_').strip())
+    #             p_start = len(parameters)-1
+    # else:
     while parameters.find('?', p_start) != -1:
         i = parameters.find('?', p_start)
-        j = parameters.find('-', p_start)
+        j = parameters.find('?', i+1)
         if j != -1:
+            p_start = j
+            if ' - ' in parameters[i:j]:
+                j = parameters.find(' - ', i)
             parameters_list.append(parameters[i:j].replace('-', '_').strip())
         else:
+            p_start = len(parameters)-1
+            if ' - ' in parameters[i:]:
+                j = parameters.find(' - ', i)
             parameters_list.append(parameters[i:len(parameters)-1].replace('-', '_').strip())
-        p_start = j+1
-
+    print(parameters_list)
     p_start = 0
     precondition_list = []
     while precondition.find(')', p_start) != -1:

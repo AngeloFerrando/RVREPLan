@@ -51,7 +51,7 @@ def main(args):
 
     # Connector instantiation
     # connector = JsonConnector() # Domain dependent: With another system, we may use another connector
-    connector = raw_connector.RawConnector(raw_mapper.RawMapper())
+    connector = raw_connector_logistics.RawConnectorLogistics(raw_mapper.RawMapper())
     with open('./sas_plan', 'r') as plan:
         actions = plan.readlines()
         actions = actions[:-1]
@@ -62,6 +62,7 @@ def main(args):
     callbackNewProps(initial_propositions)
 
 def callbackNewProps(props):
+    print(props)
     if props:
         # Update the snapshot
         snapshot.update(props)
@@ -71,6 +72,7 @@ def callbackNewProps(props):
         print(snapshot)
         return
     action = Action.fromStrToAction(actions.pop(0))
+    print(action)
     with open('./out/trace.csv', 'a') as monitor_input:
         if props:
             # update the failure handling monitor

@@ -28,7 +28,7 @@ class RawConnector(abstract_connector.AbstractConnector):
         # return props
 
     def perform(self, action, callback):
-        cmd = (self._mapper.mapActionToCommand(action))
+        action = (self._mapper.mapActionToCommand(action))
         sleep(1) # simulate cmd execution
         props = set()
         action = str(action)
