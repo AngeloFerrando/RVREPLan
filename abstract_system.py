@@ -8,7 +8,7 @@ import os
 import argparse
 
 def main(args):
-    global actions, DEJAVU_PATH, connector, snapshot, DOWNWARD_PATH, DOMAIN_FILE, PROBLEM_FILE
+    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -24,20 +24,20 @@ def main(args):
     parser.add_argument('dejavu_path', # needed to compile and execute the failure handling monitor
         help='Path to Dejavu folder (the one containing dejavu.jar)',
         type=str)
-    parser.add_argument('downward_path', # needed to (re)plan
-        help='Path to Fast Downward folder (the one containing fast-downward.py)',
+    parser.add_argument('planner_path', # needed to (re)plan
+        help='Path to the planner of choice including any flags it may use (e.g.: "/.../fast-downward.sif --alias seq-opt-lmcut")',
         type=str)
     args = parser.parse_args() # maybe in the future we will need more arguments, for now it's just one
 
     # setup instructions
     os.system('rm ./out/*.csv')
     DEJAVU_PATH = args.dejavu_path
-    DOWNWARD_PATH = args.downward_path
+    PLANNER_PATH = args.planner_path
     DOMAIN_FILE = args.domain_file
     PROBLEM_FILE = args.problem_file
 
     # Generation of the plan (given the Domain and Problem PDDL files)
-    os.system(DOWNWARD_PATH + 'fast-downward.py --alias seq-opt-lmcut ' + args.domain_file + ' ' + args.problem_file)
+    os.system(PLANNER_PATH + ' ' + args.domain_file + ' ' + args.problem_file)
 
     # Translation from PDDL to Failure handling monitor (RVPlan paper)
     os.system('python3 translators/translator.py ' + args.domain_file)
@@ -105,7 +105,7 @@ def replan():
                     updated_problem_file.write(instruction)
             updated_problem_file.write(str(snapshot) + '\n)')
     # Generation of a new plan (given the Domain and the updated Problem PDDL files)
-    os.system(DOWNWARD_PATH + 'fast-downward.py --alias seq-opt-lmcut ' + DOMAIN_FILE + ' ' + './out/updated_problem.pddl')
+    os.system(PLANNER_PATH + ' ' + DOMAIN_FILE + ' ' + './out/updated_problem.pddl')
     with open('./sas_plan', 'r') as plan:
         actions = plan.readlines()
         actions = actions[:-1]
