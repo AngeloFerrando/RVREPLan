@@ -50,8 +50,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             props.add(Proposition(False, 'at', [obj, loc]))
             props.add(Proposition(True, 'in', [obj, vehicle]))
         elif 'drive_truck' in action:
-            if 'drive_truck' in action:
-                l = 12
+            l = 12
             i = action.index(',', l)
             j = action.index(',', i+1)
             k = action.index(',', j+1)
@@ -63,8 +62,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             props.add(Proposition(False, 'at', [vehicle, locfrom]))
             props.add(Proposition(True, 'at', [vehicle, locto]))
         elif 'fly_airplane' in action:
-            if 'fly_airplane' in action:
-                l = 13
+            l = 13
             i = action.index(',', l)
             j = action.index(',', i+1)
             vehicle = action[l:i]
