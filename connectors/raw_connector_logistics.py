@@ -1,6 +1,7 @@
 from connectors import abstract_connector
 from data.proposition import Proposition
 from time import sleep
+from mappers import *
 
 class RawConnectorLogistics(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
@@ -73,3 +74,5 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             props.add(Proposition(True, 'at', [vehicle, locto]))
         self._case = self._case + 1
         callback(props)
+
+CONNECTOR = RawConnectorLogistics(raw_mapper.RawMapper())

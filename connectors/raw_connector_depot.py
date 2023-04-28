@@ -1,6 +1,7 @@
 from connectors import abstract_connector
 from data.proposition import Proposition
 from time import sleep
+from mappers import *
 
 class RawConnectorDepot(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
@@ -37,59 +38,61 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             l = 5
             i = action.index(',', l)
             j = action.index(',', i+1)
-			k = action.index(',', j+1)
+            k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
             surface = action[j+1:k]
-			place = action[k+1:-1]
+            place = action[k+1:-1]
             # (and (lifting ?x ?y) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (available ?x)) (not (on ?y ?z)))
             props.add(Proposition(False, 'at', [crate, place]))
             props.add(Proposition(False, 'clear', [crate]))
-			props.add(Proposition(False, 'available', [hoist]))
-			props.add(Proposition(False, 'on', [crate, surface]))
-			props.add(Proposition(True, 'lifting', [hoist, crate]))
-			props.add(Proposition(True, 'clear', [surface]))
+            props.add(Proposition(False, 'available', [hoist]))
+            props.add(Proposition(False, 'on', [crate, surface]))
+            props.add(Proposition(True, 'lifting', [hoist, crate]))
+            props.add(Proposition(True, 'clear', [surface]))
         elif 'drop' in action:
             l = 5
             i = action.index(',', l)
             j = action.index(',', i+1)
-			k = action.index(',', j+1)
+            k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
             surface = action[j+1:k]
-			place = action[k+1:-1]
+            place = action[k+1:-1]
             # (and (available ?x) (at ?y ?p) (clear ?y) (on ?y ?z) (not (lifting ?x ?y)) (not (clear ?z)))
-			props.add(Proposition(False, 'lifting', [hoist, crate]))
-			props.add(Proposition(False, 'clear', [surface]))
+            props.add(Proposition(False, 'lifting', [hoist, crate]))
+            props.add(Proposition(False, 'clear', [surface]))
             props.add(Proposition(True, 'at', [crate, place]))
             props.add(Proposition(True, 'clear', [crate]))
-			props.add(Proposition(True, 'available', [hoist]))
-			props.add(Proposition(True, 'on', [crate, surface]))
-        elif 'load' in True:
-            l = 5
-            i = action.index(',', l)
-            j = action.index(',', i+1)
-			k = action.index(',', j+1)
-            hoist = action[l:i]
-            crate = action[i+1:j]
-            truck = action[j+1:k]
-			place = action[k+1:-1]
-            # (in ?y ?z) (available ?x) (not (lifting ?x ?y)))
-			props.add(Proposition(False, 'lifting', [hoist, crate]))
-            props.add(Proposition(True, 'in', [crate, truck]))
-			props.add(Proposition(True, 'available', [hoist]))
-        elif 'unload' in True:
+            props.add(Proposition(True, 'available', [hoist]))
+            props.add(Proposition(True, 'on', [crate, surface]))
+        elif 'unload' in action:
             l = 7
             i = action.index(',', l)
             j = action.index(',', i+1)
-			k = action.index(',', j+1)
+            k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
             truck = action[j+1:k]
-			place = action[k+1:-1]
+            place = action[k+1:-1]
             # (and (lifting ?x ?y) (not (in ?y ?z)) (not (available ?x)))
             props.add(Proposition(False, 'in', [crate, truck]))
-			props.add(Proposition(False, 'available', [hoist]))
-			props.add(Proposition(True, 'lifting', [hoist, crate]))
+            props.add(Proposition(False, 'available', [hoist]))
+            props.add(Proposition(True, 'lifting', [hoist, crate]))
+        elif 'load' in action:
+            l = 5
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            k = action.index(',', j+1)
+            hoist = action[l:i]
+            crate = action[i+1:j]
+            truck = action[j+1:k]
+            place = action[k+1:-1]
+            # (in ?y ?z) (available ?x) (not (lifting ?x ?y)))
+            props.add(Proposition(False, 'lifting', [hoist, crate]))
+            props.add(Proposition(True, 'in', [crate, truck]))
+            props.add(Proposition(True, 'available', [hoist]))
         self._case = self._case + 1
         callback(props)
+
+CONNECTOR = RawConnectorDepot(raw_mapper.RawMapper())

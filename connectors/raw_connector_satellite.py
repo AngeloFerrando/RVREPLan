@@ -1,6 +1,7 @@
 from connectors import abstract_connector
 from data.proposition import Proposition
 from time import sleep
+from mappers import *
 
 class RawConnectorRover(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
@@ -33,28 +34,24 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             # (and (pointing ?s ?d_new) (not (pointing ?s ?d_prev)))
             props.add(Proposition(False, 'pointing', [sat, d_prev]))
             props.add(Proposition(True, 'pointing', [sat, d_new]))
-        elif 'switch_on' in action: 
+        elif 'switch_on' in action:
             l = 10
             i = action.index(',', l)
-            j = action.index(',', i+1)
             instrument = action[l:i]
-            sat = action[i+1:j]
-            surface = action[j+1:-1]
+            sat = action[i+1:-1]
             # (and (power_on ?i) (not (calibrated ?i)) (not (power_avail ?s)))
             props.add(Proposition(False, 'calibrated', [instrument]))
             props.add(Proposition(False, 'power_avail', [sat]))
-			props.add(Proposition(True, 'power_on', [instrument]))
+            props.add(Proposition(True, 'power_on', [instrument]))
         elif 'switch_off' in action:
             l = 11
             i = action.index(',', l)
-            j = action.index(',', i+1)
             instrument = action[l:i]
-            sat = action[i+1:j]
-            surface = action[j+1:-1]
+            sat = action[i+1:-1]
             # (and (power_avail ?s) (not (power_on ?i)))
-			props.add(Proposition(False, 'power_on', [instrument]))
-			props.add(Proposition(True, 'power_avail', [sat]))
-        elif 'calibrate' in True:
+            props.add(Proposition(False, 'power_on', [instrument]))
+            props.add(Proposition(True, 'power_avail', [sat]))
+        elif 'calibrate' in action:
             l = 10
             i = action.index(',', l)
             j = action.index(',', i+1)
@@ -62,17 +59,19 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             instrument = action[i+1:j]
             d = action[j+1:-1]
             # (calibrated ?i)
-			props.add(Proposition(True, 'calibrated', [instrument]))
-        elif 'take_image' in True:
+            props.add(Proposition(True, 'calibrated', [instrument]))
+        elif 'take_image' in action:
             l = 11
             i = action.index(',', l)
             j = action.index(',', i+1)
-			k = action.index(',', j+1)
+            k = action.index(',', j+1)
             sat = action[l:i]
             d = action[i+1:j]
             instrument = action[j+1:k]
-			mode = action[k+1:-1]
+            mode = action[k+1:-1]
             # (have_image ?d ?m)
-			props.add(Proposition(True, 'lifting', [d, mode]))
+            props.add(Proposition(True, 'have_image', [d, mode]))
         self._case = self._case + 1
         callback(props)
+
+CONNECTOR = RawConnectorRover(raw_mapper.RawMapper())
