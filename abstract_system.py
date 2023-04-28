@@ -58,17 +58,18 @@ def main(args):
     # initial_propositions = connector.get_initial_propositions()
     # here I am setting the initial propositions to the same ones used in the Problem file
     # however, in general, the initial propositions should come from the system
+    snapshot.update(connector.get_initial_propositions())
     initial_propositions = set(snapshot.get_props())
     callbackNewProps(initial_propositions)
 
 def callbackNewProps(props):
-    print(props)
+    # print(props)
     if props:
         # Update the snapshot
         snapshot.update(props)
     monitor_outcome = '0 errors detected!'
     if not actions:
-        os.system('rm *.class')
+        # os.system('rm *.class')
         print(snapshot)
         return
     action = Action.fromStrToAction(actions.pop(0))
