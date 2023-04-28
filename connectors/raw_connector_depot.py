@@ -2,7 +2,7 @@ from connectors import abstract_connector
 from data.proposition import Proposition
 from time import sleep
 
-class RawConnectorDepots(abstract_connector.AbstractConnector):
+class RawConnectorDepot(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
         self._mapper = mapper
         self._case = 0
@@ -40,7 +40,7 @@ class RawConnectorDepots(abstract_connector.AbstractConnector):
 			k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
-            surface = action[j+1:-1]
+            surface = action[j+1:k]
 			place = action[k+1:-1]
             # (and (lifting ?x ?y) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (available ?x)) (not (on ?y ?z)))
             props.add(Proposition(False, 'at', [crate, place]))
@@ -56,7 +56,7 @@ class RawConnectorDepots(abstract_connector.AbstractConnector):
 			k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
-            surface = action[j+1:-1]
+            surface = action[j+1:k]
 			place = action[k+1:-1]
             # (and (available ?x) (at ?y ?p) (clear ?y) (on ?y ?z) (not (lifting ?x ?y)) (not (clear ?z)))
 			props.add(Proposition(False, 'lifting', [hoist, crate]))
@@ -72,7 +72,7 @@ class RawConnectorDepots(abstract_connector.AbstractConnector):
 			k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
-            truck = action[j+1:-1]
+            truck = action[j+1:k]
 			place = action[k+1:-1]
             # (in ?y ?z) (available ?x) (not (lifting ?x ?y)))
 			props.add(Proposition(False, 'lifting', [hoist, crate]))
@@ -85,7 +85,7 @@ class RawConnectorDepots(abstract_connector.AbstractConnector):
 			k = action.index(',', j+1)
             hoist = action[l:i]
             crate = action[i+1:j]
-            truck = action[j+1:-1]
+            truck = action[j+1:k]
 			place = action[k+1:-1]
             # (and (lifting ?x ?y) (not (in ?y ?z)) (not (available ?x)))
             props.add(Proposition(False, 'in', [crate, truck]))
