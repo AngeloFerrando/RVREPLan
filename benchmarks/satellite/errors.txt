@@ -2,4 +2,4 @@
 [(power_avail satellite0)],[(power_on instrument0)]
 [(calibration_target instrument2 star2)],[(calibration_target instrument2 groundstation3)]
 [(calibration_target instrument0 star1)],[(calibration_target instrument0 planet5)]
-[(calibrated instrument0],[]
+[(calibrated instrument0)],[]
