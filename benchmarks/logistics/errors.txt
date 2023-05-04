@@ -1,1 +1,1 @@
-[(in-city pos2 cit2),(at obj12 pos1),(at apn1 apt1),(at obj32 pos3),(in-city apt4 cit4)], [(in-city pos2 cit3),(at obj12 pos4),(at apn1 apt3),(at obj32 apt4),(in-city apt4 cit1)]
+[(in-city pos2 cit2),(in-city apt4 cit4),(at obj12 pos1),(at apn1 apt1),(at obj32 pos3)], [(in-city pos2 cit3),(in-city apt4 cit1),(at obj12 pos4),(at apn1 apt3),(at obj32 apt4)]
