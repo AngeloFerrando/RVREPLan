@@ -1,5 +1,5 @@
 [(in_city pos2 cit2)], [(in_city pos2 cit3)]
-[(in_city apt4 cit4)], [(in_city apt4 cit1)]
+[(at obj33 pos2),(at obj33 pos3),(at obj33 pos4),(at obj33 apt1),(at obj33 apt2),(at obj33 apt3),(at obj33 apt4),(in obj33 tru1),(in obj33 tru2),(in obj33 tru3),(in obj33 tru4),(in obj33 apn1)], [(at obj33 pos1)]
 [(at obj12 pos1),(at obj12 pos2),(at obj12 pos3),(at obj12 apt1),(at obj12 apt2),(at obj12 apt3),(at obj12 apt4),(in obj12 tru1),(in obj12 tru2),(in obj12 tru3),(in obj12 tru4),(in obj12 apn1)], [(at obj12 pos4)]
 [(at apn1 apt1),(at apn1 apt2),(at apn1 apt4)], [(at apn1 apt3)]
 [(at obj32 pos1),(at obj32 pos2),(at obj32 pos3),(at obj32 pos4),(at obj32 apt1),(at obj32 apt2),(at obj32 apt3),(in obj32 tru1),(in obj32 tru2),(in obj32 tru3),(in obj32 tru4),(in obj32 apn1)], [(at obj32 apt4)]
