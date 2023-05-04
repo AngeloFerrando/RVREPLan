@@ -1,0 +1,5 @@
+[(calibration_target instrument1 groundstation3)],[(calibration_target instrument1 star26)]
+[(power_avail satellite1)],[(power_on instrument2)]
+[(calibrate satellite1 instrument2 groundstation3)],[(calibrate satellite1 instrument2 planet6)]
+[(power_avail satellite2)],[(power_on instrument3)]
+[(calibration_target instrument3 star1)],[(calibration_target instrument3 groundstation3)]
