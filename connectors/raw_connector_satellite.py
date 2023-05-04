@@ -7,22 +7,56 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
         self._mapper = mapper
         self._case = 0
-        self.counter = 0
+        self._actions_executed = 0
+        self._n_errors = 3
+        self._errors = (
+            [
+                [Proposition(False, 'power_avail', ['satellite1'])],
+                [Proposition(False, 'power_avail', ['satellite0'])],
+                [Proposition(False, 'pointing', ['satellite1', 'star6'])],
+                [Proposition(False, 'calibration_target', ['instrument2', 'star2'])],
+                [Proposition(False, 'calibration_target', ['instrument0', 'star1'])]
+            ],
+            [
+                [Proposition(True, 'power_on', ['instrument2'])],
+                [Proposition(True, 'power_on', ['instrument0'])],
+                [Proposition(True, 'pointing', ['satellite1', 'star0'])],
+                [Proposition(True, 'calibration_target', ['instrument2', 'groundstation3'])],       
+                [Proposition(True, 'calibration_target', ['instrument0', 'planet5'])]
+            ]
+        )
+        # self._time_to_fail = True
 
     def get_initial_propositions(self):
-        props = set()
+        props = self.get_errors()
 #        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
 #        props.add(Proposition(True, 'at', ['obj12', 'pos2']))
         return props
+    
+    def get_errors(self):
+        props = set()
+        if self._errors[0] and self._errors[1] and self._n_errors:
+            for p in self._errors[0].pop(0):
+                props.add(p)
+            for p in self._errors[1].pop(0):
+                props.add(p)
+            self._time_to_fail = False
+            self._n_errors -= 1
+        return props
 
     def perform(self, action, callback):
-        self.counter+=1
+        self._actions_executed+=1
         cmd = (self._mapper.mapActionToCommand(action))
         sleep(0.1) # simulate cmd execution
         props = set()
-#        if self.counter == 4:
-#            props.add(Proposition(False, 'at', ['tru1', 'pos1']))
-#            props.add(Proposition(True, 'at', ['tru1', 'pos2']))
+        # if self._time_to_fail and self._errors[0] and self._errors[1] and self._n_errors:
+        #     # print('##############################################################################################', len(self._errors))
+        #     for p in self._errors[0].pop(0):
+        #         props.add(p)
+        #     for p in self._errors[1].pop(0):
+        #         props.add(p)
+        #     self._time_to_fail = False
+        #     self._n_errors -= 1
         action = str(action)
         if 'turn_to' in action:
             l = 8
@@ -73,5 +107,10 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             props.add(Proposition(True, 'have_image', [d, mode]))
         self._case = self._case + 1
         callback(props)
-
+    def set_errors_to_inject(self, v):
+        self._n_errors = v
+    # def set_time_to_fail(self, v):
+    #     self._time_to_fail = v
+    def get_actions_executed(self):
+        return self._actions_executed
 CONNECTOR = RawConnectorRover(raw_mapper.RawMapper())

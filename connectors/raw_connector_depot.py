@@ -7,22 +7,86 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
         self._mapper = mapper
         self._case = 0
-        self.counter = 0
+        self._actions_executed = 0
+        self._n_errors = 3
+        self._errors = (
+            [
+                [
+                    Proposition(False, 'at', ['truck1', 'distributor0']),
+                    Proposition(False, 'at', ['truck1', 'distributor2']),
+                    Proposition(False, 'at', ['truck1', 'depot0']),
+                    Proposition(False, 'at', ['truck1', 'depot1']),
+                    Proposition(False, 'at', ['truck1', 'depot2'])
+                ],
+                [
+                    Proposition(False, 'at', ['truck0', 'distributor0']),
+                    Proposition(False, 'at', ['truck0', 'distributor1']),
+                    Proposition(False, 'at', ['truck0', 'depot0']),
+                    Proposition(False, 'at', ['truck0', 'depot1']),
+                    Proposition(False, 'at', ['truck0', 'depot2'])
+                ],
+                [
+                    Proposition(False, 'at', ['truck1', 'distributor0']),
+                    Proposition(False, 'at', ['truck1', 'distributor1']),
+                    Proposition(False, 'at', ['truck1', 'distributor2']),
+                    Proposition(False, 'at', ['truck1', 'depot1']),
+                    Proposition(False, 'at', ['truck1', 'depot2'])
+                ],
+                [
+                    Proposition(False, 'at', ['truck0', 'distributor0']),
+                    Proposition(False, 'at', ['truck0', 'distributor1']),
+                    Proposition(False, 'at', ['truck0', 'distributor2']),
+                    Proposition(False, 'at', ['truck0', 'depot0']),
+                    Proposition(False, 'at', ['truck0', 'depot1'])
+                ],
+                [
+                    Proposition(False, 'at', ['truck1', 'distributor0']),
+                    Proposition(False, 'at', ['truck1', 'distributor1']),
+                    Proposition(False, 'at', ['truck1', 'distributor2']),
+                    Proposition(False, 'at', ['truck1', 'depot0']),
+                    Proposition(False, 'at', ['truck1', 'depot1'])
+                ]
+            ], 
+            [
+                [Proposition(True, 'at', ['truck1', 'distributor1'])],
+                [Proposition(True, 'at', ['truck0', 'distributor2'])],
+                [Proposition(True, 'at', ['truck1', 'depot0'])],
+                [Proposition(True, 'at', ['truck0', 'depot2'])],
+                [Proposition(True, 'at', ['truck1', 'depot2'])]
+            ]
+        )
+        # self._time_to_fail = True
 
     def get_initial_propositions(self):
-        props = set()
+        props = self.get_errors()
 #        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
 #        props.add(Proposition(True, 'at', ['obj12', 'pos2']))
         return props
+    
+    def get_errors(self):
+        props = set()
+        if self._errors[0] and self._errors[1] and self._n_errors:
+            for p in self._errors[0].pop(0):
+                props.add(p)
+            for p in self._errors[1].pop(0):
+                props.add(p)
+            self._time_to_fail = False
+            self._n_errors -= 1
+        return props
 
     def perform(self, action, callback):
-        self.counter+=1
+        self._actions_executed+=1
         cmd = (self._mapper.mapActionToCommand(action))
         sleep(0.1) # simulate cmd execution
         props = set()
-#        if self.counter == 4:
-#            props.add(Proposition(False, 'at', ['tru1', 'pos1']))
-#            props.add(Proposition(True, 'at', ['tru1', 'pos2']))
+        # if self._time_to_fail and self._errors[0] and self._errors[1] and self._n_errors:
+        #     print('##############################################################################################', action)
+        #     for p in self._errors[0].pop(0):
+        #         props.add(p)
+        #     for p in self._errors[1].pop(0):
+        #         props.add(p)
+        #     self._time_to_fail = False
+        #     self._n_errors -= 1
         action = str(action)
         if 'drive' in action:
             l = 6
@@ -94,5 +158,10 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             props.add(Proposition(True, 'available', [hoist]))
         self._case = self._case + 1
         callback(props)
-
+    def set_errors_to_inject(self, v):
+        self._n_errors = v
+    # def set_time_to_fail(self, v):
+    #     self._time_to_fail = v
+    def get_actions_executed(self):
+        return self._actions_executed
 CONNECTOR = RawConnectorDepot(raw_mapper.RawMapper())

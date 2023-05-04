@@ -7,22 +7,106 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
     def __init__(self, mapper):
         self._mapper = mapper
         self._case = 0
-        self.counter = 0
+        self._actions_executed = 0
+        self._n_errors = 3
+# [(at obj33 pos2),(at obj33 pos3),(at obj33 pos4),(at obj33 apt1),(at obj33 apt2),(at obj33 apt3),(at obj33 apt4),(in obj33 tru1),(in obj33 tru2),(in obj33 tru3),(in obj33 tru4),(in obj33 apn1)], [(at obj33 pos1)]
+# [(at obj12 pos1),(at obj12 pos2),(at obj12 pos3),(at obj12 apt1),(at obj12 apt2),(at obj12 apt3),(at obj12 apt4),(in obj12 tru1),(in obj12 tru2),(in obj12 tru3),(in obj12 tru4),(in obj12 apn1)], [(at obj12 pos4)]
+# [(at apn1 apt1),(at apn1 apt2),(at apn1 apt4)], [(at apn1 apt3)]
+# [(at obj32 pos1),(at obj32 pos2),(at obj32 pos3),(at obj32 pos4),(at obj32 apt1),(at obj32 apt2),(at obj32 apt3),(in obj32 tru1),(in obj32 tru2),(in obj32 tru3),(in obj32 tru4),(in obj32 apn1)], [(at obj32 apt4)]
+
+        self._errors = (
+            [
+                [Proposition(False, 'in_city', ['pos2', 'cit2'])],
+                [
+                    Proposition(False, 'at', ['obj33', 'pos2']),
+                    Proposition(False, 'at', ['obj33', 'pos3']),
+                    Proposition(False, 'at', ['obj33', 'pos4']),
+                    Proposition(False, 'at', ['obj33', 'apt1']),
+                    Proposition(False, 'at', ['obj33', 'apt2']),
+                    Proposition(False, 'at', ['obj33', 'apt3']),
+                    Proposition(False, 'at', ['obj33', 'apt4']),
+                    Proposition(False, 'in', ['obj33', 'tru1']),
+                    Proposition(False, 'in', ['obj33', 'tru2']),
+                    Proposition(False, 'in', ['obj33', 'tru3']),
+                    Proposition(False, 'in', ['obj33', 'tru4']),
+                    Proposition(False, 'in', ['obj33', 'apn1'])
+                ],
+                [
+                    Proposition(False, 'at', ['obj12', 'pos1']),
+                    Proposition(False, 'at', ['obj12', 'pos2']),
+                    Proposition(False, 'at', ['obj12', 'pos3']),
+                    Proposition(False, 'at', ['obj12', 'apt1']),
+                    Proposition(False, 'at', ['obj12', 'apt2']),
+                    Proposition(False, 'at', ['obj12', 'apt3']),
+                    Proposition(False, 'at', ['obj12', 'apt4']),
+                    Proposition(False, 'in', ['obj12', 'tru1']),
+                    Proposition(False, 'in', ['obj12', 'tru2']),
+                    Proposition(False, 'in', ['obj12', 'tru3']),
+                    Proposition(False, 'in', ['obj12', 'tru4']),
+                    Proposition(False, 'in', ['obj12', 'apn1'])
+                ],
+                [
+                    Proposition(False, 'at', ['apn1', 'apt1']),
+                    Proposition(False, 'at', ['apn1', 'apt2']),
+                    Proposition(False, 'at', ['apn1', 'apt4'])
+                ],
+                [
+                    Proposition(False, 'at', ['obj32', 'pos1']),
+                    Proposition(False, 'at', ['obj32', 'pos2']),
+                    Proposition(False, 'at', ['obj32', 'pos3']),
+                    Proposition(False, 'at', ['obj32', 'pos4']),
+                    Proposition(False, 'at', ['obj32', 'apt1']),
+                    Proposition(False, 'at', ['obj32', 'apt2']),
+                    Proposition(False, 'at', ['obj32', 'apt3']),
+                    Proposition(False, 'in', ['obj32', 'tru1']),
+                    Proposition(False, 'in', ['obj32', 'tru2']),
+                    Proposition(False, 'in', ['obj32', 'tru3']),
+                    Proposition(False, 'in', ['obj32', 'tru4']),
+                    Proposition(False, 'in', ['obj32', 'apn1'])
+                ]                
+            ], 
+            [
+                [Proposition(True, 'in_city', ['pos2', 'cit3'])],
+                [Proposition(True, 'at', ['obj33', 'pos1'])],
+                [Proposition(True, 'at', ['obj12', 'pos4'])],
+                [Proposition(True, 'at', ['apn1', 'apt3'])],
+                [Proposition(True, 'at', ['obj32', 'apt4'])]                
+            ]
+        )
+        # self._time_to_fail = True
 
     def get_initial_propositions(self):
+        props = self.get_errors()
+#        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
+#        props.add(Proposition(True, 'at', ['obj12', 'pos2']))
+        return props
+    
+    def get_errors(self):
         props = set()
-        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
-        props.add(Proposition(True, 'at', ['obj12', 'pos2']))
+        if self._errors[0] and self._errors[1] and self._n_errors:
+            for p in self._errors[0].pop(0):
+                props.add(p)
+            for p in self._errors[1].pop(0):
+                props.add(p)
+            self._time_to_fail = False
+            self._n_errors -= 1
         return props
 
     def perform(self, action, callback):
-        self.counter+=1
+        self._actions_executed+=1
         cmd = (self._mapper.mapActionToCommand(action))
         sleep(0.1) # simulate cmd execution
         props = set()
-        if self.counter == 4:
-            props.add(Proposition(False, 'at', ['tru1', 'pos1']))
-            props.add(Proposition(True, 'at', ['tru1', 'pos2']))
+        # if self._time_to_fail and self._errors[0] and self._errors[1] and self._n_errors:
+        #     for p in self._errors[0].pop(0):
+        #         props.add(p)
+        #     for p in self._errors[1].pop(0):
+        #         props.add(p)
+        #     self._time_to_fail = False
+        #     self._n_errors -= 1
+        # if self._counter == 4:
+        #     props.add(Proposition(False, 'at', ['tru1', 'pos1']))
+        #     props.add(Proposition(True, 'at', ['tru1', 'pos2']))
         action = str(action)
         if 'unload_truck' in action or 'unload_airplane' in action: # unloading actions
             if 'unload_truck' in action:
@@ -74,5 +158,11 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             props.add(Proposition(True, 'at', [vehicle, locto]))
         self._case = self._case + 1
         callback(props)
+    def set_errors_to_inject(self, v):
+        self._n_errors = v
+    # def set_time_to_fail(self, v):
+    #     self._time_to_fail = v
+    def get_actions_executed(self):
+        return self._actions_executed
 
 CONNECTOR = RawConnectorLogistics(raw_mapper.RawMapper())
