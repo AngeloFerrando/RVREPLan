@@ -1,5 +1,5 @@
 [(at, truck1, distributor0),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor1)]
 [(at, truck0, distributor0),(at, truck0, distributor1),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor2)]
-[(at, truck1, distributor0),(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, depot0)]
-[(at, truck0, distributor0),(at, truck0, distributor1),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1)],[(at, truck0, depot2)]
+[(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor0)]
+[(at, truck0, distributor0),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor1)]
 [(at, truck1, distributor0),(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1)],[(at, truck1, depot2)]
