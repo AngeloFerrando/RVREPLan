@@ -58,7 +58,7 @@ def main(args):
     
     # Translation from PDDL to Failure handling monitor (RVPlan paper)
     if not args.no_monitor_synthesis:
-        os.system('python3 ../../../translators/translator.py ' + args.domain_file)
+        os.system('python3 translators/translator.py ' + args.domain_file)
         os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./out/prop.qtl | grep -v "Elapsed total"')
         os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
 

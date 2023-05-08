@@ -1155,46 +1155,41 @@ abstract class Formula(val monitor: Monitor) {
 
 
 /*
-  prop fo_ltl_0 : Forall obj . Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc)) 
+  prop fo_ltl_0 : Forall x . Forall y . Forall z . drive(x,y,z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y)) 
 */
 
 class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("load_truck")(V("obj"),V("truck"),V("loc"))
-      now(11) = build("not_package")(V("obj"))
-      now(12) = build("package")(V("obj"))
-      now(15) = build("not_truck")(V("truck"))
-      now(16) = build("truck")(V("truck"))
-      now(19) = build("not_location")(V("loc"))
-      now(20) = build("location")(V("loc"))
-      now(23) = build("not_at")(V("truck"),V("loc"))
-      now(24) = build("at")(V("truck"),V("loc"))
-      now(27) = build("not_at")(V("obj"),V("loc"))
-      now(28) = build("at")(V("obj"),V("loc"))
+      now(4) = build("drive")(V("x"),V("y"),V("z"))
+      now(10) = build("not_truck")(V("x"))
+      now(11) = build("truck")(V("x"))
+      now(14) = build("not_place")(V("y"))
+      now(15) = build("place")(V("y"))
+      now(18) = build("not_place")(V("z"))
+      now(19) = build("place")(V("z"))
+      now(22) = build("not_at")(V("x"),V("y"))
+      now(23) = build("at")(V("x"),V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
-      now(6) = now(7).and(now(21))
-      now(26) = now(27).not()
-      now(25) = now(28).or(now(26).and(pre(25)))
-      now(5) = now(6).and(now(25))
+      now(9) = now(10).not()
+      now(8) = now(11).or(now(9).and(pre(8)))
+      now(13) = now(14).not()
+      now(12) = now(15).or(now(13).and(pre(12)))
+      now(7) = now(8).and(now(12))
+      now(17) = now(18).not()
+      now(16) = now(19).or(now(17).and(pre(16)))
+      now(6) = now(7).and(now(16))
+      now(21) = now(22).not()
+      now(20) = now(23).or(now(21).and(pre(20)))
+      now(5) = now(6).and(now(20))
       now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_loc.quantvar)
-      now(1) = now(2).forAll(var_truck.quantvar)
-      now(0) = now(1).forAll(var_obj.quantvar)
+      now(2) = now(3).forAll(var_z.quantvar)
+      now(1) = now(2).forAll(var_y.quantvar)
+      now(0) = now(1).forAll(var_x.quantvar)
 
     debugMonitorState()
 
@@ -1207,44 +1202,39 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_obj :: var_truck :: var_loc :: Nil = declareVariables(("obj",false), ("truck",false), ("loc",false))(0)
+  val var_x :: var_y :: var_z :: Nil = declareVariables(("x",false), ("y",false), ("z",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(25,21,17,13,9)
+  val indices: List[Int] = List(20,16,12,8)
 
-  pre = Array.fill(29)(bddGenerator.False)
-  now = Array.fill(29)(bddGenerator.False)
+  pre = Array.fill(24)(bddGenerator.False)
+  now = Array.fill(24)(bddGenerator.False)
 
   txt = Array(
-    "Forall obj . Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "Forall truck . Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "Forall loc . load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "load_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "load_truck(obj,truck,loc)",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck))",
-      "!not_package(obj) S package(obj)",
-      "!not_package(obj)",
-      "not_package(obj)",
-      "package(obj)",
-      "!not_truck(truck) S truck(truck)",
-      "!not_truck(truck)",
-      "not_truck(truck)",
-      "truck(truck)",
-      "!not_location(loc) S location(loc)",
-      "!not_location(loc)",
-      "not_location(loc)",
-      "location(loc)",
-      "!not_at(truck,loc) S at(truck,loc)",
-      "!not_at(truck,loc)",
-      "not_at(truck,loc)",
-      "at(truck,loc)",
-      "!not_at(obj,loc) S at(obj,loc)",
-      "!not_at(obj,loc)",
-      "not_at(obj,loc)",
-      "at(obj,loc)"
+    "Forall x . Forall y . Forall z . drive(x,y,z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y))",
+      "Forall y . Forall z . drive(x,y,z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y))",
+      "Forall z . drive(x,y,z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y))",
+      "drive(x,y,z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y))",
+      "drive(x,y,z)",
+      "(!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x,y) S at(x,y))",
+      "(!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z))",
+      "(!not_truck(x) S truck(x)) & (!not_place(y) S place(y))",
+      "!not_truck(x) S truck(x)",
+      "!not_truck(x)",
+      "not_truck(x)",
+      "truck(x)",
+      "!not_place(y) S place(y)",
+      "!not_place(y)",
+      "not_place(y)",
+      "place(y)",
+      "!not_place(z) S place(z)",
+      "!not_place(z)",
+      "not_place(z)",
+      "place(z)",
+      "!not_at(x,y) S at(x,y)",
+      "!not_at(x,y)",
+      "not_at(x,y)",
+      "at(x,y)"
   )
 
   debugMonitorState()
@@ -1252,46 +1242,67 @@ class Formula_fo_ltl_0(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_1 : Forall obj . Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc)) 
+  prop fo_ltl_1 : Forall x . Forall y . Forall z . Forall p . lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y)) 
 */
 
 class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("load_airplane")(V("obj"),V("airplane"),V("loc"))
-      now(11) = build("not_package")(V("obj"))
-      now(12) = build("package")(V("obj"))
-      now(15) = build("not_airplane")(V("airplane"))
-      now(16) = build("airplane")(V("airplane"))
-      now(19) = build("not_location")(V("loc"))
-      now(20) = build("location")(V("loc"))
-      now(23) = build("not_at")(V("obj"),V("loc"))
-      now(24) = build("at")(V("obj"),V("loc"))
-      now(27) = build("not_at")(V("airplane"),V("loc"))
-      now(28) = build("at")(V("airplane"),V("loc"))
+      now(5) = build("lift")(V("x"),V("y"),V("z"),V("p"))
+      now(16) = build("not_hoist")(V("x"))
+      now(17) = build("hoist")(V("x"))
+      now(20) = build("not_crate")(V("y"))
+      now(21) = build("crate")(V("y"))
+      now(24) = build("not_surface")(V("z"))
+      now(25) = build("surface")(V("z"))
+      now(28) = build("not_place")(V("p"))
+      now(29) = build("place")(V("p"))
+      now(32) = build("not_at")(V("x"),V("p"))
+      now(33) = build("at")(V("x"),V("p"))
+      now(36) = build("not_available")(V("x"))
+      now(37) = build("available")(V("x"))
+      now(40) = build("not_at")(V("y"),V("p"))
+      now(41) = build("at")(V("y"),V("p"))
+      now(44) = build("not_on")(V("y"),V("z"))
+      now(45) = build("on")(V("y"),V("z"))
+      now(48) = build("not_clear")(V("y"))
+      now(49) = build("clear")(V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
-      now(6) = now(7).and(now(21))
-      now(26) = now(27).not()
-      now(25) = now(28).or(now(26).and(pre(25)))
-      now(5) = now(6).and(now(25))
-      now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_loc.quantvar)
-      now(1) = now(2).forAll(var_airplane.quantvar)
-      now(0) = now(1).forAll(var_obj.quantvar)
+      now(15) = now(16).not()
+      now(14) = now(17).or(now(15).and(pre(14)))
+      now(19) = now(20).not()
+      now(18) = now(21).or(now(19).and(pre(18)))
+      now(13) = now(14).and(now(18))
+      now(23) = now(24).not()
+      now(22) = now(25).or(now(23).and(pre(22)))
+      now(12) = now(13).and(now(22))
+      now(27) = now(28).not()
+      now(26) = now(29).or(now(27).and(pre(26)))
+      now(11) = now(12).and(now(26))
+      now(31) = now(32).not()
+      now(30) = now(33).or(now(31).and(pre(30)))
+      now(10) = now(11).and(now(30))
+      now(35) = now(36).not()
+      now(34) = now(37).or(now(35).and(pre(34)))
+      now(9) = now(10).and(now(34))
+      now(39) = now(40).not()
+      now(38) = now(41).or(now(39).and(pre(38)))
+      now(8) = now(9).and(now(38))
+      now(43) = now(44).not()
+      now(42) = now(45).or(now(43).and(pre(42)))
+      now(7) = now(8).and(now(42))
+      now(47) = now(48).not()
+      now(46) = now(49).or(now(47).and(pre(46)))
+      now(6) = now(7).and(now(46))
+      now(4) = now(5).not().or(now(6))
+      now(3) = now(4).forAll(var_p.quantvar)
+      now(2) = now(3).forAll(var_z.quantvar)
+      now(1) = now(2).forAll(var_y.quantvar)
+      now(0) = now(1).forAll(var_x.quantvar)
 
     debugMonitorState()
 
@@ -1304,44 +1315,65 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_obj :: var_airplane :: var_loc :: Nil = declareVariables(("obj",false), ("airplane",false), ("loc",false))(0)
+  val var_x :: var_y :: var_z :: var_p :: Nil = declareVariables(("x",false), ("y",false), ("z",false), ("p",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(25,21,17,13,9)
+  val indices: List[Int] = List(46,42,38,34,30,26,22,18,14)
 
-  pre = Array.fill(29)(bddGenerator.False)
-  now = Array.fill(29)(bddGenerator.False)
+  pre = Array.fill(50)(bddGenerator.False)
+  now = Array.fill(50)(bddGenerator.False)
 
   txt = Array(
-    "Forall obj . Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "Forall airplane . Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "Forall loc . load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "load_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "load_airplane(obj,airplane,loc)",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj,loc) S at(obj,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane))",
-      "!not_package(obj) S package(obj)",
-      "!not_package(obj)",
-      "not_package(obj)",
-      "package(obj)",
-      "!not_airplane(airplane) S airplane(airplane)",
-      "!not_airplane(airplane)",
-      "not_airplane(airplane)",
-      "airplane(airplane)",
-      "!not_location(loc) S location(loc)",
-      "!not_location(loc)",
-      "not_location(loc)",
-      "location(loc)",
-      "!not_at(obj,loc) S at(obj,loc)",
-      "!not_at(obj,loc)",
-      "not_at(obj,loc)",
-      "at(obj,loc)",
-      "!not_at(airplane,loc) S at(airplane,loc)",
-      "!not_at(airplane,loc)",
-      "not_at(airplane,loc)",
-      "at(airplane,loc)"
+    "Forall x . Forall y . Forall z . Forall p . lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "Forall y . Forall z . Forall p . lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "Forall z . Forall p . lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "Forall p . lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "lift(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "lift(x,y,z,p)",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z)) & (!not_clear(y) S clear(y))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p)) & (!not_on(y,z) S on(y,z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x)) & (!not_at(y,p) S at(y,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_available(x) S available(x))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y))",
+      "!not_hoist(x) S hoist(x)",
+      "!not_hoist(x)",
+      "not_hoist(x)",
+      "hoist(x)",
+      "!not_crate(y) S crate(y)",
+      "!not_crate(y)",
+      "not_crate(y)",
+      "crate(y)",
+      "!not_surface(z) S surface(z)",
+      "!not_surface(z)",
+      "not_surface(z)",
+      "surface(z)",
+      "!not_place(p) S place(p)",
+      "!not_place(p)",
+      "not_place(p)",
+      "place(p)",
+      "!not_at(x,p) S at(x,p)",
+      "!not_at(x,p)",
+      "not_at(x,p)",
+      "at(x,p)",
+      "!not_available(x) S available(x)",
+      "!not_available(x)",
+      "not_available(x)",
+      "available(x)",
+      "!not_at(y,p) S at(y,p)",
+      "!not_at(y,p)",
+      "not_at(y,p)",
+      "at(y,p)",
+      "!not_on(y,z) S on(y,z)",
+      "!not_on(y,z)",
+      "not_on(y,z)",
+      "on(y,z)",
+      "!not_clear(y) S clear(y)",
+      "!not_clear(y)",
+      "not_clear(y)",
+      "clear(y)"
   )
 
   debugMonitorState()
@@ -1349,46 +1381,62 @@ class Formula_fo_ltl_1(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_2 : Forall obj . Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck)) 
+  prop fo_ltl_2 : Forall x . Forall y . Forall z . Forall p . drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y)) 
 */
 
 class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("unload_truck")(V("obj"),V("truck"),V("loc"))
-      now(11) = build("not_package")(V("obj"))
-      now(12) = build("package")(V("obj"))
-      now(15) = build("not_truck")(V("truck"))
-      now(16) = build("truck")(V("truck"))
-      now(19) = build("not_location")(V("loc"))
-      now(20) = build("location")(V("loc"))
-      now(23) = build("not_at")(V("truck"),V("loc"))
-      now(24) = build("at")(V("truck"),V("loc"))
-      now(27) = build("not_in")(V("obj"),V("truck"))
-      now(28) = build("in")(V("obj"),V("truck"))
+      now(5) = build("drop")(V("x"),V("y"),V("z"),V("p"))
+      now(15) = build("not_hoist")(V("x"))
+      now(16) = build("hoist")(V("x"))
+      now(19) = build("not_crate")(V("y"))
+      now(20) = build("crate")(V("y"))
+      now(23) = build("not_surface")(V("z"))
+      now(24) = build("surface")(V("z"))
+      now(27) = build("not_place")(V("p"))
+      now(28) = build("place")(V("p"))
+      now(31) = build("not_at")(V("x"),V("p"))
+      now(32) = build("at")(V("x"),V("p"))
+      now(35) = build("not_at")(V("z"),V("p"))
+      now(36) = build("at")(V("z"),V("p"))
+      now(39) = build("not_clear")(V("z"))
+      now(40) = build("clear")(V("z"))
+      now(43) = build("not_lifting")(V("x"),V("y"))
+      now(44) = build("lifting")(V("x"),V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
       now(14) = now(15).not()
       now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
       now(18) = now(19).not()
       now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
+      now(12) = now(13).and(now(17))
       now(22) = now(23).not()
       now(21) = now(24).or(now(22).and(pre(21)))
-      now(6) = now(7).and(now(21))
+      now(11) = now(12).and(now(21))
       now(26) = now(27).not()
       now(25) = now(28).or(now(26).and(pre(25)))
-      now(5) = now(6).and(now(25))
-      now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_loc.quantvar)
-      now(1) = now(2).forAll(var_truck.quantvar)
-      now(0) = now(1).forAll(var_obj.quantvar)
+      now(10) = now(11).and(now(25))
+      now(30) = now(31).not()
+      now(29) = now(32).or(now(30).and(pre(29)))
+      now(9) = now(10).and(now(29))
+      now(34) = now(35).not()
+      now(33) = now(36).or(now(34).and(pre(33)))
+      now(8) = now(9).and(now(33))
+      now(38) = now(39).not()
+      now(37) = now(40).or(now(38).and(pre(37)))
+      now(7) = now(8).and(now(37))
+      now(42) = now(43).not()
+      now(41) = now(44).or(now(42).and(pre(41)))
+      now(6) = now(7).and(now(41))
+      now(4) = now(5).not().or(now(6))
+      now(3) = now(4).forAll(var_p.quantvar)
+      now(2) = now(3).forAll(var_z.quantvar)
+      now(1) = now(2).forAll(var_y.quantvar)
+      now(0) = now(1).forAll(var_x.quantvar)
 
     debugMonitorState()
 
@@ -1401,44 +1449,60 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_obj :: var_truck :: var_loc :: Nil = declareVariables(("obj",false), ("truck",false), ("loc",false))(0)
+  val var_x :: var_y :: var_z :: var_p :: Nil = declareVariables(("x",false), ("y",false), ("z",false), ("p",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(25,21,17,13,9)
+  val indices: List[Int] = List(41,37,33,29,25,21,17,13)
 
-  pre = Array.fill(29)(bddGenerator.False)
-  now = Array.fill(29)(bddGenerator.False)
+  pre = Array.fill(45)(bddGenerator.False)
+  now = Array.fill(45)(bddGenerator.False)
 
   txt = Array(
-    "Forall obj . Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
-      "Forall truck . Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
-      "Forall loc . unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
-      "unload_truck(obj,truck,loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
-      "unload_truck(obj,truck,loc)",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc)) & (!not_in(obj,truck) S in(obj,truck))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck,loc) S at(truck,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc))",
-      "(!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck))",
-      "!not_package(obj) S package(obj)",
-      "!not_package(obj)",
-      "not_package(obj)",
-      "package(obj)",
-      "!not_truck(truck) S truck(truck)",
-      "!not_truck(truck)",
-      "not_truck(truck)",
-      "truck(truck)",
-      "!not_location(loc) S location(loc)",
-      "!not_location(loc)",
-      "not_location(loc)",
-      "location(loc)",
-      "!not_at(truck,loc) S at(truck,loc)",
-      "!not_at(truck,loc)",
-      "not_at(truck,loc)",
-      "at(truck,loc)",
-      "!not_in(obj,truck) S in(obj,truck)",
-      "!not_in(obj,truck)",
-      "not_in(obj,truck)",
-      "in(obj,truck)"
+    "Forall x . Forall y . Forall z . Forall p . drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall y . Forall z . Forall p . drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall z . Forall p . drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall p . drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "drop(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "drop(x,y,z,p)",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x,y) S lifting(x,y))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_clear(z) S clear(z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y))",
+      "!not_hoist(x) S hoist(x)",
+      "!not_hoist(x)",
+      "not_hoist(x)",
+      "hoist(x)",
+      "!not_crate(y) S crate(y)",
+      "!not_crate(y)",
+      "not_crate(y)",
+      "crate(y)",
+      "!not_surface(z) S surface(z)",
+      "!not_surface(z)",
+      "not_surface(z)",
+      "surface(z)",
+      "!not_place(p) S place(p)",
+      "!not_place(p)",
+      "not_place(p)",
+      "place(p)",
+      "!not_at(x,p) S at(x,p)",
+      "!not_at(x,p)",
+      "not_at(x,p)",
+      "at(x,p)",
+      "!not_at(z,p) S at(z,p)",
+      "!not_at(z,p)",
+      "not_at(z,p)",
+      "at(z,p)",
+      "!not_clear(z) S clear(z)",
+      "!not_clear(z)",
+      "not_clear(z)",
+      "clear(z)",
+      "!not_lifting(x,y) S lifting(x,y)",
+      "!not_lifting(x,y)",
+      "not_lifting(x,y)",
+      "lifting(x,y)"
   )
 
   debugMonitorState()
@@ -1446,125 +1510,28 @@ class Formula_fo_ltl_2(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_3 : Forall obj . Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc)) 
+  prop fo_ltl_3 : Forall x . Forall y . Forall z . Forall p . load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y)) 
 */
 
 class Formula_fo_ltl_3(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("unload_airplane")(V("obj"),V("airplane"),V("loc"))
-      now(11) = build("not_package")(V("obj"))
-      now(12) = build("package")(V("obj"))
-      now(15) = build("not_airplane")(V("airplane"))
-      now(16) = build("airplane")(V("airplane"))
-      now(19) = build("not_location")(V("loc"))
-      now(20) = build("location")(V("loc"))
-      now(23) = build("not_in")(V("obj"),V("airplane"))
-      now(24) = build("in")(V("obj"),V("airplane"))
-      now(27) = build("not_at")(V("airplane"),V("loc"))
-      now(28) = build("at")(V("airplane"),V("loc"))
-    // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
-    // assignments3 (rule calls):
-    // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
-    // assignments5 (main formula excluding leaf nodes):
-      now(10) = now(11).not()
-      now(9) = now(12).or(now(10).and(pre(9)))
-      now(14) = now(15).not()
-      now(13) = now(16).or(now(14).and(pre(13)))
-      now(8) = now(9).and(now(13))
-      now(18) = now(19).not()
-      now(17) = now(20).or(now(18).and(pre(17)))
-      now(7) = now(8).and(now(17))
-      now(22) = now(23).not()
-      now(21) = now(24).or(now(22).and(pre(21)))
-      now(6) = now(7).and(now(21))
-      now(26) = now(27).not()
-      now(25) = now(28).or(now(26).and(pre(25)))
-      now(5) = now(6).and(now(25))
-      now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_loc.quantvar)
-      now(1) = now(2).forAll(var_airplane.quantvar)
-      now(0) = now(1).forAll(var_obj.quantvar)
-
-    debugMonitorState()
-
-    val error = now(0).isZero
-    if (error) monitor.recordResult()
-    tmp = now
-    now = pre
-    pre = tmp
-    touchedByLastEvent = emptyTouchedSet
-    !error
-  }
-
-  val var_obj :: var_airplane :: var_loc :: Nil = declareVariables(("obj",false), ("airplane",false), ("loc",false))(0)
-
-  varsInRelations = Set()
-  val indices: List[Int] = List(25,21,17,13,9)
-
-  pre = Array.fill(29)(bddGenerator.False)
-  now = Array.fill(29)(bddGenerator.False)
-
-  txt = Array(
-    "Forall obj . Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "Forall airplane . Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "Forall loc . unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "unload_airplane(obj,airplane,loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "unload_airplane(obj,airplane,loc)",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane)) & (!not_at(airplane,loc) S at(airplane,loc))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj,airplane) S in(obj,airplane))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc))",
-      "(!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane))",
-      "!not_package(obj) S package(obj)",
-      "!not_package(obj)",
-      "not_package(obj)",
-      "package(obj)",
-      "!not_airplane(airplane) S airplane(airplane)",
-      "!not_airplane(airplane)",
-      "not_airplane(airplane)",
-      "airplane(airplane)",
-      "!not_location(loc) S location(loc)",
-      "!not_location(loc)",
-      "not_location(loc)",
-      "location(loc)",
-      "!not_in(obj,airplane) S in(obj,airplane)",
-      "!not_in(obj,airplane)",
-      "not_in(obj,airplane)",
-      "in(obj,airplane)",
-      "!not_at(airplane,loc) S at(airplane,loc)",
-      "!not_at(airplane,loc)",
-      "not_at(airplane,loc)",
-      "at(airplane,loc)"
-  )
-
-  debugMonitorState()
-}
-        
-
-/*
-  prop fo_ltl_4 : Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city)) 
-*/
-
-class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
-          
-  override def evaluate(): Boolean = {
-    // assignments1 (leaf nodes that are not rule calls):
-      now(5) = build("drive_truck")(V("truck"),V("loc_from"),V("loc_to"),V("city"))
-      now(14) = build("not_truck")(V("truck"))
-      now(15) = build("truck")(V("truck"))
-      now(18) = build("not_location")(V("loc_from"))
-      now(19) = build("location")(V("loc_from"))
-      now(22) = build("not_location")(V("loc_to"))
-      now(23) = build("location")(V("loc_to"))
-      now(26) = build("not_city")(V("city"))
-      now(27) = build("city")(V("city"))
-      now(30) = build("not_at")(V("truck"),V("loc_from"))
-      now(31) = build("at")(V("truck"),V("loc_from"))
-      now(34) = build("not_in_city")(V("loc_from"),V("city"))
-      now(35) = build("in_city")(V("loc_from"),V("city"))
-      now(38) = build("not_in_city")(V("loc_to"),V("city"))
-      now(39) = build("in_city")(V("loc_to"),V("city"))
+      now(5) = build("load")(V("x"),V("y"),V("z"),V("p"))
+      now(14) = build("not_hoist")(V("x"))
+      now(15) = build("hoist")(V("x"))
+      now(18) = build("not_crate")(V("y"))
+      now(19) = build("crate")(V("y"))
+      now(22) = build("not_truck")(V("z"))
+      now(23) = build("truck")(V("z"))
+      now(26) = build("not_place")(V("p"))
+      now(27) = build("place")(V("p"))
+      now(30) = build("not_at")(V("x"),V("p"))
+      now(31) = build("at")(V("x"),V("p"))
+      now(34) = build("not_at")(V("z"),V("p"))
+      now(35) = build("at")(V("z"),V("p"))
+      now(38) = build("not_lifting")(V("x"),V("y"))
+      now(39) = build("lifting")(V("x"),V("y"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
@@ -1590,10 +1557,10 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
       now(36) = now(39).or(now(37).and(pre(36)))
       now(6) = now(7).and(now(36))
       now(4) = now(5).not().or(now(6))
-      now(3) = now(4).forAll(var_city.quantvar)
-      now(2) = now(3).forAll(var_loc_to.quantvar)
-      now(1) = now(2).forAll(var_loc_from.quantvar)
-      now(0) = now(1).forAll(var_truck.quantvar)
+      now(3) = now(4).forAll(var_p.quantvar)
+      now(2) = now(3).forAll(var_z.quantvar)
+      now(1) = now(2).forAll(var_y.quantvar)
+      now(0) = now(1).forAll(var_x.quantvar)
 
     debugMonitorState()
 
@@ -1606,7 +1573,7 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_truck :: var_loc_from :: var_loc_to :: var_city :: Nil = declareVariables(("truck",false), ("loc_from",false), ("loc_to",false), ("city",false))(0)
+  val var_x :: var_y :: var_z :: var_p :: Nil = declareVariables(("x",false), ("y",false), ("z",false), ("p",false))(0)
 
   varsInRelations = Set()
   val indices: List[Int] = List(36,32,28,24,20,16,12)
@@ -1615,46 +1582,46 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
   now = Array.fill(40)(bddGenerator.False)
 
   txt = Array(
-    "Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "Forall loc_from . Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "Forall loc_to . Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "Forall city . drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "drive_truck(truck,loc_from,loc_to,city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "drive_truck(truck,loc_from,loc_to,city)",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city)) & (!not_in_city(loc_to,city) S in_city(loc_to,city))",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from)) & (!not_in_city(loc_from,city) S in_city(loc_from,city))",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck,loc_from) S at(truck,loc_from))",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city))",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to))",
-      "(!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from))",
-      "!not_truck(truck) S truck(truck)",
-      "!not_truck(truck)",
-      "not_truck(truck)",
-      "truck(truck)",
-      "!not_location(loc_from) S location(loc_from)",
-      "!not_location(loc_from)",
-      "not_location(loc_from)",
-      "location(loc_from)",
-      "!not_location(loc_to) S location(loc_to)",
-      "!not_location(loc_to)",
-      "not_location(loc_to)",
-      "location(loc_to)",
-      "!not_city(city) S city(city)",
-      "!not_city(city)",
-      "not_city(city)",
-      "city(city)",
-      "!not_at(truck,loc_from) S at(truck,loc_from)",
-      "!not_at(truck,loc_from)",
-      "not_at(truck,loc_from)",
-      "at(truck,loc_from)",
-      "!not_in_city(loc_from,city) S in_city(loc_from,city)",
-      "!not_in_city(loc_from,city)",
-      "not_in_city(loc_from,city)",
-      "in_city(loc_from,city)",
-      "!not_in_city(loc_to,city) S in_city(loc_to,city)",
-      "!not_in_city(loc_to,city)",
-      "not_in_city(loc_to,city)",
-      "in_city(loc_to,city)"
+    "Forall x . Forall y . Forall z . Forall p . load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall y . Forall z . Forall p . load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall z . Forall p . load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "Forall p . load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "load(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "load(x,y,z,p)",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_lifting(x,y) S lifting(x,y))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y))",
+      "!not_hoist(x) S hoist(x)",
+      "!not_hoist(x)",
+      "not_hoist(x)",
+      "hoist(x)",
+      "!not_crate(y) S crate(y)",
+      "!not_crate(y)",
+      "not_crate(y)",
+      "crate(y)",
+      "!not_truck(z) S truck(z)",
+      "!not_truck(z)",
+      "not_truck(z)",
+      "truck(z)",
+      "!not_place(p) S place(p)",
+      "!not_place(p)",
+      "not_place(p)",
+      "place(p)",
+      "!not_at(x,p) S at(x,p)",
+      "!not_at(x,p)",
+      "not_at(x,p)",
+      "at(x,p)",
+      "!not_at(z,p) S at(z,p)",
+      "!not_at(z,p)",
+      "not_at(z,p)",
+      "at(z,p)",
+      "!not_lifting(x,y) S lifting(x,y)",
+      "!not_lifting(x,y)",
+      "not_lifting(x,y)",
+      "lifting(x,y)"
   )
 
   debugMonitorState()
@@ -1662,41 +1629,62 @@ class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
         
 
 /*
-  prop fo_ltl_5 : Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from)) 
+  prop fo_ltl_4 : Forall x . Forall y . Forall z . Forall p . unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z)) 
 */
 
-class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
+class Formula_fo_ltl_4(monitor: Monitor) extends Formula(monitor) {
           
   override def evaluate(): Boolean = {
     // assignments1 (leaf nodes that are not rule calls):
-      now(4) = build("fly_airplane")(V("airplane"),V("loc_from"),V("loc_to"))
-      now(10) = build("not_airplane")(V("airplane"))
-      now(11) = build("airplane")(V("airplane"))
-      now(14) = build("not_airport")(V("loc_from"))
-      now(15) = build("airport")(V("loc_from"))
-      now(18) = build("not_airport")(V("loc_to"))
-      now(19) = build("airport")(V("loc_to"))
-      now(22) = build("not_at")(V("airplane"),V("loc_from"))
-      now(23) = build("at")(V("airplane"),V("loc_from"))
+      now(5) = build("unload")(V("x"),V("y"),V("z"),V("p"))
+      now(15) = build("not_hoist")(V("x"))
+      now(16) = build("hoist")(V("x"))
+      now(19) = build("not_crate")(V("y"))
+      now(20) = build("crate")(V("y"))
+      now(23) = build("not_truck")(V("z"))
+      now(24) = build("truck")(V("z"))
+      now(27) = build("not_place")(V("p"))
+      now(28) = build("place")(V("p"))
+      now(31) = build("not_at")(V("x"),V("p"))
+      now(32) = build("at")(V("x"),V("p"))
+      now(35) = build("not_at")(V("z"),V("p"))
+      now(36) = build("at")(V("z"),V("p"))
+      now(39) = build("not_available")(V("x"))
+      now(40) = build("available")(V("x"))
+      now(43) = build("not_in")(V("y"),V("z"))
+      now(44) = build("in")(V("y"),V("z"))
     // assignments2 (rule nodes excluding what is below @ and excluding leaf nodes):
     // assignments3 (rule calls):
     // assignments4 (the rest of rules that are below @ and excluding leaf nodes):
     // assignments5 (main formula excluding leaf nodes):
-      now(9) = now(10).not()
-      now(8) = now(11).or(now(9).and(pre(8)))
-      now(13) = now(14).not()
-      now(12) = now(15).or(now(13).and(pre(12)))
-      now(7) = now(8).and(now(12))
-      now(17) = now(18).not()
-      now(16) = now(19).or(now(17).and(pre(16)))
-      now(6) = now(7).and(now(16))
-      now(21) = now(22).not()
-      now(20) = now(23).or(now(21).and(pre(20)))
-      now(5) = now(6).and(now(20))
-      now(3) = now(4).not().or(now(5))
-      now(2) = now(3).forAll(var_loc_to.quantvar)
-      now(1) = now(2).forAll(var_loc_from.quantvar)
-      now(0) = now(1).forAll(var_airplane.quantvar)
+      now(14) = now(15).not()
+      now(13) = now(16).or(now(14).and(pre(13)))
+      now(18) = now(19).not()
+      now(17) = now(20).or(now(18).and(pre(17)))
+      now(12) = now(13).and(now(17))
+      now(22) = now(23).not()
+      now(21) = now(24).or(now(22).and(pre(21)))
+      now(11) = now(12).and(now(21))
+      now(26) = now(27).not()
+      now(25) = now(28).or(now(26).and(pre(25)))
+      now(10) = now(11).and(now(25))
+      now(30) = now(31).not()
+      now(29) = now(32).or(now(30).and(pre(29)))
+      now(9) = now(10).and(now(29))
+      now(34) = now(35).not()
+      now(33) = now(36).or(now(34).and(pre(33)))
+      now(8) = now(9).and(now(33))
+      now(38) = now(39).not()
+      now(37) = now(40).or(now(38).and(pre(37)))
+      now(7) = now(8).and(now(37))
+      now(42) = now(43).not()
+      now(41) = now(44).or(now(42).and(pre(41)))
+      now(6) = now(7).and(now(41))
+      now(4) = now(5).not().or(now(6))
+      now(3) = now(4).forAll(var_p.quantvar)
+      now(2) = now(3).forAll(var_z.quantvar)
+      now(1) = now(2).forAll(var_y.quantvar)
+      now(0) = now(1).forAll(var_x.quantvar)
 
     debugMonitorState()
 
@@ -1709,39 +1697,60 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
     !error
   }
 
-  val var_airplane :: var_loc_from :: var_loc_to :: Nil = declareVariables(("airplane",false), ("loc_from",false), ("loc_to",false))(0)
+  val var_x :: var_y :: var_z :: var_p :: Nil = declareVariables(("x",false), ("y",false), ("z",false), ("p",false))(0)
 
   varsInRelations = Set()
-  val indices: List[Int] = List(20,16,12,8)
+  val indices: List[Int] = List(41,37,33,29,25,21,17,13)
 
-  pre = Array.fill(24)(bddGenerator.False)
-  now = Array.fill(24)(bddGenerator.False)
+  pre = Array.fill(45)(bddGenerator.False)
+  now = Array.fill(45)(bddGenerator.False)
 
   txt = Array(
-    "Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
-      "Forall loc_from . Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
-      "Forall loc_to . fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
-      "fly_airplane(airplane,loc_from,loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
-      "fly_airplane(airplane,loc_from,loc_to)",
-      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane,loc_from) S at(airplane,loc_from))",
-      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to))",
-      "(!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from))",
-      "!not_airplane(airplane) S airplane(airplane)",
-      "!not_airplane(airplane)",
-      "not_airplane(airplane)",
-      "airplane(airplane)",
-      "!not_airport(loc_from) S airport(loc_from)",
-      "!not_airport(loc_from)",
-      "not_airport(loc_from)",
-      "airport(loc_from)",
-      "!not_airport(loc_to) S airport(loc_to)",
-      "!not_airport(loc_to)",
-      "not_airport(loc_to)",
-      "airport(loc_to)",
-      "!not_at(airplane,loc_from) S at(airplane,loc_from)",
-      "!not_at(airplane,loc_from)",
-      "not_at(airplane,loc_from)",
-      "at(airplane,loc_from)"
+    "Forall x . Forall y . Forall z . Forall p . unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "Forall y . Forall z . Forall p . unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "Forall z . Forall p . unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "Forall p . unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "unload(x,y,z,p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "unload(x,y,z,p)",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x)) & (!not_in(y,z) S in(y,z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p)) & (!not_available(x) S available(x))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p)) & (!not_at(z,p) S at(z,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x,p) S at(x,p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z))",
+      "(!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y))",
+      "!not_hoist(x) S hoist(x)",
+      "!not_hoist(x)",
+      "not_hoist(x)",
+      "hoist(x)",
+      "!not_crate(y) S crate(y)",
+      "!not_crate(y)",
+      "not_crate(y)",
+      "crate(y)",
+      "!not_truck(z) S truck(z)",
+      "!not_truck(z)",
+      "not_truck(z)",
+      "truck(z)",
+      "!not_place(p) S place(p)",
+      "!not_place(p)",
+      "not_place(p)",
+      "place(p)",
+      "!not_at(x,p) S at(x,p)",
+      "!not_at(x,p)",
+      "not_at(x,p)",
+      "at(x,p)",
+      "!not_at(z,p) S at(z,p)",
+      "!not_at(z,p)",
+      "not_at(z,p)",
+      "at(z,p)",
+      "!not_available(x) S available(x)",
+      "!not_available(x)",
+      "not_available(x)",
+      "available(x)",
+      "!not_in(y,z) S in(y,z)",
+      "!not_in(y,z)",
+      "not_in(y,z)",
+      "in(y,z)"
   )
 
   debugMonitorState()
@@ -1750,9 +1759,9 @@ class Formula_fo_ltl_5(monitor: Monitor) extends Formula(monitor) {
 /* The specialized Monitor for the provided properties. */
 
 class PropertyMonitor extends Monitor {
-  def eventsInSpec: Set[String] = Set("location","load_truck","not_in_city","not_at","in_city","unload_truck","unload_airplane","in","not_airplane","airport","at","not_in","not_package","package","not_city","not_airport","fly_airplane","not_location","city","drive_truck","not_truck","load_airplane","airplane","truck")
+  def eventsInSpec: Set[String] = Set("clear","not_at","load","in","surface","unload","crate","at","not_lifting","hoist","not_in","not_surface","drop","available","not_crate","not_place","not_on","not_hoist","not_available","place","lifting","drive","on","not_truck","lift","not_clear","truck")
 
-  formulae ++= List(new Formula_fo_ltl_0(this),new Formula_fo_ltl_1(this),new Formula_fo_ltl_2(this),new Formula_fo_ltl_3(this),new Formula_fo_ltl_4(this),new Formula_fo_ltl_5(this))
+  formulae ++= List(new Formula_fo_ltl_0(this),new Formula_fo_ltl_1(this),new Formula_fo_ltl_2(this),new Formula_fo_ltl_3(this),new Formula_fo_ltl_4(this))
 }
       
 object TraceMonitor {

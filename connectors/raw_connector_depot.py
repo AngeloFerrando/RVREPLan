@@ -26,18 +26,18 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
                     Proposition(False, 'at', ['truck0', 'depot2'])
                 ],
                 [
-                    Proposition(False, 'at', ['truck1', 'distributor0']),
                     Proposition(False, 'at', ['truck1', 'distributor1']),
                     Proposition(False, 'at', ['truck1', 'distributor2']),
+                    Proposition(False, 'at', ['truck1', 'depot0']),
                     Proposition(False, 'at', ['truck1', 'depot1']),
                     Proposition(False, 'at', ['truck1', 'depot2'])
                 ],
                 [
-                    Proposition(False, 'at', ['truck0', 'distributor0']),
-                    Proposition(False, 'at', ['truck0', 'distributor1']),
-                    Proposition(False, 'at', ['truck0', 'distributor2']),
-                    Proposition(False, 'at', ['truck0', 'depot0']),
-                    Proposition(False, 'at', ['truck0', 'depot1'])
+                    Proposition(False, 'at', ['truck1', 'distributor0']),
+                    Proposition(False, 'at', ['truck1', 'distributor1']),
+                    Proposition(False, 'at', ['truck1', 'distributor2']),
+                    Proposition(False, 'at', ['truck1', 'depot0']),
+                    Proposition(False, 'at', ['truck1', 'depot2'])
                 ],
                 [
                     Proposition(False, 'at', ['truck1', 'distributor0']),
@@ -50,11 +50,13 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             [
                 [Proposition(True, 'at', ['truck1', 'distributor1'])],
                 [Proposition(True, 'at', ['truck0', 'distributor2'])],
-                [Proposition(True, 'at', ['truck1', 'depot0'])],
-                [Proposition(True, 'at', ['truck0', 'depot2'])],
+                [Proposition(True, 'at', ['truck1', 'distributor0'])],
+                [Proposition(True, 'at', ['truck1', 'depot1'])],
                 [Proposition(True, 'at', ['truck1', 'depot2'])]
             ]
         )
+#         [(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor0)]
+# [(at, truck0, distributor0),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor1)]
         # self._time_to_fail = True
 
     def get_initial_propositions(self):

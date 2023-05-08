@@ -1,15 +1,18 @@
 prop fo_ltl_0 :
-	Forall x . Forall y . Forall z . drive(x, y, z) -> (!not_truck(x) S truck(x)) & (!not_place(y) S place(y)) & (!not_place(z) S place(z)) & (!not_at(x, y) S at(x, y))
+	Forall obj . Forall truck . Forall loc . load_truck(obj, truck, loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck, loc) S at(truck, loc)) & (!not_at(obj, loc) S at(obj, loc))
 
 prop fo_ltl_1 :
-	Forall x . Forall y . Forall z . Forall p . lift(x, y, z, p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x, p) S at(x, p)) & (!not_available(x) S available(x)) & (!not_at(y, p) S at(y, p)) & (!not_on(y, z) S on(y, z)) & (!not_clear(y) S clear(y))
+	Forall obj . Forall airplane . Forall loc . load_airplane(obj, airplane, loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_at(obj, loc) S at(obj, loc)) & (!not_at(airplane, loc) S at(airplane, loc))
 
 prop fo_ltl_2 :
-	Forall x . Forall y . Forall z . Forall p . drop(x, y, z, p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_surface(z) S surface(z)) & (!not_place(p) S place(p)) & (!not_at(x, p) S at(x, p)) & (!not_at(z, p) S at(z, p)) & (!not_clear(z) S clear(z)) & (!not_lifting(x, y) S lifting(x, y))
+	Forall obj . Forall truck . Forall loc . unload_truck(obj, truck, loc) -> (!not_package(obj) S package(obj)) & (!not_truck(truck) S truck(truck)) & (!not_location(loc) S location(loc)) & (!not_at(truck, loc) S at(truck, loc)) & (!not_in(obj, truck) S in(obj, truck))
 
 prop fo_ltl_3 :
-	Forall x . Forall y . Forall z . Forall p . load(x, y, z, p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x, p) S at(x, p)) & (!not_at(z, p) S at(z, p)) & (!not_lifting(x, y) S lifting(x, y))
+	Forall obj . Forall airplane . Forall loc . unload_airplane(obj, airplane, loc) -> (!not_package(obj) S package(obj)) & (!not_airplane(airplane) S airplane(airplane)) & (!not_location(loc) S location(loc)) & (!not_in(obj, airplane) S in(obj, airplane)) & (!not_at(airplane, loc) S at(airplane, loc))
 
 prop fo_ltl_4 :
-	Forall x . Forall y . Forall z . Forall p . unload(x, y, z, p) -> (!not_hoist(x) S hoist(x)) & (!not_crate(y) S crate(y)) & (!not_truck(z) S truck(z)) & (!not_place(p) S place(p)) & (!not_at(x, p) S at(x, p)) & (!not_at(z, p) S at(z, p)) & (!not_available(x) S available(x)) & (!not_in(y, z) S in(y, z))
+	Forall truck . Forall loc_from . Forall loc_to . Forall city . drive_truck(truck, loc_from, loc_to, city) -> (!not_truck(truck) S truck(truck)) & (!not_location(loc_from) S location(loc_from)) & (!not_location(loc_to) S location(loc_to)) & (!not_city(city) S city(city)) & (!not_at(truck, loc_from) S at(truck, loc_from)) & (!not_in_city(loc_from, city) S in_city(loc_from, city)) & (!not_in_city(loc_to, city) S in_city(loc_to, city))
+
+prop fo_ltl_5 :
+	Forall airplane . Forall loc_from . Forall loc_to . fly_airplane(airplane, loc_from, loc_to) -> (!not_airplane(airplane) S airplane(airplane)) & (!not_airport(loc_from) S airport(loc_from)) & (!not_airport(loc_to) S airport(loc_to)) & (!not_at(airplane, loc_from) S at(airplane, loc_from))
 
