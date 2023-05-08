@@ -30,16 +30,40 @@ Logistics:
 python3 abstract_system.py ./benchmarks/logistics/domain.pddl ./benchmarks/logistics/problem.pddl connectors.raw_connector_logistics DEJAVU "PLANNER/fast-downward.py --alias lama-first"
 ```
 
+```bash
+python3 abstract_system.py ./benchmarks/logistics/domain.pddl ./benchmarks/logistics/problem.pddl connectors.raw_connector_logistics DEJAVU "PLANNER/fast-downward.py --alias seq-opt-bjolp"
+```
+
+```bash
+python3 abstract_system.py ./benchmarks/logistics/domain.pddl ./benchmarks/logistics/problem.pddl connectors.raw_connector_logistics DEJAVU "PLANNER/fast-downward.py --alias seq-opt-lmcut"
+```
+
 Depot:
 
 ```bash
 python3 abstract_system.py ./benchmarks/depot/domain.pddl ./benchmarks/depot/problem.pddl connectors.raw_connector_depot DEJAVU "PLANNER/fast-downward.py --alias lama-first"
 ```
 
+```bash
+python3 abstract_system.py ./benchmarks/depot/domain.pddl ./benchmarks/depot/problem.pddl connectors.raw_connector_depot DEJAVU "PLANNER/fast-downward.py --alias seq-opt-bjolp"
+```
+
+```bash
+python3 abstract_system.py ./benchmarks/depot/domain.pddl ./benchmarks/depot/problem.pddl connectors.raw_connector_depot DEJAVU "PLANNER/fast-downward.py --alias seq-opt-lmcut"
+```
+
 Satellite:
 
 ```bash
 python3 abstract_system.py ./benchmarks/satellite/domain.pddl ./benchmarks/satellite/problem.pddl connectors.raw_connector_satellite DEJAVU "PLANNER/fast-downward.py --alias lama-first"
+```
+
+```bash
+python3 abstract_system.py ./benchmarks/satellite/domain.pddl ./benchmarks/satellite/problem.pddl connectors.raw_connector_satellite DEJAVU "PLANNER/fast-downward.py --alias seq-opt-bjolp"
+```
+
+```bash
+python3 abstract_system.py ./benchmarks/satellite/domain.pddl ./benchmarks/satellite/problem.pddl connectors.raw_connector_satellite DEJAVU "PLANNER/fast-downward.py --alias seq-opt-lmcut"
 ```
 
 where DEJAVU and PLANNER (replace .py with .sif if using the container version of FD) need to be replaced with their respective paths.
