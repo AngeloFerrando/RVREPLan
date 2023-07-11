@@ -18,33 +18,38 @@ def parameterisedMonitor(domain_file_name):
             break
         next_act = domain_text.find(':action', par)
         action, parameters_list, precondition_list, effect_list = extract_info(domain_text, act, par, pre, eff, next_act)
-        fo_ltl = ''
-        for p in parameters_list:
-            fo_ltl = fo_ltl + 'Forall ' + p.replace('?', '') + ' . '
-        fo_ltl = fo_ltl
-        fo_ltl = fo_ltl + action + '('
-        for p_i in range(0, len(parameters_list)):
-            if p_i != 0: fo_ltl = fo_ltl + ', '
-            fo_ltl = fo_ltl + parameters_list[p_i].replace('?', '')
-        fo_ltl = fo_ltl + ') -> '
-        for p_i in range(0, len(precondition_list)):
-            if p_i != 0: fo_ltl = fo_ltl + ' & '
-            index = precondition_list[p_i].find('?', 0)
-            vars = []
-            while index != -1:
-                index1 = precondition_list[p_i].find('?', index+1)
-                if index1 != -1:
-                    vars.append(precondition_list[p_i][index+1:index1].replace(',', '').strip())
-                else:
-                    vars.append(precondition_list[p_i][index+1:].replace(')', '').replace(',', '').strip())
-                index = index1
-            if precondition_list[p_i].startswith('!'):
-                fo_ltl = fo_ltl + '((!' + precondition_list[p_i].replace('?', '')[1:] + ' S ' + 'not_' + precondition_list[p_i].replace('?', '')[1:] + ') | (H (!' + precondition_list[p_i].replace('?', '')[1:] + ')))'
-            else:
-                fo_ltl = fo_ltl + '(!' + 'not_' + precondition_list[p_i].replace('?', '') + ' S ' + precondition_list[p_i].replace('?', '') + ')'
-        fo_ltl_list.append(fo_ltl)
+        fo_ltl_pre = extract_fo_ltl('begin_' + action, parameters_list, precondition_list)
+        fo_ltl_eff = extract_fo_ltl('end_' + action, parameters_list, effect_list)
+        fo_ltl_list.append((fo_ltl_pre, fo_ltl_eff))
         start = eff+1
     return fo_ltl_list
+
+def extract_fo_ltl(action, parameters_list, pre_eff_list):
+    fo_ltl = ''
+    for p in parameters_list:
+        fo_ltl = fo_ltl + 'Forall ' + p.replace('?', '') + ' . '
+    fo_ltl = fo_ltl
+    fo_ltl = fo_ltl + action + '('
+    for p_i in range(0, len(parameters_list)):
+        if p_i != 0: fo_ltl = fo_ltl + ', '
+        fo_ltl = fo_ltl + parameters_list[p_i].replace('?', '')
+    fo_ltl = fo_ltl + ') -> '
+    for p_i in range(0, len(pre_eff_list)):
+        if p_i != 0: fo_ltl = fo_ltl + ' & '
+        index = pre_eff_list[p_i].find('?', 0)
+        vars = []
+        while index != -1:
+            index1 = pre_eff_list[p_i].find('?', index+1)
+            if index1 != -1:
+                vars.append(pre_eff_list[p_i][index+1:index1].replace(',', '').strip())
+            else:
+                vars.append(pre_eff_list[p_i][index+1:].replace(')', '').replace(',', '').strip())
+            index = index1
+        if pre_eff_list[p_i].startswith('!'):
+            fo_ltl = fo_ltl + '((!' + pre_eff_list[p_i].replace('?', '')[1:] + ' S ' + 'not_' + pre_eff_list[p_i].replace('?', '')[1:] + ') | (H (!' + pre_eff_list[p_i].replace('?', '')[1:] + ')))'
+        else:
+            fo_ltl = fo_ltl + '(!' + 'not_' + pre_eff_list[p_i].replace('?', '') + ' S ' + pre_eff_list[p_i].replace('?', '') + ')'
+    return fo_ltl
 
 def instantiatedMonitor(domain_file_name, plan_file_name):
     domain = open(domain_file_name, 'r')
@@ -176,15 +181,20 @@ def main(args):
     start_time = time.time()
     if len(args) == 2:
         fo_ltl_list = parameterisedMonitor(args[1])
-        for fo_ltl in fo_ltl_list:
-            print(fo_ltl)
-        f = open('./out/prop.qtl', 'w')
+        for (fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
+            print('FO_pre:', fo_ltl_pre)
+            print('FO_eff:', fo_ltl_eff)
+        f_pre = open('./out/pre/prop.qtl', 'w')
+        f_eff = open('./out/eff/prop.qtl', 'w')
         i = 0
-        for fo_ltl in fo_ltl_list:
-            f.write('prop fo_ltl_' + str(i) + ' :\n')
-            f.write('\t' + fo_ltl + '\n\n')
+        for (fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
+            f_pre.write('prop fo_ltl_pre_' + str(i) + ' :\n')
+            f_pre.write('\t' + fo_ltl_pre + '\n\n')
+            f_eff.write('prop fo_ltl_eff_' + str(i) + ' :\n')
+            f_eff.write('\t' + fo_ltl_eff + '\n\n')
             i = i + 1
-        f.close()
+        f_pre.close()
+        f_eff.close()
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
         return prop_time

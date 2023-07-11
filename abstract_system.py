@@ -59,8 +59,13 @@ def main(args):
     # Translation from PDDL to Failure handling monitor (RVPlan paper)
     if not args.no_monitor_synthesis:
         os.system('python3 translators/translator.py ' + args.domain_file)
-        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./out/prop.qtl | grep -v "Elapsed total"')
+        os.chdir('./out/pre/')
+        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
         os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+        os.chdir('../eff/')
+        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+        os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+        os.chdir('../../')
 
     # Create snapshot
     # createSnapshot(args.problem_file)
@@ -87,7 +92,9 @@ def main(args):
     initial_propositions = set(snapshot.get_props())
     callbackNewProps(initial_propositions)
 
+prev_action = None
 def callbackNewProps(props):
+    global prev_action
     # print(props)
     if props:
         # Update the snapshot
@@ -105,10 +112,23 @@ def callbackNewProps(props):
             # update the failure handling monitor
             for prop in props:
                 monitor_input.write(str(prop) + '\n')
-        monitor_input.write(str(action))
-    monitor_outcome = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ./out/trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
-    print(monitor_outcome)
-    if '0 errors detected!' not in monitor_outcome:
+        if prev_action:
+            monitor_input.write('end_' + str(prev_action))
+        monitor_input.write('begin_' + str(action))
+        prev_action = action
+    os.chdir('./out/pre/')
+    monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+    os.chdir('../../')
+    # POST CONDITIONS MONITOR STUFF
+    # os.chdir('./out/eff/')
+    # monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+    # os.chdir('../../')
+    # print(monitor_outcome_pre)
+    # if '0 errors detected!' not in monitor_outcome_eff:
+    #     print(monitor_outcome_eff)
+    #     return
+    # POST CONDITIONS MONITOR STUFF
+    if '0 errors detected!' not in monitor_outcome_pre:
         with open('./out/trace.csv') as monitor_input:
             lines = monitor_input.readlines()
         with open('./out/trace.csv', 'w') as monitor_input:
