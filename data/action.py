@@ -11,8 +11,7 @@ class Action(object):
             res = res + ',' + ','.join(aux_args)
         return res
     def toJSON(self):
-        return json.dumps(self, default=lambda o: o.__dict__,
-            sort_keys=True, indent=4)
+        return json.dumps(self, default=lambda o: o.__dict__)
     def fromStrToAction(actionStr):
         actionStr = actionStr.replace('(', '').replace(')', '')
         firstComma = actionStr.index(' ', 0)

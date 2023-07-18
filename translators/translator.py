@@ -9,6 +9,7 @@ def parameterisedMonitor(domain_file_name):
     domain.close()
     fo_ltl_list = []
     start = 0
+    dict_pre_eff = {}
     while True:
         act = domain_text.find(':action', start)
         par = domain_text.find(':parameters', start)
@@ -18,11 +19,13 @@ def parameterisedMonitor(domain_file_name):
             break
         next_act = domain_text.find(':action', par)
         action, parameters_list, precondition_list, effect_list = extract_info(domain_text, act, par, pre, eff, next_act)
+        dict_pre_eff['begin_' + action] = (parameters_list, precondition_list)
+        dict_pre_eff['end_' + action] = (parameters_list, effect_list)
         fo_ltl_pre = extract_fo_ltl('begin_' + action, parameters_list, precondition_list)
         fo_ltl_eff = extract_fo_ltl('end_' + action, parameters_list, effect_list)
         fo_ltl_list.append((fo_ltl_pre, fo_ltl_eff))
         start = eff+1
-    return fo_ltl_list
+    return fo_ltl_list, dict_pre_eff
 
 def extract_fo_ltl(action, parameters_list, pre_eff_list):
     fo_ltl = ''
@@ -180,7 +183,7 @@ def extract_info(domain_text, act, par, pre, eff, next_act):
 def main(args):
     start_time = time.time()
     if len(args) == 2:
-        fo_ltl_list = parameterisedMonitor(args[1])
+        fo_ltl_list, dict_pre_eff = parameterisedMonitor(args[1])
         for (fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
             print('FO_pre:', fo_ltl_pre)
             print('FO_eff:', fo_ltl_eff)
@@ -197,6 +200,8 @@ def main(args):
         f_eff.close()
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
+        with open('./out/dict_pre_eff.json', 'w') as file:
+            json.dump(dict_pre_eff, file)
         return prop_time
     elif len(args) == 3:
         ltl_list = instantiatedMonitor(args[1], args[2])

@@ -10,7 +10,7 @@ import argparse
 import importlib
 
 def main(args):
-    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, errors_to_inject
+    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, errors_to_inject, dict_pre_eff, counter
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -36,6 +36,7 @@ def main(args):
     args = parser.parse_args() # maybe in the future we will need more arguments, for now it's just one
 
     replanning_calls = 0
+    counter = 0
     avg_size_replanning_plans = 0
     replanning_time = 0
     if args.inject_errors:
@@ -67,6 +68,12 @@ def main(args):
         os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
         os.chdir('../../')
 
+    # Load the JSON file which contains the information about each action's preconditions and effects
+    with open('./out/dict_pre_eff.json', 'r') as file:
+        dict_pre_eff = json.load(file)
+    with open('./out/log', 'w') as file:
+        file.write('')
+
     # Create snapshot
     # createSnapshot(args.problem_file)
 
@@ -94,12 +101,14 @@ def main(args):
 
 prev_action = None
 def callbackNewProps(props):
-    global prev_action
+    global prev_action, counter
+    counter += 1
     # print(props)
     if props:
         # Update the snapshot
         snapshot.update(props)
-    monitor_outcome = '0 errors detected!'
+    monitor_outcome_pre = '0 errors detected!'
+    monitor_outcome_eff = '0 errors detected!'
     if not actions:
         # os.system('rm *.class')
         print(snapshot)
@@ -107,39 +116,68 @@ def callbackNewProps(props):
         return
     action = Action.fromStrToAction(actions.pop(0))
     print(action)
+    to_remove = -1
     with open('./out/trace.csv', 'a') as monitor_input:
         if props:
             # update the failure handling monitor
             for prop in props:
                 monitor_input.write(str(prop) + '\n')
-        if prev_action:
-            monitor_input.write('end_' + str(prev_action))
         monitor_input.write('begin_' + str(action))
+        if prev_action:
+            to_remove = -2
+            monitor_input.write('end_' + str(prev_action))
         prev_action = action
     os.chdir('./out/pre/')
     monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
     os.chdir('../../')
     # POST CONDITIONS MONITOR STUFF
-    # os.chdir('./out/eff/')
-    # monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
-    # os.chdir('../../')
-    # print(monitor_outcome_pre)
-    # if '0 errors detected!' not in monitor_outcome_eff:
-    #     print(monitor_outcome_eff)
-    #     return
-    # POST CONDITIONS MONITOR STUFF
-    if '0 errors detected!' not in monitor_outcome_pre:
+    os.chdir('./out/eff/')
+    monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+    os.chdir('../../')
+    print(monitor_outcome_pre)
+    if '0 errors detected!' not in monitor_outcome_eff:
+        # TRIGGER to LOG [A precondition is violated]
+        issues = detect_issue('end_', action, snapshot.get_props())
+        log('POST', counter, action, issues)
         with open('./out/trace.csv') as monitor_input:
             lines = monitor_input.readlines()
         with open('./out/trace.csv', 'w') as monitor_input:
             monitor_input.writelines(lines[:-1])
+            to_remove = -1
+    # POST CONDITIONS MONITOR STUFF
+    if '0 errors detected!' not in monitor_outcome_pre:
+        # TRIGGER to LOG [A precondition is violated]
+        issues = detect_issue('begin_', action, snapshot.get_props())
+        log('PRE', counter, action, issues)
+        with open('./out/trace.csv') as monitor_input:
+            lines = monitor_input.readlines()
+        with open('./out/trace.csv', 'w') as monitor_input:
+            monitor_input.writelines(lines[:to_remove])
         # connector.set_time_to_fail(True)
         replan() # replan
     else:
         connector.perform(action, callbackNewProps)
 
+def detect_issue(prefix, action, props):
+    (params, cond) = dict_pre_eff[prefix + action._functor]
+    auxMap = {}
+    for i in range(0, len(params)):
+        auxMap[params[i]] = action._args[i].replace('\n', '')
+    for i in range(0, len(cond)):
+        for m in auxMap:
+            cond[i] = cond[i].replace(m, auxMap[m])
+    cond = set([c.replace('(', ',').replace(')', '').replace(' ', '') for c in cond])
+    props = set([str(p) for p in props])
+    return cond.difference(props)
+
+def log(*things):
+    with open('./out/log', 'a') as file:
+        for t in things:
+            file.write(str(t).replace('\n', '').replace(' ', '') + ' ')
+        file.write('\n')
+
 def replan():
-    global actions, replanning_time, replanning_calls, avg_size_replanning_plans
+    global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action
     replanning_calls += 1
     start = time.time()
     # Creation of the newly updated problem file (starting from the snapshot)
@@ -165,6 +203,7 @@ def replan():
     avg_size_replanning_plans += len(actions)
     replanning_time += time.time() - start
     props = connector.get_errors()
+    prev_action = None
     callbackNewProps(props)
 
 def log_metrics():
