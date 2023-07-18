@@ -126,7 +126,6 @@ def callbackNewProps(props):
         if prev_action:
             to_remove = -2
             monitor_input.write('end_' + str(prev_action))
-        prev_action = action
     os.chdir('./out/pre/')
     monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
     os.chdir('../../')
@@ -136,15 +135,16 @@ def callbackNewProps(props):
     os.chdir('../../')
     print(monitor_outcome_pre)
     if '0 errors detected!' not in monitor_outcome_eff:
-        # TRIGGER to LOG [A precondition is violated]
-        issues = detect_issue('end_', action, snapshot.get_props())
-        log('POST', counter, action, issues)
+        # TRIGGER to LOG [A postcondition is violated]
+        issues = detect_issue('end_', prev_action, snapshot.get_props())
+        log('POST', counter, prev_action, issues)
         with open('./out/trace.csv') as monitor_input:
             lines = monitor_input.readlines()
         with open('./out/trace.csv', 'w') as monitor_input:
             monitor_input.writelines(lines[:-1])
             to_remove = -1
-    # POST CONDITIONS MONITOR STUFF
+    prev_action = action
+    # PRE CONDITIONS MONITOR STUFF
     if '0 errors detected!' not in monitor_outcome_pre:
         # TRIGGER to LOG [A precondition is violated]
         issues = detect_issue('begin_', action, snapshot.get_props())
@@ -166,7 +166,7 @@ def detect_issue(prefix, action, props):
     for i in range(0, len(cond)):
         for m in auxMap:
             cond[i] = cond[i].replace(m, auxMap[m])
-    cond = set([c.replace('(', ',').replace(')', '').replace(' ', '') for c in cond])
+    cond = set([c.replace('(', ',').replace(')', '').replace(' ', '').replace('!','not_') for c in cond])
     props = set([str(p) for p in props])
     return cond.difference(props)
 

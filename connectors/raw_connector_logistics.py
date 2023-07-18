@@ -74,6 +74,8 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             ]
         )
         # self._time_to_fail = True
+        self.__trigger_remove = {}
+        self.__trigger_remove['load_truck'] = lambda : True if self._case >= 2 and self._case <= 8 else False 
 
     def get_initial_propositions(self):
         props = self.get_errors()
@@ -119,8 +121,9 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             vehicle = action[i+1:j]
             loc = action[j+1:-1]
             # (and (not (in ?obj ?truck)) (at ?obj ?loc)))
-            props.add(Proposition(False, 'in', [obj, vehicle]))
-            props.add(Proposition(True, 'at', [obj, loc]))
+            if 'unload_truck' not in self.__trigger_remove or not self.__trigger_remove['unload_truck']():
+                props.add(Proposition(False, 'in', [obj, vehicle]))
+                props.add(Proposition(True, 'at', [obj, loc]))
         elif 'load_truck' in action or 'load_airplane' in action: # loading actions
             if 'load_truck' in action:
                 l = 11
@@ -132,8 +135,9 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             vehicle = action[i+1:j]
             loc = action[j+1:-1]
             # (and (not (at ?obj ?loc)) (in ?obj ?truck)))
-            props.add(Proposition(False, 'at', [obj, loc]))
-            props.add(Proposition(True, 'in', [obj, vehicle]))
+            if 'load_truck' not in self.__trigger_remove or not self.__trigger_remove['load_truck']():
+                props.add(Proposition(False, 'at', [obj, loc])) 
+                props.add(Proposition(True, 'in', [obj, vehicle]))
         elif 'drive_truck' in action:
             l = 12
             i = action.index(',', l)
@@ -144,8 +148,9 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             locto = action[j+1:k]
             city = action[k+1:-1]
             # (and (not (at ?truck ?loc-from)) (at ?truck ?loc-to)))
-            props.add(Proposition(False, 'at', [vehicle, locfrom]))
-            props.add(Proposition(True, 'at', [vehicle, locto]))
+            if 'drive_truck' not in self.__trigger_remove or not self.__trigger_remove['drive_truck']():
+                props.add(Proposition(False, 'at', [vehicle, locfrom]))
+                props.add(Proposition(True, 'at', [vehicle, locto]))
         elif 'fly_airplane' in action:
             l = 13
             i = action.index(',', l)
@@ -154,8 +159,9 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             locfrom = action[i+1:j]
             locto = action[j+1:-1]
             # (and (not (at ?airplane ?loc-from)) (at ?airplane ?loc-to)))
-            props.add(Proposition(False, 'at', [vehicle, locfrom]))
-            props.add(Proposition(True, 'at', [vehicle, locto]))
+            if 'fly_airplane' not in self.__trigger_remove or not self.__trigger_remove['fly_airplane']():
+                props.add(Proposition(False, 'at', [vehicle, locfrom]))
+                props.add(Proposition(True, 'at', [vehicle, locto]))
         self._case = self._case + 1
         callback(props)
     def set_errors_to_inject(self, v):
