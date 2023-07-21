@@ -103,6 +103,13 @@ prev_action = None
 def callbackNewProps(props):
     global prev_action, counter
     counter += 1
+
+    # check props against effects of previous action to check whether additional propositions are in props, but not in the effects
+    if prev_action:
+        _, issues = detect_issue('end_', prev_action, props)
+        if issues:
+            log('DIFF', counter, connector._case-1, prev_action, issues)
+
     # print(props)
     if props:
         # Update the snapshot
@@ -136,8 +143,8 @@ def callbackNewProps(props):
     print(monitor_outcome_pre)
     if '0 errors detected!' not in monitor_outcome_eff:
         # TRIGGER to LOG [A postcondition is violated]
-        issues = detect_issue('end_', prev_action, snapshot.get_props())
-        log('POST', counter, prev_action, issues)
+        issues, _ = detect_issue('end_', prev_action, snapshot.get_props())
+        log('POST', counter, connector._case-1, prev_action, issues)
         with open('./out/trace.csv') as monitor_input:
             lines = monitor_input.readlines()
         with open('./out/trace.csv', 'w') as monitor_input:
@@ -147,8 +154,8 @@ def callbackNewProps(props):
     # PRE CONDITIONS MONITOR STUFF
     if '0 errors detected!' not in monitor_outcome_pre:
         # TRIGGER to LOG [A precondition is violated]
-        issues = detect_issue('begin_', action, snapshot.get_props())
-        log('PRE', counter, action, issues)
+        issues, _ = detect_issue('begin_', action, snapshot.get_props())
+        log('PRE', counter, connector._case, action, issues)
         with open('./out/trace.csv') as monitor_input:
             lines = monitor_input.readlines()
         with open('./out/trace.csv', 'w') as monitor_input:
@@ -163,12 +170,13 @@ def detect_issue(prefix, action, props):
     auxMap = {}
     for i in range(0, len(params)):
         auxMap[params[i]] = action._args[i].replace('\n', '')
+    cond = cond.copy()
     for i in range(0, len(cond)):
         for m in auxMap:
             cond[i] = cond[i].replace(m, auxMap[m])
     cond = set([c.replace('(', ',').replace(')', '').replace(' ', '').replace('!','not_') for c in cond])
     props = set([str(p) for p in props])
-    return cond.difference(props)
+    return cond.difference(props), props.difference(cond)
 
 def log(*things):
     with open('./out/log', 'a') as file:
@@ -179,6 +187,7 @@ def log(*things):
 def replan():
     global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action
     replanning_calls += 1
+    os.rename('./sas_plan', './sas_plan_' + str(replanning_calls))
     start = time.time()
     # Creation of the newly updated problem file (starting from the snapshot)
     with open('./out/updated_problem.pddl', 'w') as updated_problem_file:
