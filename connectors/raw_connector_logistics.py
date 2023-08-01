@@ -174,7 +174,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             if 'fly_airplane' in self.__trigger_add and self.__trigger_add['fly_airplane']():
                 props.add(Proposition(True, 'fake', [vehicle]))
         self._case = self._case + 1
-        callback(props)
+        callback(abstract_connector.ResultCode.SUCCESS, props)
     def set_errors_to_inject(self, v):
         self._n_errors = v
     # def set_time_to_fail(self, v):

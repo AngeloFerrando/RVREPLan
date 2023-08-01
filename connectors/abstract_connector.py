@@ -1,4 +1,9 @@
 from abc import ABC, abstractmethod
+from enum import Enum
+
+class ResultCode(Enum):
+    SUCCESS = 1
+    FAILURE = 0
 
 class AbstractConnector(ABC):
     @abstractmethod

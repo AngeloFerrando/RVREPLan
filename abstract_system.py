@@ -1,4 +1,5 @@
 from connectors import *
+from connectors.abstract_connector import ResultCode
 from mappers import *
 from data.action import *
 from data.snapshot import *
@@ -56,17 +57,6 @@ def main(args):
     # Generation of the plan (given the Domain and Problem PDDL files)
     os.system(PLANNER_PATH + ' ' + args.domain_file + ' ' + args.problem_file)
     initial_planning_time = time.time() - start
-    
-    # Translation from PDDL to Failure handling monitor (RVPlan paper)
-    if not args.no_monitor_synthesis:
-        os.system('python3 translators/translator.py ' + args.domain_file)
-        os.chdir('./out/pre/')
-        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
-        os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
-        os.chdir('../eff/')
-        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
-        os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
-        os.chdir('../../')
 
     # Load the JSON file which contains the information about each action's preconditions and effects
     with open('./out/dict_pre_eff.json', 'r') as file:
@@ -74,6 +64,10 @@ def main(args):
     with open('./out/log', 'w') as file:
         file.write('')
 
+    # Translation from PDDL to Failure handling monitor (RVPlan paper)
+    if not args.no_monitor_synthesis:
+        synthesise_decentralised_monitors(args)
+    
     # Create snapshot
     # createSnapshot(args.problem_file)
 
@@ -97,18 +91,22 @@ def main(args):
     # however, in general, the initial propositions should come from the system
     snapshot.update(connector.get_initial_propositions())
     initial_propositions = set(snapshot.get_props())
-    callbackNewProps(initial_propositions)
+    callbackNewProps(None, initial_propositions)
 
 prev_action = None
-def callbackNewProps(props):
+def callbackNewProps(RESULTCODE, props):
     global prev_action, counter
     counter += 1
+
+    # check whether the previous action failed
+    if RESULTCODE == ResultCode.FAILURE:
+        log('FAILURE', counter, connector._case-1, prev_action, set())
 
     # check props against effects of previous action to check whether additional propositions are in props, but not in the effects
     if prev_action:
         _, issues = detect_issue('end_', prev_action, props)
         if issues:
-            log('DIFF', counter, connector._case-1, prev_action, issues)
+            log('DIFF_POST', counter, connector._case-1, prev_action, issues)
 
     # print(props)
     if props:
@@ -123,6 +121,9 @@ def callbackNewProps(props):
         return
     action = Action.fromStrToAction(actions.pop(0))
     print(action)
+    _, issues = detect_issue('begin_', action, props)
+    if issues:
+        log('DIFF_PRE', counter, connector._case, action, issues)
     to_remove = -1
     with open('./out/trace.csv', 'a') as monitor_input:
         if props:
@@ -133,15 +134,16 @@ def callbackNewProps(props):
         if prev_action:
             to_remove = -2
             monitor_input.write('end_' + str(prev_action))
-    os.chdir('./out/pre/')
-    monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
-    os.chdir('../../')
+    os.chdir('./out/pre/' + str(action).split(',')[0])
+    monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+    os.chdir('../../../')
     # POST CONDITIONS MONITOR STUFF
-    os.chdir('./out/eff/')
-    monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
-    os.chdir('../../')
-    print(monitor_outcome_pre)
+    if prev_action:
+        os.chdir('./out/eff/' + str(prev_action).split(',')[0])
+        monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+        os.chdir('../../../')
     if '0 errors detected!' not in monitor_outcome_eff:
+        print(monitor_outcome_eff)
         # TRIGGER to LOG [A postcondition is violated]
         issues, _ = detect_issue('end_', prev_action, snapshot.get_props())
         log('POST', counter, connector._case-1, prev_action, issues)
@@ -153,6 +155,7 @@ def callbackNewProps(props):
     prev_action = action
     # PRE CONDITIONS MONITOR STUFF
     if '0 errors detected!' not in monitor_outcome_pre:
+        print(monitor_outcome_pre)
         # TRIGGER to LOG [A precondition is violated]
         issues, _ = detect_issue('begin_', action, snapshot.get_props())
         log('PRE', counter, connector._case, action, issues)
@@ -164,6 +167,37 @@ def callbackNewProps(props):
         replan() # replan
     else:
         connector.perform(action, callbackNewProps)
+
+# def synthesise_centralised_monitors(args):
+#     os.system('python3 translators/translator.py ' + args.domain_file)
+#     os.chdir('./out/pre/')
+#     os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+#     os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+#     os.chdir('../eff/')
+#     os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+#     os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+#     os.chdir('../../')
+
+def synthesise_decentralised_monitors(args):
+    os.system('python3 translators/translator.py ' + args.domain_file)
+    os.chdir('./out/pre/')
+    for action in dict_pre_eff:
+        if 'begin_' not in action: continue
+        action = action[6:]
+        os.chdir('./' + action)
+        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+        os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+        os.chdir('../')
+    os.chdir('../eff/')
+    for action in dict_pre_eff:
+        if 'end_' not in action: continue
+        action = action[4:]
+        os.chdir('./' + action)
+        os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+        os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+        os.chdir('../')
+    os.chdir('../../')
+
 
 def detect_issue(prefix, action, props):
     (params, cond) = dict_pre_eff[prefix + action._functor]
@@ -213,7 +247,7 @@ def replan():
     replanning_time += time.time() - start
     props = connector.get_errors()
     prev_action = None
-    callbackNewProps(props)
+    callbackNewProps(None, props)
 
 def log_metrics():
     # (initial solution planning time,  replanning time, total plan size of executed actions, replanning calls, average size of replanning plans)

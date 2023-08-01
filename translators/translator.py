@@ -23,9 +23,30 @@ def parameterisedMonitor(domain_file_name):
         dict_pre_eff['end_' + action] = (parameters_list, effect_list)
         fo_ltl_pre = extract_fo_ltl('begin_' + action, parameters_list, precondition_list)
         fo_ltl_eff = extract_fo_ltl('end_' + action, parameters_list, effect_list)
-        fo_ltl_list.append((fo_ltl_pre, fo_ltl_eff))
+        fo_ltl_list.append((action, fo_ltl_pre, fo_ltl_eff))
         start = eff+1
     return fo_ltl_list, dict_pre_eff
+
+def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_file_name):
+    with open(domain_file_name, 'r') as domain:
+        domain_text = domain.read()
+    act_index = domain_text.find('(:action', 0)
+    with open(dict_pre_eff_file_name, 'r') as file:
+        dict_pre_eff = json.load(file)
+    dict_domain = {}
+    for act in dict_pre_eff:
+        action = act[6:] if 'begin_' in act else act[4:]
+        if action not in dict_domain:
+            dict_domain[action] = ['\t:parameters\n\t(' + '\t\t\n'.join(dict_pre_eff[act][0]) + '\t)', ':precondition\n(and ', ':effect\n(and ']
+        if 'begin_' in act:
+            dict_domain[action][1] += ' '.join(dict_pre_eff[act][1]) + ')'
+        else:
+            dict_domain[action][2] += ' '.join(dict_pre_eff[act][1]) + ')'
+    with open(new_domain_file_name, 'w') as file:
+        file.write(domain_text[:act_index])
+        for act in dict_domain:
+            file.write('\n(:action ' + act + '\n' + dict_domain[act][0] + '\n' + dict_domain[act][1] + '\n' + dict_domain[act][2] + '\n)')
+        file.write(')')
 
 def extract_fo_ltl(action, parameters_list, pre_eff_list):
     fo_ltl = ''
@@ -184,20 +205,25 @@ def main(args):
     start_time = time.time()
     if len(args) == 2:
         fo_ltl_list, dict_pre_eff = parameterisedMonitor(args[1])
-        for (fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
+        for (action, fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
+            print('ACTION:', action)
             print('FO_pre:', fo_ltl_pre)
             print('FO_eff:', fo_ltl_eff)
-        f_pre = open('./out/pre/prop.qtl', 'w')
-        f_eff = open('./out/eff/prop.qtl', 'w')
+        # f_pre = open('./out/pre/prop.qtl', 'w')
+        # f_eff = open('./out/eff/prop.qtl', 'w')
         i = 0
-        for (fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
-            f_pre.write('prop fo_ltl_pre_' + str(i) + ' :\n')
-            f_pre.write('\t' + fo_ltl_pre + '\n\n')
-            f_eff.write('prop fo_ltl_eff_' + str(i) + ' :\n')
-            f_eff.write('\t' + fo_ltl_eff + '\n\n')
+        for (action, fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
+            os.system('mkdir ./out/pre/' + action)
+            with open('./out/pre/' + action + '/prop.qtl', 'w') as file:
+                file.write('prop fo_ltl_pre_' + str(i) + ' :\n')
+                file.write('\t' + fo_ltl_pre + '\n\n')
+            os.system('mkdir ./out/eff/' + action)
+            with open('./out/eff/' + action + '/prop.qtl', 'w') as file:
+                file.write('prop fo_ltl_eff_' + str(i) + ' :\n')
+                file.write('\t' + fo_ltl_eff + '\n\n')
             i = i + 1
-        f_pre.close()
-        f_eff.close()
+        # f_pre.close()
+        # f_eff.close()
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
         with open('./out/dict_pre_eff.json', 'w') as file:
@@ -217,7 +243,8 @@ def main(args):
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
         return prop_time
-        # os.system('scalac -cp .:./dejavu_akka.jar TraceMonitor.scala 2>&1')
+    elif len(args) == 4:
+        from_monitor_to_domain(args[1], args[2], args[3])
     else:
         print('usage: <domain_file_name> <plan_file_name> (<plan_file_name> is required only for the instantiated version)')
 if __name__ == '__main__':
