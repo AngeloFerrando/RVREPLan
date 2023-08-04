@@ -75,10 +75,10 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
         )
         # self._time_to_fail = True
         self.__trigger_remove = {}
-        self.__trigger_remove['load_truck'] = lambda : True if self._case >= 2 and self._case <= 8 else False 
+        # self.__trigger_remove['load_truck'] = lambda : True if self._case >= 2 and self._case <= 8 else False 
 
         self.__trigger_add = {}
-        self.__trigger_add['unload_truck'] = lambda : True 
+        # self.__trigger_add['unload_truck'] = lambda : True 
 
     def get_initial_propositions(self):
         props = self.get_errors()
@@ -142,7 +142,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             # (and (not (at ?obj ?loc)) (in ?obj ?truck)))
             if 'load_truck' not in self.__trigger_remove or not self.__trigger_remove['load_truck']():
                 props.add(Proposition(False, 'at', [obj, loc])) 
-                props.add(Proposition(True, 'in', [obj, vehicle]))
+                props.add(Proposition(False, 'in', [obj, vehicle]))
             if 'load_truck' in self.__trigger_add and self.__trigger_add['load_truck']():
                 props.add(Proposition(True, 'fake', [obj, vehicle]))
         elif 'drive_truck' in action:

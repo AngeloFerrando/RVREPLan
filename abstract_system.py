@@ -9,9 +9,10 @@ import time
 import os
 import argparse
 import importlib
+import copy
 
 def main(args):
-    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, errors_to_inject, dict_pre_eff, counter
+    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, errors_to_inject, dict_pre_eff, counter, past_actions
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -66,7 +67,7 @@ def main(args):
 
     # Translation from PDDL to Failure handling monitor (RVPlan paper)
     if not args.no_monitor_synthesis:
-        synthesise_decentralised_monitors(args)
+        synthesise_decentralised_monitors(args.domain_file, dict_pre_eff)
     
     # Create snapshot
     # createSnapshot(args.problem_file)
@@ -91,6 +92,7 @@ def main(args):
     # however, in general, the initial propositions should come from the system
     snapshot.update(connector.get_initial_propositions())
     initial_propositions = set(snapshot.get_props())
+    past_actions = []
     callbackNewProps(None, initial_propositions)
 
 prev_action = None
@@ -104,6 +106,7 @@ def callbackNewProps(RESULTCODE, props):
 
     # check props against effects of previous action to check whether additional propositions are in props, but not in the effects
     if prev_action:
+        past_actions.append(prev_action)
         _, issues = detect_issue('end_', prev_action, props)
         if issues:
             log('DIFF_POST', counter, connector._case-1, prev_action, issues)
@@ -159,12 +162,113 @@ def callbackNewProps(RESULTCODE, props):
         # TRIGGER to LOG [A precondition is violated]
         issues, _ = detect_issue('begin_', action, snapshot.get_props())
         log('PRE', counter, connector._case, action, issues)
-        with open('./out/trace.csv') as monitor_input:
-            lines = monitor_input.readlines()
-        with open('./out/trace.csv', 'w') as monitor_input:
-            monitor_input.writelines(lines[:to_remove])
+
+        # TBC
+        # for issue in issues:
+        #     if 'not_' in issue:
+        #         issue = issue[4:]
+        #     else:
+        #         issue = 'not_' + issue
+        #     for act in past_actions:
+        #         effects = get_instantiated_pre_eff_action('end_', act)
+        #         if issue in effects:
+        #             # a post condition of a past action caused the issue
+        #             replan() # but where we enforce to create a new plan
+        # at this point the issue must be in a postcondition of a past action
+        with open('./out/log', 'r') as file: 
+            log_lines = file.readlines()
+        actions_to_modify = {}
+
+        (params, cond) = dict_pre_eff['begin_' + action._functor]
+        actions_to_modify['begin_'+str(action).replace('\n', '')] = set()
+        for c in cond:
+            add = True
+            for issue in issues:
+                if c[:c.index('(')] == issue[:issue.index(',')]:
+                    add = False
+            if add:
+                actions_to_modify['begin_'+str(action).replace('\n', '')].add(c.replace('(', ',').replace(')', ''))
+
+        log_lines = [line for line in log_lines if 'DIFF_POST' in line]
+        for i in range(len(log_lines)-1, -1, -1):
+            log_line = log_lines[i]
+            print(log_line)
+            act = 'end_' + log_line.split(' ')[3]
+            print(act)
+            log_line = log_line.split(' ')[4].replace('{', '').replace('}', '').replace('\',\'', ';').replace('\'', '').split(';')
+            print(log_line)
+            issues_to_remove = set()
+            for issue in issues:
+                aux = issue
+                if 'not_' in issue:
+                    issue = issue[4:]
+                else:
+                    issue = 'not_' + issue
+                if issue in log_line:
+                    if act not in actions_to_modify:
+                        actions_to_modify[act] = set()
+                    actions_to_modify[act].add(issue)
+                    issues_to_remove.add(aux)
+            issues.difference_update(issues_to_remove)
+            if not issues:
+                break
+        if issues:
+            with open('./out/trace.csv') as monitor_input:
+                lines = monitor_input.readlines()
+            with open('./out/trace.csv', 'w') as monitor_input:
+                monitor_input.writelines(lines[:to_remove])
+            replan() # but where we enforce to create a new plan
+        else:
+            aux_dict_pre_eff = {}
+            for act in actions_to_modify:
+                prefix = 'begin_' if act.startswith('begin_') else 'end_'
+                act1 = act.replace(prefix, '')
+                issues = actions_to_modify[act]
+                issues = list(issues)
+                (params, cond) = dict_pre_eff[prefix + act1.split(',')[0]]
+                if prefix == 'end_':
+                    _, paramsMap = get_instantiated_pre_eff_action(prefix, Action(act1.split(',')[0], act1.split(',')[1:]))
+                    for param in paramsMap:
+                        for i in range(0, len(issues)): 
+                            if paramsMap[param] in issues[i]:
+                                issues[i] = issues[i].replace(paramsMap[param], param)
+                    problem = False
+                    for i in issues:
+                        aux = i.split(',')
+                        for j in range(1, len(aux)):
+                            if '?' not in aux[j]:
+                                problem = True
+                    if not problem:
+                        for i in range(0, len(issues)):
+                            aux = issues[i].split(',')
+                            issues[i] = aux[0] + '(' + ','.join(aux[1:]) + ')'
+                        aux_dict_pre_eff[prefix + act1.split(',')[0]] = (params, list(set(cond).union(issues)))
+                        # aux_dict_pre_eff['begin_' + act.split(',')[0]] = dict_pre_eff['begin_' + act.split(',')[0]]
+                else:
+                    aux_dict_pre_eff[prefix + act1.split(',')[0]] = (params, list(issues))
+            with open('./out/dict_pre_eff_new.json', 'w') as file:
+                json.dump(aux_dict_pre_eff, file)
+            os.system('python3 translators/translator.py ' + DOMAIN_FILE + ' ' + DOMAIN_FILE.replace('.pddl', '_new.pddl') + ' ' + './out/dict_pre_eff_new.json')
+            for act in actions_to_modify:
+                prefix = 'begin_' if act.startswith('begin_') else 'end_'
+                act = act.replace(prefix, '')
+                if prefix == 'begin_':
+                    os.rename('./out/pre/' + act.split(',')[0] + '/prop.qtl', './out/pre/' + act.split(',')[0] + '/prop_old.qtl')
+                else:
+                    os.rename('./out/eff/' + act.split(',')[0] + '/prop.qtl', './out/eff/' + act.split(',')[0] + '/prop_old.qtl')
+            synthesise_decentralised_monitors(DOMAIN_FILE.replace('.pddl', '_new.pddl'), aux_dict_pre_eff)
+            # at this point, we should have a new version of the monitors related to the updated actions
+            # run simulation with monitors 
+            # if errors is reported by monitors so modified, then delete prop.qtl and rename prop_old.qtl to prop.qtl, then replan
+            # otherwise, if error is reported by other monitors, then remove prop_old.qtl, then replan
+            # otherwise, remove prop_old.qtl and keep running            
+
+            
+        # TBC
+
+        
         # connector.set_time_to_fail(True)
-        replan() # replan
+        #replan() # replan
     else:
         connector.perform(action, callbackNewProps)
 
@@ -178,8 +282,9 @@ def callbackNewProps(RESULTCODE, props):
 #     os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
 #     os.chdir('../../')
 
-def synthesise_decentralised_monitors(args):
-    os.system('python3 translators/translator.py ' + args.domain_file)
+def synthesise_decentralised_monitors(domain_file, dict_pre_eff):
+    print('python3 translators/translator.py ' + domain_file)
+    os.system('python3 translators/translator.py ' + domain_file)
     os.chdir('./out/pre/')
     for action in dict_pre_eff:
         if 'begin_' not in action: continue
@@ -198,8 +303,7 @@ def synthesise_decentralised_monitors(args):
         os.chdir('../')
     os.chdir('../../')
 
-
-def detect_issue(prefix, action, props):
+def get_instantiated_pre_eff_action(prefix, action):
     (params, cond) = dict_pre_eff[prefix + action._functor]
     auxMap = {}
     for i in range(0, len(params)):
@@ -209,6 +313,10 @@ def detect_issue(prefix, action, props):
         for m in auxMap:
             cond[i] = cond[i].replace(m, auxMap[m])
     cond = set([c.replace('(', ',').replace(')', '').replace(' ', '').replace('!','not_') for c in cond])
+    return cond, auxMap
+
+def detect_issue(prefix, action, props):
+    cond, _ = get_instantiated_pre_eff_action(prefix, action)
     props = set([str(p) for p in props])
     return cond.difference(props), props.difference(cond)
 
@@ -219,7 +327,7 @@ def log(*things):
         file.write('\n')
 
 def replan():
-    global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action
+    global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action, past_actions
     replanning_calls += 1
     os.rename('./sas_plan', './sas_plan_' + str(replanning_calls))
     start = time.time()
@@ -247,6 +355,7 @@ def replan():
     replanning_time += time.time() - start
     props = connector.get_errors()
     prev_action = None
+    past_actions = []
     callbackNewProps(None, props)
 
 def log_metrics():

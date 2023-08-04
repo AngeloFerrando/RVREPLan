@@ -39,9 +39,35 @@ def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_
         if action not in dict_domain:
             dict_domain[action] = ['\t:parameters\n\t(' + '\t\t\n'.join(dict_pre_eff[act][0]) + '\t)', ':precondition\n(and ', ':effect\n(and ']
         if 'begin_' in act:
-            dict_domain[action][1] += ' '.join(dict_pre_eff[act][1]) + ')'
+            for aux in dict_pre_eff[act][1]:
+                aux = aux.replace(',', ' ').replace('(', ' ').replace(')', '')
+                while '  ' in aux:
+                    aux = aux.replace('  ', ' ')
+                if aux.startswith('not_'):
+                    aux = '(not (' + aux[4:] + ')'
+                if aux.startswith('!'):
+                    if aux[1:].startswith('not_'):
+                        aux = aux[5:]
+                    else:
+                        aux = '(not (' + aux[1:] + ')'
+                dict_domain[action][1] += '(' + aux + ') '
+            dict_domain[action][1] += ')'
+            # dict_domain[action][1] += '(' + ' '.join(dict_pre_eff[act][1]).replace(',', ' ').replace('not_', '!') + ')'
         else:
-            dict_domain[action][2] += ' '.join(dict_pre_eff[act][1]) + ')'
+            for aux in dict_pre_eff[act][1]:
+                aux = aux.replace(',', ' ').replace('(', ' ').replace(')', '')
+                while '  ' in aux:
+                    aux = aux.replace('  ', ' ')
+                if aux.startswith('not_'):
+                    aux = '(not (' + aux[4:] + ')'
+                if aux.startswith('!'):
+                    if aux[1:].startswith('not_'):
+                        aux = aux[5:]
+                    else:
+                        aux = '(not (' + aux[1:] + ')'
+                dict_domain[action][2] += '(' + aux + ') '
+            dict_domain[action][2] += ')'
+            #dict_domain[action][2] += ' '.join(dict_pre_eff[act][1]).replace(',', ' ').replace('not_', '!') + ')'
     with open(new_domain_file_name, 'w') as file:
         file.write(domain_text[:act_index])
         for act in dict_domain:
