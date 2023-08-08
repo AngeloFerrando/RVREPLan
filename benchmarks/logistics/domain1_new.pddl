@@ -15,13 +15,4 @@
 
  
 
-(:action load_truck
-	:parameters
-	(?obj		
-?truck		
-?loc	)
-:precondition
-(and (package ?obj) (truck ?truck) (location ?loc) (at ?truck ?loc) (at ?obj ?loc) )
-:effect
-(and )
-))
+)

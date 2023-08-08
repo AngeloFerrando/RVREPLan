@@ -44,12 +44,12 @@ def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_
                 while '  ' in aux:
                     aux = aux.replace('  ', ' ')
                 if aux.startswith('not_'):
-                    aux = '(not (' + aux[4:] + ')'
+                    aux = 'not (' + aux[4:] + ')'
                 if aux.startswith('!'):
                     if aux[1:].startswith('not_'):
                         aux = aux[5:]
                     else:
-                        aux = '(not (' + aux[1:] + ')'
+                        aux = 'not (' + aux[1:] + ')'
                 dict_domain[action][1] += '(' + aux + ') '
             dict_domain[action][1] += ')'
             # dict_domain[action][1] += '(' + ' '.join(dict_pre_eff[act][1]).replace(',', ' ').replace('not_', '!') + ')'
@@ -59,12 +59,12 @@ def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_
                 while '  ' in aux:
                     aux = aux.replace('  ', ' ')
                 if aux.startswith('not_'):
-                    aux = '(not (' + aux[4:] + ')'
+                    aux = 'not (' + aux[4:] + ')'
                 if aux.startswith('!'):
                     if aux[1:].startswith('not_'):
                         aux = aux[5:]
                     else:
-                        aux = '(not (' + aux[1:] + ')'
+                        aux = 'not (' + aux[1:] + ')'
                 dict_domain[action][2] += '(' + aux + ') '
             dict_domain[action][2] += ')'
             #dict_domain[action][2] += ' '.join(dict_pre_eff[act][1]).replace(',', ' ').replace('not_', '!') + ')'
@@ -99,6 +99,8 @@ def extract_fo_ltl(action, parameters_list, pre_eff_list):
             fo_ltl = fo_ltl + '((!' + pre_eff_list[p_i].replace('?', '')[1:] + ' S ' + 'not_' + pre_eff_list[p_i].replace('?', '')[1:] + ') | (H (!' + pre_eff_list[p_i].replace('?', '')[1:] + ')))'
         else:
             fo_ltl = fo_ltl + '(!' + 'not_' + pre_eff_list[p_i].replace('?', '') + ' S ' + pre_eff_list[p_i].replace('?', '') + ')'
+    if fo_ltl.endswith('-> '):
+        fo_ltl = fo_ltl + 'true'
     return fo_ltl
 
 def instantiatedMonitor(domain_file_name, plan_file_name):
