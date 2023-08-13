@@ -33,8 +33,15 @@
 (:action take_image
  :parameters ( ?s ?d ?i ?m)
  :precondition
-	(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m)  (calibrated ?i) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d) (power_on ?i))
+	(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m)  (calibrated ?i) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
  :effect
 	 (have_image ?d ?m))
+
+(:action calibrate_and_take_image
+ :parameters ( ?s ?d ?i ?m)
+ :precondition
+	(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
+ :effect
+	 (and (calibrated ?i) (have_image ?d ?m)))
 
 )

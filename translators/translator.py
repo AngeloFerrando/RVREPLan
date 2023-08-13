@@ -240,15 +240,32 @@ def main(args):
         # f_pre = open('./out/pre/prop.qtl', 'w')
         # f_eff = open('./out/eff/prop.qtl', 'w')
         i = 0
+        synthesised_properties = []
         for (action, fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
             os.system('mkdir ./out/pre/' + action)
-            with open('./out/pre/' + action + '/prop.qtl', 'w') as file:
-                file.write('prop fo_ltl_pre_' + str(i) + ' :\n')
-                file.write('\t' + fo_ltl_pre + '\n\n')
+            generate = True
+            if os.path.exists('./out/pre/' + action + '/prop.qtl'):
+                with open('./out/pre/' + action + '/prop.qtl', 'r') as file:
+                    previous_content = file.read()
+                if fo_ltl_pre in previous_content:
+                    generate = False
+            if generate:
+                synthesised_properties.append('begin_' + action)
+                with open('./out/pre/' + action + '/prop.qtl', 'w') as file:
+                    file.write('prop fo_ltl_pre_' + str(i) + ' :\n')
+                    file.write('\t' + fo_ltl_pre + '\n\n')
+            generate = True
             os.system('mkdir ./out/eff/' + action)
-            with open('./out/eff/' + action + '/prop.qtl', 'w') as file:
-                file.write('prop fo_ltl_eff_' + str(i) + ' :\n')
-                file.write('\t' + fo_ltl_eff + '\n\n')
+            if os.path.exists('./out/eff/' + action + '/prop.qtl'):
+                with open('./out/eff/' + action + '/prop.qtl', 'r') as file:
+                    previous_content = file.read()
+                if fo_ltl_eff in previous_content:
+                    generate = False
+            if generate:
+                synthesised_properties.append('end_' + action)
+                with open('./out/eff/' + action + '/prop.qtl', 'w') as file:
+                    file.write('prop fo_ltl_eff_' + str(i) + ' :\n')
+                    file.write('\t' + fo_ltl_eff + '\n\n')
             i = i + 1
         # f_pre.close()
         # f_eff.close()
@@ -256,6 +273,9 @@ def main(args):
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
         with open('./out/dict_pre_eff.json', 'w') as file:
             json.dump(dict_pre_eff, file)
+        print(synthesised_properties)
+        with open('./out/synthesised_properties', 'w') as file:
+            file.write(str(synthesised_properties))
         return prop_time
     elif len(args) == 3:
         ltl_list = instantiatedMonitor(args[1], args[2])

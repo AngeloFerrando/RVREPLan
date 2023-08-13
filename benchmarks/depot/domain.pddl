@@ -30,6 +30,13 @@
  :effect
 	(and (in ?y ?z) (available ?x) (not (lifting ?x ?y))))
 
+(:action lift_and_load
+ :parameters ( ?x ?y ?z ?p ?q)
+ :precondition
+	(and (hoist ?x) (crate ?y) (surface ?z) (place ?p) (truck ?q) (at ?q ?p) (at ?x ?p) (available ?x) (at ?y ?p) (on ?y ?z) (clear ?y))
+ :effect
+	(and (in ?y ?q) (available ?x) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (on ?y ?z))))
+
 (:action unload
  :parameters ( ?x ?y ?z ?p)
  :precondition

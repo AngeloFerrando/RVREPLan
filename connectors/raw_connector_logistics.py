@@ -74,8 +74,9 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             ]
         )
         # self._time_to_fail = True
+        
         self.__trigger_remove = {}
-        # self.__trigger_remove['load_truck'] = lambda : True if self._case >= 2 and self._case <= 8 else False 
+        self.__trigger_remove['load_truck'] = lambda : True
 
         self.__trigger_add = {}
         # self.__trigger_add['unload_truck'] = lambda : True 
@@ -113,7 +114,37 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
         #     props.add(Proposition(False, 'at', ['tru1', 'pos1']))
         #     props.add(Proposition(True, 'at', ['tru1', 'pos2']))
         action = str(action)
-        if 'unload_truck' in action or 'unload_airplane' in action: # unloading actions
+        if 'call_human' in action: # unloading actions
+            l = 11
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            human = action[l:i]
+            vehicle = action[i+1:j]
+            loc = action[j+1:-1]
+            # (and (not (in ?obj ?truck)) (at ?obj ?loc)))
+            if 'call_human' not in self.__trigger_remove or not self.__trigger_remove['call_human']():
+                props.add(Proposition(False, 'at', [human, loc]))
+                props.add(Proposition(True, 'at', [human, vehicle]))
+            if 'call_human' in self.__trigger_add and self.__trigger_add['call_human']():
+                props.add(Proposition(True, 'fake', [obj, vehicle]))
+        elif 'unload_truck_human' in action: # unloading actions
+            l = 19
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            k = action.index(',', j+1)
+            human = action[l:i]
+            obj = action[i+1:j]
+            vehicle = action[j+1:k]
+            loc = action[k+1:-1]
+            # (and (not (in ?obj ?truck)) (at ?obj ?loc)))
+            if 'unload_truck_human' not in self.__trigger_remove or not self.__trigger_remove['unload_truck_human']():
+                props.add(Proposition(False, 'in', [obj, vehicle]))
+                props.add(Proposition(True, 'at', [obj, loc]))
+                props.add(Proposition(False, 'at', [human, vehicle]))
+                props.add(Proposition(True, 'at', [human, loc]))
+            if 'unload_truck_human' in self.__trigger_add and self.__trigger_add['unload_truck_human']():
+                props.add(Proposition(True, 'fake', [obj, vehicle]))
+        elif 'unload_truck' in action or 'unload_airplane' in action: # unloading actions
             if 'unload_truck' in action:
                 l = 13
             elif 'unload_airplane' in action:
@@ -129,6 +160,26 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
                 props.add(Proposition(True, 'at', [obj, loc]))
             if 'unload_truck' in self.__trigger_add and self.__trigger_add['unload_truck']():
                 props.add(Proposition(True, 'fake', [obj, vehicle]))
+        elif 'load_truck_human' in action: # loading actions
+            l = 17
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            k = action.index(',', j+1)
+            human = action[l:i]
+            obj = action[i+1:j]
+            vehicle = action[j+1:k]
+            loc = action[k+1:-1]
+            # (and (not (at ?obj ?loc)) (in ?obj ?truck)))
+            if 'load_truck_human' not in self.__trigger_remove or not self.__trigger_remove['load_truck_human']():
+                props.add(Proposition(False, 'at', [obj, loc])) 
+                props.add(Proposition(True, 'in', [obj, vehicle]))
+                props.add(Proposition(False, 'at', [human, vehicle]))
+                props.add(Proposition(True, 'at', [human, loc]))  
+            if 'load_truck_human' in self.__trigger_add and self.__trigger_add['load_truck_human']():
+                props.add(Proposition(True, 'fake', [obj, vehicle]))
+            # if self._case >= 2 and self._case <= 5:
+            #     self._case = self._case + 1
+            #     callback(abstract_connector.ResultCode.FAILURE, props)
         elif 'load_truck' in action or 'load_airplane' in action: # loading actions
             if 'load_truck' in action:
                 l = 11
@@ -140,7 +191,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
             vehicle = action[i+1:j]
             loc = action[j+1:-1]
             # (and (not (at ?obj ?loc)) (in ?obj ?truck)))
-            if 'load_truck' not in self.__trigger_remove or not self.__trigger_remove['load_truck']():
+            if 'load_truck' not in action or ('load_truck' not in self.__trigger_remove or not self.__trigger_remove['load_truck']()):
                 props.add(Proposition(False, 'at', [obj, loc])) 
                 props.add(Proposition(True, 'in', [obj, vehicle]))
             if 'load_truck' in self.__trigger_add and self.__trigger_add['load_truck']():

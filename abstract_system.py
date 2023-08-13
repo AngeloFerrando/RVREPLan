@@ -111,12 +111,12 @@ def callbackNewProps(RESULTCODE, props):
         log_lines = [line for line in log_lines if 'DIFF_PRE' in line]
         for i in range(len(log_lines)-1, -1, -1):
             log_line = log_lines[i]
-            print(log_line)
+            # print(log_line)
             act = 'begin_' + log_line.split(' ')[3]
-            print(act)
+            # print(act)
             if log_line.split(' ')[3] == str(prev_action).replace('begin_', '').replace('end_', ''):
                 log_line = log_line.split(' ')[4].replace('{', '').replace('}', '').replace('\',\'', ';').replace('\'', '').split(';')
-                print(log_line)
+                # print(log_line)
                 for issue in log_line:
                     if act not in actions_to_modify:
                         actions_to_modify[act] = set()
@@ -198,24 +198,24 @@ def callbackNewProps(RESULTCODE, props):
             log_lines = file.readlines()
         actions_to_modify = {}
 
-        (params, cond) = dict_pre_eff['end_' + action._functor]
-        actions_to_modify['end_'+str(action).replace('\n', '')] = set()
+        (params, cond) = dict_pre_eff['end_' + prev_action._functor]
+        actions_to_modify['end_'+str(prev_action).replace('\n', '')] = set()
         for c in cond:
             add = True
             for issue in issues:
                 if c[:c.index('(')].replace('!', 'not_') == issue[:issue.index(',')]:
                     add = False
             if add:
-                actions_to_modify['end_'+str(action).replace('\n', '')].add(c.replace('(', ',').replace(')', ''))
+                actions_to_modify['end_'+str(prev_action).replace('\n', '')].add(c.replace('(', ',').replace(')', ''))
 
         log_lines = [line for line in log_lines if 'DIFF_PRE' in line]
         for i in range(len(log_lines)-1, -1, -1):
             log_line = log_lines[i]
-            print(log_line)
+            # print(log_line)
             act = 'begin_' + log_line.split(' ')[3]
-            print(act)
+            # print(act)
             log_line = log_line.split(' ')[4].replace('{', '').replace('}', '').replace('\',\'', ';').replace('\'', '').split(';')
-            print(log_line)
+            # print(log_line)
             issues_to_remove = set()
             for issue in issues:
                 aux = issue
@@ -250,7 +250,8 @@ def callbackNewProps(RESULTCODE, props):
                 if issues_backup.intersection(cond):
                     violate_future_action = True
                     break
-            if not violate_future_action:
+            cond = set([str(c).replace('(', ',').replace(')', '').replace(' ', '').replace('!','not_') for c in snapshot._goals])
+            if not violate_future_action and not issues_backup.intersection(cond):
                 run_simulation = False
         if run_simulation:
             aux_dict_pre_eff = update_monitors(actions_to_modify, 0)
@@ -291,11 +292,11 @@ def callbackNewProps(RESULTCODE, props):
         log_lines = [line for line in log_lines if 'DIFF_POST' in line]
         for i in range(len(log_lines)-1, -1, -1):
             log_line = log_lines[i]
-            print(log_line)
+            # print(log_line)
             act = 'end_' + log_line.split(' ')[3]
-            print(act)
+            # print(act)
             log_line = log_line.split(' ')[4].replace('{', '').replace('}', '').replace('\',\'', ';').replace('\'', '').split(';')
-            print(log_line)
+            # print(log_line)
             issues_to_remove = set()
             for issue in issues:
                 aux = issue
@@ -454,9 +455,13 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
 
 def synthesise_decentralised_monitors(domain_file, dict_pre_eff, synthesise_dict):
     translate(domain_file, synthesise_dict)
+    with open('./out/synthesised_properties', 'r') as file:
+        synthesised_properties = file.read()
+    synthesised_properties = synthesised_properties.replace(' ', '').replace('\'', '').replace('[', '').replace(']', '').split(',')
     os.chdir('./out/pre/')
     for action in dict_pre_eff:
         if 'begin_' not in action: continue
+        if action not in synthesised_properties: continue
         action = action[6:]
         os.chdir('./' + action)
         os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
@@ -465,6 +470,7 @@ def synthesise_decentralised_monitors(domain_file, dict_pre_eff, synthesise_dict
     os.chdir('../eff/')
     for action in dict_pre_eff:
         if 'end_' not in action: continue
+        if action not in synthesised_properties: continue
         action = action[4:]
         os.chdir('./' + action)
         os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')

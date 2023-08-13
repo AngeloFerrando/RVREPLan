@@ -11,9 +11,31 @@
   (city ?city)
   (at ?obj ?loc)
   (in ?obj ?obj)
-  (full ?truck)
+  (human ?human)
 )
 
+(:action call_human
+  :parameters
+   (?human
+    ?truck
+    ?loc)
+  :precondition
+   (and (human ?human) (truck ?truck) (location ?loc)
+   (at ?human ?loc) (at ?truck ?loc))
+  :effect
+   (and (not (at ?human ?loc)) (at ?human ?truck)))
+
+(:action load_truck_human
+  :parameters
+   (?human
+    ?obj
+    ?truck
+    ?loc)
+  :precondition
+   (and (package ?obj) (truck ?truck) (location ?loc)
+   (at ?truck ?loc) (at ?obj ?loc) (human ?human) (at ?human ?truck))
+  :effect
+   (and (not (at ?obj ?loc)) (in ?obj ?truck) (not (at ?human ?truck)) (at ?human ?loc)))
  
 (:action load_truck
   :parameters
@@ -22,9 +44,9 @@
     ?loc)
   :precondition
    (and (package ?obj) (truck ?truck) (location ?loc)
-   (at ?truck ?loc) (at ?obj ?loc) (not (full ?truck)))
+   (at ?truck ?loc) (at ?obj ?loc))
   :effect
-   (and (not (at ?obj ?loc)) (in ?obj ?truck) (full ?truck)))
+   (and (not (at ?obj ?loc)) (in ?obj ?truck)))
 
 (:action load_airplane
   :parameters
@@ -44,9 +66,21 @@
     ?loc)
   :precondition
    (and (package ?obj) (truck ?truck) (location ?loc)
-        (at ?truck ?loc) (in ?obj ?truck) (full ?truck))
+        (at ?truck ?loc) (in ?obj ?truck))
   :effect
-   (and (not (in ?obj ?truck)) (at ?obj ?loc) (not (full ?truck))))
+   (and (not (in ?obj ?truck)) (at ?obj ?loc)))
+
+(:action unload_truck_human
+  :parameters
+   (?human
+    ?obj
+    ?truck
+    ?loc)
+  :precondition
+   (and (package ?obj) (truck ?truck) (location ?loc)
+        (at ?truck ?loc) (in ?obj ?truck) (human ?human) (at ?human ?truck))
+  :effect
+   (and (not (in ?obj ?truck)) (at ?obj ?loc) (not (at ?human ?truck)) (at ?human ?loc)))
 
 (:action unload_airplane
   :parameters

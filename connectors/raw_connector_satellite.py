@@ -27,6 +27,11 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
         )
         # self._time_to_fail = True
 
+        self.__trigger_remove = {}
+        self.__trigger_remove['calibrate_and_take_image'] = lambda : True
+
+        self.__trigger_add = {}
+
     def get_initial_propositions(self):
         props = self.get_errors()
 #        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
@@ -66,25 +71,49 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             d_new = action[i+1:j]
             d_prev = action[j+1:-1]
             # (and (pointing ?s ?d_new) (not (pointing ?s ?d_prev)))
-            props.add(Proposition(False, 'pointing', [sat, d_prev]))
-            props.add(Proposition(True, 'pointing', [sat, d_new]))
+            if 'turn_to' not in self.__trigger_remove or not self.__trigger_remove['turn_to']():
+                props.add(Proposition(False, 'pointing', [sat, d_prev]))
+                props.add(Proposition(True, 'pointing', [sat, d_new]))
+            if 'turn_to' in self.__trigger_add and self.__trigger_add['turn_to']():
+                props.add(Proposition(True, 'fake', [sat]))
         elif 'switch_on' in action:
             l = 10
             i = action.index(',', l)
             instrument = action[l:i]
             sat = action[i+1:-1]
             # (and (power_on ?i) (not (calibrated ?i)) (not (power_avail ?s)))
-            props.add(Proposition(False, 'calibrated', [instrument]))
-            props.add(Proposition(False, 'power_avail', [sat]))
-            props.add(Proposition(True, 'power_on', [instrument]))
+            if 'switch_on' not in self.__trigger_remove or not self.__trigger_remove['switch_on']():
+                props.add(Proposition(False, 'calibrated', [instrument]))
+                props.add(Proposition(False, 'power_avail', [sat]))
+                props.add(Proposition(True, 'power_on', [instrument]))
+            if 'switch_on' in self.__trigger_add and self.__trigger_add['switch_on']():
+                props.add(Proposition(True, 'fake', [sat]))
         elif 'switch_off' in action:
             l = 11
             i = action.index(',', l)
             instrument = action[l:i]
             sat = action[i+1:-1]
             # (and (power_avail ?s) (not (power_on ?i)))
-            props.add(Proposition(False, 'power_on', [instrument]))
-            props.add(Proposition(True, 'power_avail', [sat]))
+            if 'switch_off' not in self.__trigger_remove or not self.__trigger_remove['switch_off']():
+                props.add(Proposition(False, 'power_on', [instrument]))
+                props.add(Proposition(True, 'power_avail', [sat]))
+            if 'switch_off' in self.__trigger_add and self.__trigger_add['switch_off']():
+                props.add(Proposition(True, 'fake', [sat]))
+        elif 'calibrate_and_take_image' in action:
+            l = 25
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            k = action.index(',', j+1)
+            sat = action[l:i]
+            d = action[i+1:j]
+            instrument = action[j+1:k]
+            mode = action[k+1:-1]
+            # (have_image ?d ?m)
+            if 'calibrate_and_take_image' not in self.__trigger_remove or not self.__trigger_remove['calibrate_and_take_image']():
+                props.add(Proposition(True, 'have_image', [d, mode]))
+                props.add(Proposition(True, 'calibrated', [instrument]))
+            if 'calibrate_and_take_image' in self.__trigger_add and self.__trigger_add['calibrate_and_take_image']():
+                props.add(Proposition(True, 'fake', [sat]))
         elif 'calibrate' in action:
             l = 10
             i = action.index(',', l)
@@ -93,7 +122,10 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             instrument = action[i+1:j]
             d = action[j+1:-1]
             # (calibrated ?i)
-            props.add(Proposition(True, 'calibrated', [instrument]))
+            if 'calibrate' not in self.__trigger_remove or not self.__trigger_remove['calibrate']():
+                props.add(Proposition(True, 'calibrated', [instrument]))
+            if 'calibrate' in self.__trigger_add and self.__trigger_add['calibrate']():
+                props.add(Proposition(True, 'fake', [sat]))
         elif 'take_image' in action:
             l = 11
             i = action.index(',', l)
@@ -104,9 +136,12 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             instrument = action[j+1:k]
             mode = action[k+1:-1]
             # (have_image ?d ?m)
-            props.add(Proposition(True, 'have_image', [d, mode]))
+            if 'take_image' not in self.__trigger_remove or not self.__trigger_remove['take_image']():
+                props.add(Proposition(True, 'have_image', [d, mode]))
+            if 'take_image' in self.__trigger_add and self.__trigger_add['take_image']():
+                props.add(Proposition(True, 'fake', [sat]))
         self._case = self._case + 1
-        callback(props)
+        callback(abstract_connector.ResultCode.SUCCESS, props)
     def set_errors_to_inject(self, v):
         self._n_errors = v
     # def set_time_to_fail(self, v):

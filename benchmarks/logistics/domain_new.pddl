@@ -11,9 +11,9 @@
   (city ?city)
   (at ?obj ?loc)
   (in ?obj ?obj)
+  (human ?human)
 )
 
- 
 
 (:action load_truck
 	:parameters

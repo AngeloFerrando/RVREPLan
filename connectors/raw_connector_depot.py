@@ -55,6 +55,10 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
                 [Proposition(True, 'at', ['truck1', 'depot2'])]
             ]
         )
+        self.__trigger_remove = {}
+        self.__trigger_remove['lift_and_load'] = lambda : True
+
+        self.__trigger_add = {}
 #         [(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor0)]
 # [(at, truck0, distributor0),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor1)]
         # self._time_to_fail = True
@@ -90,7 +94,28 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
         #     self._time_to_fail = False
         #     self._n_errors -= 1
         action = str(action)
-        if 'drive' in action:
+        if 'lift_and_load' in action:
+            l = 14
+            i = action.index(',', l)
+            j = action.index(',', i+1)
+            k = action.index(',', j+1)
+            w = action.index(',', k+1)
+            hoist = action[l:i]
+            crate = action[i+1:j]
+            surface = action[j+1:k]
+            place = action[k+1:w]
+            truck = action[w+1:-1]
+            # (and (lifting ?x ?y) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (available ?x)) (not (on ?y ?z)))
+            if 'lift_and_load' not in self.__trigger_remove or not self.__trigger_remove['lift_and_load']():
+                props.add(Proposition(False, 'at', [crate, place]))
+                props.add(Proposition(False, 'clear', [crate]))
+                props.add(Proposition(False, 'on', [crate, surface]))
+                props.add(Proposition(True, 'clear', [surface]))
+                props.add(Proposition(True, 'in', [crate, truck]))
+                props.add(Proposition(True, 'available', [hoist]))
+            if 'lift_and_load' in self.__trigger_add and self.__trigger_add['lift_and_load']():
+                props.add(Proposition(True, 'fake', [truck]))
+        elif 'drive' in action:
             l = 6
             i = action.index(',', l)
             j = action.index(',', i+1)
@@ -98,8 +123,11 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             place_at = action[i+1:j]
             place_to = action[j+1:-1]
             # (and (at ?x ?z) (not (at ?x ?y)))
-            props.add(Proposition(False, 'at', [truck, place_at]))
-            props.add(Proposition(True, 'at', [truck, place_to]))
+            if 'drive' not in self.__trigger_remove or not self.__trigger_remove['drive']():
+                props.add(Proposition(False, 'at', [truck, place_at]))
+                props.add(Proposition(True, 'at', [truck, place_to]))
+            if 'call_human' in self.__trigger_add and self.__trigger_add['call_human']():
+                props.add(Proposition(True, 'fake', [truck]))
         elif 'lift' in action: 
             l = 5
             i = action.index(',', l)
@@ -110,12 +138,15 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             surface = action[j+1:k]
             place = action[k+1:-1]
             # (and (lifting ?x ?y) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (available ?x)) (not (on ?y ?z)))
-            props.add(Proposition(False, 'at', [crate, place]))
-            props.add(Proposition(False, 'clear', [crate]))
-            props.add(Proposition(False, 'available', [hoist]))
-            props.add(Proposition(False, 'on', [crate, surface]))
-            props.add(Proposition(True, 'lifting', [hoist, crate]))
-            props.add(Proposition(True, 'clear', [surface]))
+            if 'lift' not in self.__trigger_remove or not self.__trigger_remove['lift']():
+                props.add(Proposition(False, 'at', [crate, place]))
+                props.add(Proposition(False, 'clear', [crate]))
+                props.add(Proposition(False, 'available', [hoist]))
+                props.add(Proposition(False, 'on', [crate, surface]))
+                props.add(Proposition(True, 'lifting', [hoist, crate]))
+                props.add(Proposition(True, 'clear', [surface]))
+            if 'lift' in self.__trigger_add and self.__trigger_add['lift']():
+                props.add(Proposition(True, 'fake', [truck]))
         elif 'drop' in action:
             l = 5
             i = action.index(',', l)
@@ -126,12 +157,15 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             surface = action[j+1:k]
             place = action[k+1:-1]
             # (and (available ?x) (at ?y ?p) (clear ?y) (on ?y ?z) (not (lifting ?x ?y)) (not (clear ?z)))
-            props.add(Proposition(False, 'lifting', [hoist, crate]))
-            props.add(Proposition(False, 'clear', [surface]))
-            props.add(Proposition(True, 'at', [crate, place]))
-            props.add(Proposition(True, 'clear', [crate]))
-            props.add(Proposition(True, 'available', [hoist]))
-            props.add(Proposition(True, 'on', [crate, surface]))
+            if 'drop' not in self.__trigger_remove or not self.__trigger_remove['drop']():
+                props.add(Proposition(False, 'lifting', [hoist, crate]))
+                props.add(Proposition(False, 'clear', [surface]))
+                props.add(Proposition(True, 'at', [crate, place]))
+                props.add(Proposition(True, 'clear', [crate]))
+                props.add(Proposition(True, 'available', [hoist]))
+                props.add(Proposition(True, 'on', [crate, surface]))
+            if 'drop' in self.__trigger_add and self.__trigger_add['drop']():
+                props.add(Proposition(True, 'fake', [truck]))
         elif 'unload' in action:
             l = 7
             i = action.index(',', l)
@@ -142,9 +176,12 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             truck = action[j+1:k]
             place = action[k+1:-1]
             # (and (lifting ?x ?y) (not (in ?y ?z)) (not (available ?x)))
-            props.add(Proposition(False, 'in', [crate, truck]))
-            props.add(Proposition(False, 'available', [hoist]))
-            props.add(Proposition(True, 'lifting', [hoist, crate]))
+            if 'unload' not in self.__trigger_remove or not self.__trigger_remove['unload']():
+                props.add(Proposition(False, 'in', [crate, truck]))
+                props.add(Proposition(False, 'available', [hoist]))
+                props.add(Proposition(True, 'lifting', [hoist, crate]))
+            if 'unload' in self.__trigger_add and self.__trigger_add['unload']():
+                props.add(Proposition(True, 'fake', [truck]))
         elif 'load' in action:
             l = 5
             i = action.index(',', l)
@@ -155,11 +192,14 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             truck = action[j+1:k]
             place = action[k+1:-1]
             # (in ?y ?z) (available ?x) (not (lifting ?x ?y)))
-            props.add(Proposition(False, 'lifting', [hoist, crate]))
-            props.add(Proposition(True, 'in', [crate, truck]))
-            props.add(Proposition(True, 'available', [hoist]))
+            if 'load' not in self.__trigger_remove or not self.__trigger_remove['load']():
+                props.add(Proposition(False, 'lifting', [hoist, crate]))
+                props.add(Proposition(True, 'in', [crate, truck]))
+                props.add(Proposition(True, 'available', [hoist]))
+            if 'load' in self.__trigger_add and self.__trigger_add['load']():
+                props.add(Proposition(True, 'fake', [truck]))
         self._case = self._case + 1
-        callback(props)
+        callback(abstract_connector.ResultCode.SUCCESS, props)
     def set_errors_to_inject(self, v):
         self._n_errors = v
     # def set_time_to_fail(self, v):
