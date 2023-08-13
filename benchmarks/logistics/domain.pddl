@@ -11,6 +11,7 @@
   (city ?city)
   (at ?obj ?loc)
   (in ?obj ?obj)
+  (full ?truck)
 )
 
  
@@ -21,9 +22,9 @@
     ?loc)
   :precondition
    (and (package ?obj) (truck ?truck) (location ?loc)
-   (at ?truck ?loc) (at ?obj ?loc))
+   (at ?truck ?loc) (at ?obj ?loc) (not (full ?truck)))
   :effect
-   (and (not (at ?obj ?loc)) (in ?obj ?truck)))
+   (and (not (at ?obj ?loc)) (in ?obj ?truck) (full ?truck)))
 
 (:action load_airplane
   :parameters
@@ -43,9 +44,9 @@
     ?loc)
   :precondition
    (and (package ?obj) (truck ?truck) (location ?loc)
-        (at ?truck ?loc) (in ?obj ?truck))
+        (at ?truck ?loc) (in ?obj ?truck) (full ?truck))
   :effect
-   (and (not (in ?obj ?truck)) (at ?obj ?loc)))
+   (and (not (in ?obj ?truck)) (at ?obj ?loc) (not (full ?truck))))
 
 (:action unload_airplane
   :parameters

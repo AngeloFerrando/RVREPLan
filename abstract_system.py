@@ -114,7 +114,7 @@ def callbackNewProps(RESULTCODE, props):
             print(log_line)
             act = 'begin_' + log_line.split(' ')[3]
             print(act)
-            if log_line.split(' ')[3].split(',')[0] == str(act).split(',')[0].replace('begin_', '').replace('end_', ''):
+            if log_line.split(' ')[3] == str(prev_action).replace('begin_', '').replace('end_', ''):
                 log_line = log_line.split(' ')[4].replace('{', '').replace('}', '').replace('\',\'', ';').replace('\'', '').split(';')
                 print(log_line)
                 for issue in log_line:
@@ -128,22 +128,24 @@ def callbackNewProps(RESULTCODE, props):
             return
         else:
             aux_dict_pre_eff = update_monitors(actions_to_modify, 0)
-            if not aux_dict_pre_eff:
-                replan()
-                pass
-            props_to_add = set()
-            for i in issues:
-                if i.split(',')[0].startswith('not_'):
-                    props_to_add.add(Proposition(False, i.split(',')[0][4:], i.split(',')[1:]))
-                else:
-                    props_to_add.add(Proposition(True, i.split(',')[0], i.split(',')[1:]))
-            # at this point, we should have a new version of the monitors related to the updated actions
-            # run simulation with monitors 
-            if not simulate([k.split(',')[0] for k in actions_to_modify.keys()], props_to_add, aux_dict_pre_eff, prev_action):
-                return
-            # if errors is reported by monitors so modified, then delete prop.qtl and rename prop_old.qtl to prop.qtl, then replan
-            # otherwise, if error is reported by other monitors, then remove prop_old.qtl, then replan
-            # otherwise, remove prop_old.qtl and keep running  
+            for act in aux_dict_pre_eff:
+                dict_pre_eff[act] = aux_dict_pre_eff[act]
+            with open('./out/dict_pre_eff_new.json', 'w') as file:
+                json.dump(dict_pre_eff, file)
+            os.system('python3 translators/translator.py ' + DOMAIN_FILE + ' ' + DOMAIN_FILE.replace('.pddl', '1.pddl') + ' ' + './out/dict_pre_eff_new.json')
+            DOMAIN_FILE = DOMAIN_FILE.replace('.pddl', '1.pddl')
+            replan()
+            # if not aux_dict_pre_eff:
+            #     replan()
+            #     pass
+            # props_to_add = set()
+            # for i in issues:
+            #     if i.split(',')[0].startswith('not_'):
+            #         props_to_add.add(Proposition(False, i.split(',')[0][4:], i.split(',')[1:]))
+            #     else:
+            #         props_to_add.add(Proposition(True, i.split(',')[0], i.split(',')[1:]))
+            # if not simulate([k.split(',')[0] for k in actions_to_modify.keys()], props_to_add, aux_dict_pre_eff, prev_action):
+            #     return
     # check props against effects of previous action to check whether additional propositions are in props, but not in the effects
     if prev_action:
         past_actions.append(prev_action)
