@@ -1,7 +1,7 @@
 (define (domain satellite)
 (:requirements :strips)
 (:predicates
-	 (on_board ?i ?s) (supports ?i ?m) (pointing ?s ?d) (power_avail ?s) (power_on ?i) (calibrated ?i) (have_image ?d ?m) (calibration_target ?i ?d)(satellite ?x) (direction ?x) (instrument ?x) (mode ?x) )
+	 (orbit ?s) (on_board ?i ?s) (supports ?i ?m) (pointing ?s ?d) (power_avail ?s) (power_on ?i) (calibrated ?i) (have_image ?d ?m) (calibration_target ?i ?d)(satellite ?x) (direction ?x) (instrument ?x) (mode ?x) )
 (:action turn_to
  :parameters ( ?s ?d_new ?d_prev)
  :precondition
@@ -33,15 +33,22 @@
 (:action take_image
  :parameters ( ?s ?d ?i ?m)
  :precondition
-	(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m)  (calibrated ?i) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
+	(and (orbit ?s) (satellite ?s) (direction ?d) (instrument ?i) (mode ?m)  (calibrated ?i) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
  :effect
 	 (have_image ?d ?m))
 
 (:action calibrate_and_take_image
  :parameters ( ?s ?d ?i ?m)
  :precondition
-	(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
+	(and (orbit ?s) (satellite ?s) (direction ?d) (instrument ?i) (mode ?m) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d))
  :effect
 	 (and (calibrated ?i) (have_image ?d ?m)))
+
+(:action orbiting
+ :parameters ( ?s )
+ :precondition
+	()
+ :effect
+	 (and (orbit ?s)))
 
 )

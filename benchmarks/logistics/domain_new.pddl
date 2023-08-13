@@ -12,16 +12,17 @@
   (at ?obj ?loc)
   (in ?obj ?obj)
   (human ?human)
+  (balanced ?airplane)
 )
 
 
-(:action load_truck
+(:action load_airplane
 	:parameters
 	(?obj		
-?truck		
+?airplane		
 ?loc	)
 :precondition
-(and (package ?obj) (truck ?truck) (location ?loc) (at ?truck ?loc) (at ?obj ?loc) )
+(and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
 :effect
-(and )
+(and (in ?obj ?airplane) (not (balanced ?airplane)) (not (at ?obj ?loc)) )
 ))

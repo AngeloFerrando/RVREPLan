@@ -12,6 +12,7 @@
   (at ?obj ?loc)
   (in ?obj ?obj)
   (human ?human)
+  (balanced ?airplane)
 )
 
 (:action call_human
@@ -114,7 +115,15 @@
     ?loc_to)
   :precondition
    (and (airplane ?airplane) (airport ?loc_from) (airport ?loc_to)
-	(at ?airplane ?loc_from))
+	(at ?airplane ?loc_from) (balanced ?airplane))
   :effect
    (and (not (at ?airplane ?loc_from)) (at ?airplane ?loc_to)))
+
+  (:action balance_airplane
+  :parameters
+   (?airplane)
+  :precondition
+   ()
+  :effect
+   (balanced ?airplane))
 )

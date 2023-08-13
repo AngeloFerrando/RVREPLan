@@ -279,15 +279,15 @@ def callbackNewProps(RESULTCODE, props):
             log_lines = file.readlines()
         actions_to_modify = {}
 
-        (params, cond) = dict_pre_eff['begin_' + action._functor]
-        actions_to_modify['begin_'+str(action).replace('\n', '')] = set()
-        for c in cond:
-            add = True
-            for issue in issues:
-                if c[:c.index('(')].replace('!', 'not_') == issue[:issue.index(',')]:
-                    add = False
-            if add:
-                actions_to_modify['begin_'+str(action).replace('\n', '')].add(c.replace('(', ',').replace(')', ''))
+        # (params, cond) = dict_pre_eff['begin_' + action._functor]
+        # actions_to_modify['begin_'+str(action).replace('\n', '')] = set()
+        # for c in cond:
+        #     add = True
+        #     for issue in issues:
+        #         if c[:c.index('(')].replace('!', 'not_') == issue[:issue.index(',')]:
+        #             add = False
+        #     if add:
+        #         actions_to_modify['begin_'+str(action).replace('\n', '')].add(c.replace('(', ',').replace(')', ''))
 
         log_lines = [line for line in log_lines if 'DIFF_POST' in line]
         for i in range(len(log_lines)-1, -1, -1):
@@ -458,6 +458,7 @@ def synthesise_decentralised_monitors(domain_file, dict_pre_eff, synthesise_dict
     with open('./out/synthesised_properties', 'r') as file:
         synthesised_properties = file.read()
     synthesised_properties = synthesised_properties.replace(' ', '').replace('\'', '').replace('[', '').replace(']', '').split(',')
+    print(synthesised_properties)
     os.chdir('./out/pre/')
     for action in dict_pre_eff:
         if 'begin_' not in action: continue

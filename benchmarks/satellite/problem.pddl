@@ -27,6 +27,9 @@
 )
 (:init
 	(satellite satellite0)
+	(orbit satellite0)
+	(orbit satellite1)
+	(orbit satellite2)
 	(instrument instrument0)
 	(supports instrument0 infrared1)
 	(supports instrument0 spectrograph0)

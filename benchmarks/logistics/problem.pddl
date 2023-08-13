@@ -13,6 +13,7 @@
  (at obj33 pos3) (at tru4 pos4) (at obj41 pos4) (at obj42 pos4) (at obj43 pos4)
  (in_city pos1 cit1) (in_city apt1 cit1) (in_city pos2 cit2) (in_city apt2 cit2)
  (in_city pos3 cit3) (in_city apt3 cit3) (in_city pos4 cit4) (in_city apt4 cit4)
+ (balanced apn1)
  (human human1) (human human2) (human human3) (human human4) (human human5) 
  (human human6) (human human7) (human human8) (at human1 pos1) (at human2 pos2)
  (at human3 pos3) (at human4 pos4) (at human5 apt1) (at human6 apt2) (at human7 apt3)

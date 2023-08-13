@@ -28,9 +28,10 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
         # self._time_to_fail = True
 
         self.__trigger_remove = {}
-        self.__trigger_remove['calibrate_and_take_image'] = lambda : True
+        # self.__trigger_remove['calibrate_and_take_image'] = lambda : True
 
         self.__trigger_add = {}
+        self.__trigger_add['turn_to'] = lambda : True
 
     def get_initial_propositions(self):
         props = self.get_errors()
@@ -75,7 +76,7 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
                 props.add(Proposition(False, 'pointing', [sat, d_prev]))
                 props.add(Proposition(True, 'pointing', [sat, d_new]))
             if 'turn_to' in self.__trigger_add and self.__trigger_add['turn_to']():
-                props.add(Proposition(True, 'fake', [sat]))
+                props.add(Proposition(False, 'orbit', [sat]))
         elif 'switch_on' in action:
             l = 10
             i = action.index(',', l)
@@ -139,6 +140,13 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
             if 'take_image' not in self.__trigger_remove or not self.__trigger_remove['take_image']():
                 props.add(Proposition(True, 'have_image', [d, mode]))
             if 'take_image' in self.__trigger_add and self.__trigger_add['take_image']():
+                props.add(Proposition(True, 'fake', [sat]))
+        elif 'orbiting' in action:
+            l = 9
+            sat = action[l:-1]
+            if 'orbiting' not in self.__trigger_remove or not self.__trigger_remove['orbiting']():
+                props.add(Proposition(True, 'orbit', [sat]))
+            if 'orbiting' in self.__trigger_add and self.__trigger_add['orbiting']():
                 props.add(Proposition(True, 'fake', [sat]))
         self._case = self._case + 1
         callback(abstract_connector.ResultCode.SUCCESS, props)
