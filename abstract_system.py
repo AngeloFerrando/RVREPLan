@@ -46,6 +46,10 @@ def main(args):
     simulation_violations = []
     if args.inject_errors:
         errors_to_inject = args.inject_errors
+        if errors_to_inject < 0:
+            errors_to_inject = 0
+        if errors_to_inject > 3:
+            errors_to_inject = 3
     else:
         errors_to_inject = 0
 
@@ -136,8 +140,12 @@ def callbackNewProps(RESULTCODE, props):
                 dict_pre_eff[act] = aux_dict_pre_eff[act]
             with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
                 json.dump(dict_pre_eff, file)
-            os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + DOMAIN_FILE.replace('.pddl', '1.pddl') + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
-            DOMAIN_FILE = DOMAIN_FILE.replace('.pddl', '1.pddl')
+            new_domain_file_name = DOMAIN_FILE
+            if not DOMAIN_FILE.endswith('_1.pddl'):
+                new_domain_file_name = DOMAIN_FILE.replace('.pddl', '_1.pddl')
+            os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + new_domain_file_name + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
+            if not DOMAIN_FILE.endswith('_1.pddl'):
+                DOMAIN_FILE = new_domain_file_name
             replan()
             # if not aux_dict_pre_eff:
             #     replan()
@@ -443,8 +451,12 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
             dict_pre_eff[act] = aux_dict_pre_eff[act]
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
             json.dump(dict_pre_eff, file)
-        os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + DOMAIN_FILE.replace('.pddl', '1.pddl') + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
-        DOMAIN_FILE = DOMAIN_FILE.replace('.pddl', '1.pddl')
+        new_domain_file_name = DOMAIN_FILE
+        if not DOMAIN_FILE.endswith('_1.pddl'):
+            new_domain_file_name = DOMAIN_FILE.replace('.pddl', '_1.pddl')
+        os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + new_domain_file_name + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
+        if not DOMAIN_FILE.endswith('_1.pddl'):
+            DOMAIN_FILE = new_domain_file_name
         replan()
         return False
     else:
@@ -457,8 +469,12 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
             dict_pre_eff[act] = aux_dict_pre_eff[act]
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
             json.dump(dict_pre_eff, file)
-        os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + DOMAIN_FILE.replace('.pddl', '1.pddl') + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
-        DOMAIN_FILE = DOMAIN_FILE.replace('.pddl', '1.pddl')
+        new_domain_file_name = DOMAIN_FILE
+        if not DOMAIN_FILE.endswith('_1.pddl'):
+            new_domain_file_name = DOMAIN_FILE.replace('.pddl', '_1.pddl')
+        os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + DOMAIN_FILE + ' ' + new_domain_file_name + ' ' + EXPERIMENTS_PATH + './out/dict_pre_eff_new.json')
+        if not DOMAIN_FILE.endswith('_1.pddl'):
+            DOMAIN_FILE = new_domain_file_name
         return True
 
 # def synthesise_centralised_monitors(args):
@@ -572,10 +588,10 @@ def replan():
         actions = actions[:-1]
     avg_size_replanning_plans += len(actions)
     replanning_time += time.time() - start
-    props = connector.get_errors()
+    # props = connector.get_errors()
     prev_action = None
     past_actions = []
-    callbackNewProps(None, props)
+    callbackNewProps(None, set())
 
 def log_metrics():
     # (initial solution planning time,  replanning time, total plan size of executed actions, replanning calls, monitor synthesis runtime, simulation time, kind of simulation violations, average size of replanning plans)

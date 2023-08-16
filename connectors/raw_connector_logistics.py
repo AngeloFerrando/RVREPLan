@@ -76,10 +76,7 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
         # self._time_to_fail = True
         
         self.__trigger_remove = {}
-        # self.__trigger_remove['load_truck'] = lambda : True
-
         self.__trigger_add = {}
-        self.__trigger_add['load_airplane'] = lambda : True 
 
     def get_initial_propositions(self):
         props = self.get_errors()
@@ -245,6 +242,10 @@ class RawConnectorLogistics(abstract_connector.AbstractConnector):
         callback(abstract_connector.ResultCode.SUCCESS, props)
     def set_errors_to_inject(self, v):
         self._n_errors = v
+        if self._n_errors == 1 or self._n_errors == 3:
+            self.__trigger_remove['load_truck'] = lambda : True
+        if self._n_errors == 2 or self._n_errors == 3:
+            self.__trigger_add['load_airplane'] = lambda : True 
     # def set_time_to_fail(self, v):
     #     self._time_to_fail = v
     def get_actions_executed(self):

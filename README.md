@@ -2,7 +2,8 @@
 
 ## What to install
 - Download and Install DEJAVU (https://github.com/havelund/dejavu) and be sure it works [tested on version 1.0].
-- Download and Install Python 3 and be sure it works [tested on version 3.6.9].
+- Download and Install Fast-Downward (https://www.fast-downward.org) and be sure it works [tested on version 22.12+]
+- Download and Install Python 3 and be sure it works [tested on version 3.10.12].
 
 ## How to run
 
@@ -20,9 +21,7 @@ where:
 - DEJAVU: the path to the folder where Dejavu has been installed (where dejavu.jar is)
 - PLANNER: the path to the planner and any flags it may use
 
-## Example of use for the three different domains:
-
-- Download and Install Fast Downward (https://www.fast-downward.org/) and be sure it works [tested on version 22.06+].
+## Example of use for the three different domains experimented in the paper:
 
 Logistics:
 
@@ -76,7 +75,11 @@ To ask RVReplan to simulate failures in order to cause replanning it is enough t
 python3 abstract_system.py DOMAIN PROBLEM CONNECTOR DEJAVU PLANNER --inject_errors N
 ```
 
-where the N parameter denotes the number of failures to instroduce (5 is the maximum value in our current experiments).
+where the N parameter denotes the kind of failures to introduce:
+- 0 no failures (this is the default if no --inject_errors flag is passed)
+- 1 one failure that causes a postcondition violation
+- 2 one failure that causes a precondition violation
+- 3 two failures that cause both a precondition and postcondition violations
 
 ## Other useful flags
 

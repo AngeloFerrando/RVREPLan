@@ -56,14 +56,8 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             ]
         )
         self.__trigger_remove = {}
-        # self.__trigger_remove['lift_and_load'] = lambda : True
-
         self.__trigger_add = {}
-        self.__trigger_add['unload'] = lambda : True
-#         [(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor0)]
-# [(at, truck0, distributor0),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor1)]
-        # self._time_to_fail = True
-
+        
     def get_initial_propositions(self):
         props = self.get_errors()
 #        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
@@ -213,6 +207,10 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
         callback(abstract_connector.ResultCode.SUCCESS, props)
     def set_errors_to_inject(self, v):
         self._n_errors = v
+        if self._n_errors == 1 or self._n_errors == 3:
+            self.__trigger_remove['lift_and_load'] = lambda : True
+        if self._n_errors == 2 or self._n_errors == 3:
+            self.__trigger_add['unload'] = lambda : True
     # def set_time_to_fail(self, v):
     #     self._time_to_fail = v
     def get_actions_executed(self):
