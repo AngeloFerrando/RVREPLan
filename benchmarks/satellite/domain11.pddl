@@ -12,7 +12,7 @@
 :precondition
 (and (satellite ?s) (direction ?d_new) (direction ?d_prev) (pointing ?s ?d_prev) )
 :effect
-(and (pointing ?s ?d_new) (not (pointing ?s ?d_prev)) )
+(and (not (pointing ?s ?d_prev)) (not (orbit ?s)) (pointing ?s ?d_new) )
 )
 (:action switch_on
 	:parameters
@@ -60,15 +60,15 @@
 ?i		
 ?m	)
 :precondition
-(and (satellite ?s) (direction ?d) (instrument ?i) (mode ?m) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d) )
+(and (orbit ?s) (satellite ?s) (direction ?d) (instrument ?i) (mode ?m) (on_board ?i ?s) (supports ?i ?m) (power_on ?i) (pointing ?s ?d) )
 :effect
-(and (calibrated ?i) (have_image ?d ?m) )
+(and )
 )
 (:action orbiting
 	:parameters
 	(?s	)
 :precondition
-(and )
+(and (satellite ?s) )
 :effect
 (and (orbit ?s) )
 ))

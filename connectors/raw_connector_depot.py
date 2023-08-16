@@ -56,9 +56,10 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
             ]
         )
         self.__trigger_remove = {}
-        self.__trigger_remove['lift_and_load'] = lambda : True
+        # self.__trigger_remove['lift_and_load'] = lambda : True
 
         self.__trigger_add = {}
+        self.__trigger_add['unload'] = lambda : True
 #         [(at, truck1, distributor1),(at, truck1, distributor2),(at, truck1, depot0),(at, truck1, depot1),(at, truck1, depot2)],[(at, truck1, distributor0)]
 # [(at, truck0, distributor0),(at, truck0, distributor2),(at, truck0, depot0),(at, truck0, depot1),(at, truck0, depot2)],[(at, truck0, distributor1)]
         # self._time_to_fail = True
@@ -181,7 +182,7 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
                 props.add(Proposition(False, 'available', [hoist]))
                 props.add(Proposition(True, 'lifting', [hoist, crate]))
             if 'unload' in self.__trigger_add and self.__trigger_add['unload']():
-                props.add(Proposition(True, 'fake', [truck]))
+                props.add(Proposition(False, 'facing_up', [crate]))
         elif 'load' in action:
             l = 5
             i = action.index(',', l)
@@ -197,6 +198,16 @@ class RawConnectorDepot(abstract_connector.AbstractConnector):
                 props.add(Proposition(True, 'in', [crate, truck]))
                 props.add(Proposition(True, 'available', [hoist]))
             if 'load' in self.__trigger_add and self.__trigger_add['load']():
+                props.add(Proposition(True, 'fake', [truck]))
+        elif 'turn_crate' in action:
+            l = 11
+            i = action.index(',', l)
+            hoist = action[l:i]
+            crate = action[i+1:-1]
+            # (in ?y ?z) (available ?x) (not (lifting ?x ?y)))
+            if 'turn_crate' not in self.__trigger_remove or not self.__trigger_remove['turn_crate']():
+                props.add(Proposition(True, 'facing_up', [crate]))
+            if 'turn_crate' in self.__trigger_add and self.__trigger_add['turn_crate']():
                 props.add(Proposition(True, 'fake', [truck]))
         self._case = self._case + 1
         callback(abstract_connector.ResultCode.SUCCESS, props)

@@ -3,6 +3,8 @@ import sys
 import time
 import json
 
+EXPERIMENTS_PATH = '/home/angelo/Desktop/git/RvEPLan/'
+
 def parameterisedMonitor(domain_file_name):
     domain = open(domain_file_name, 'r')
     domain_text = domain.read()
@@ -242,28 +244,28 @@ def main(args):
         i = 0
         synthesised_properties = []
         for (action, fo_ltl_pre, fo_ltl_eff) in fo_ltl_list:
-            os.system('mkdir ./out/pre/' + action)
+            os.system('mkdir ' + EXPERIMENTS_PATH + './out/pre/' + action)
             generate = True
-            if os.path.exists('./out/pre/' + action + '/prop.qtl'):
-                with open('./out/pre/' + action + '/prop.qtl', 'r') as file:
+            if os.path.exists(EXPERIMENTS_PATH + './out/pre/' + action + '/prop.qtl'):
+                with open(EXPERIMENTS_PATH + './out/pre/' + action + '/prop.qtl', 'r') as file:
                     previous_content = file.read()
                 if fo_ltl_pre in previous_content:
                     generate = False
             if generate:
                 synthesised_properties.append('begin_' + action)
-                with open('./out/pre/' + action + '/prop.qtl', 'w') as file:
+                with open(EXPERIMENTS_PATH + './out/pre/' + action + '/prop.qtl', 'w') as file:
                     file.write('prop fo_ltl_pre_' + str(i) + ' :\n')
                     file.write('\t' + fo_ltl_pre + '\n\n')
             generate = True
-            os.system('mkdir ./out/eff/' + action)
-            if os.path.exists('./out/eff/' + action + '/prop.qtl'):
-                with open('./out/eff/' + action + '/prop.qtl', 'r') as file:
+            os.system('mkdir ' + EXPERIMENTS_PATH + './out/eff/' + action)
+            if os.path.exists(EXPERIMENTS_PATH + './out/eff/' + action + '/prop.qtl'):
+                with open(EXPERIMENTS_PATH + './out/eff/' + action + '/prop.qtl', 'r') as file:
                     previous_content = file.read()
                 if fo_ltl_eff in previous_content:
                     generate = False
             if generate:
                 synthesised_properties.append('end_' + action)
-                with open('./out/eff/' + action + '/prop.qtl', 'w') as file:
+                with open(EXPERIMENTS_PATH + './out/eff/' + action + '/prop.qtl', 'w') as file:
                     file.write('prop fo_ltl_eff_' + str(i) + ' :\n')
                     file.write('\t' + fo_ltl_eff + '\n\n')
             i = i + 1
@@ -271,17 +273,17 @@ def main(args):
         # f_eff.close()
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
-        with open('./out/dict_pre_eff.json', 'w') as file:
+        with open(EXPERIMENTS_PATH + './out/dict_pre_eff.json', 'w') as file:
             json.dump(dict_pre_eff, file)
         print(synthesised_properties)
-        with open('./out/synthesised_properties', 'w') as file:
+        with open(EXPERIMENTS_PATH + './out/synthesised_properties', 'w') as file:
             file.write(str(synthesised_properties))
         return prop_time
     elif len(args) == 3:
         ltl_list = instantiatedMonitor(args[1], args[2])
         for ltl in ltl_list:
             print(ltl)
-        f = open('./out/prop.qtl', 'w')
+        f = open(EXPERIMENTS_PATH + './out/prop.qtl', 'w')
         i = 0
         for ltl in ltl_list:
             f.write('prop ltl_' + str(i) + ' :\n')

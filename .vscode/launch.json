@@ -7,7 +7,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": ["./benchmarks/satellite/domain.pddl", "./benchmarks/satellite/problem.pddl", "connectors.raw_connector_satellite", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "0"]
+            "args": ["./benchmarks/logistics/domain.pddl", "./benchmarks/logistics/problem.pddl", "connectors.raw_connector_logistics", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "0"]
         }
     ]
 }

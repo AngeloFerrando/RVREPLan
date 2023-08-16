@@ -2,6 +2,12 @@
 (:objects
 	depot0 depot1 depot2 distributor0 distributor1 distributor2 truck0 truck1 pallet0 pallet1 pallet2 pallet3 pallet4 pallet5 pallet6 pallet7 pallet8 pallet9 crate0 crate1 crate2 crate3 crate4 crate5 hoist0 hoist1 hoist2 hoist3 hoist4 hoist5 )
 (:init
+	(facing_up crate0)
+	(facing_up crate1)
+	(facing_up crate2)
+	(facing_up crate3)
+	(facing_up crate4)
+	(facing_up crate5)
 	(pallet pallet0)
 	(surface pallet0)
 	(at pallet0 depot0)

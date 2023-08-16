@@ -123,7 +123,7 @@
   :parameters
    (?airplane)
   :precondition
-   ()
+   (airplane ?airplane)
   :effect
    (balanced ?airplane))
 )

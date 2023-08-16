@@ -11,5 +11,5 @@
 :precondition
 (and (satellite ?s) (direction ?d_new) (direction ?d_prev) (pointing ?s ?d_prev) )
 :effect
-(and (pointing ?s ?d_new) (not (pointing ?s ?d_prev)) (not (orbit ?s)) )
+(and (not (pointing ?s ?d_prev)) (not (orbit ?s)) (pointing ?s ?d_new) )
 ))

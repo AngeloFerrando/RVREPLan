@@ -47,7 +47,7 @@
 (:action orbiting
  :parameters ( ?s )
  :precondition
-	()
+	(satellite ?s)
  :effect
 	 (and (orbit ?s)))
 

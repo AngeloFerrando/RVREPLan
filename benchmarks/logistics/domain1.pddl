@@ -55,7 +55,7 @@
 :precondition
 (and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
 :effect
-(and (in ?obj ?airplane) (not (balanced ?airplane)) (not (at ?obj ?loc)) )
+(and (not (balanced ?airplane)) (not (at ?obj ?loc)) (in ?obj ?airplane) )
 )
 (:action unload_truck
 	:parameters
@@ -113,7 +113,7 @@
 	:parameters
 	(?airplane	)
 :precondition
-(and )
+(and (airplane ?airplane) )
 :effect
 (and (balanced ?airplane) )
 ))
