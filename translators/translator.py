@@ -115,6 +115,8 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
         line = plan.readline()
         if not line:
             break
+        if line.startswith(';'):
+            continue
         plan_list.append(line.replace('(', '').replace(')', '').replace('\n', '').split(' '))
     plan.close()
 
@@ -138,13 +140,17 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
     for p in plan_list:
         # p[0] = 'act_' + p[0]
         act_def = domain_dict[p[0].replace('-', '_')]
-        ltl = 'H(' + p[0].replace('-', '_') + '('
+        ltl_pre = 'H(begin_' + p[0].replace('-', '_') + '('
+        ltl_post = 'H(end_' + p[0].replace('-', '_') + '('
         for p_i in range(1, len(p)):
-            if p_i != 1: ltl = ltl + ', '
-            ltl = ltl + '"' + p[p_i].replace('-', '_') + '"'
-        ltl = ltl + ') -> '
+            if p_i != 1: 
+                ltl_pre = ltl_pre + ', '
+                ltl_post = ltl_post + ', '
+            ltl_pre = ltl_pre + '"' + p[p_i].replace('-', '_') + '"'
+            ltl_post = ltl_post + '"' + p[p_i].replace('-', '_') + '"'
+        ltl_pre = ltl_pre + ') -> '
         for j in range(0, len(act_def[1])):
-            if j != 0: ltl = ltl + ' & '
+            if j != 0: ltl_pre = ltl_pre + ' & '
             aux = act_def[1][j]
             vars = []
             for i in range(1, len(p)):
@@ -152,11 +158,29 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
                     vars.append(act_def[0][i-1].replace('?', ''))
                 aux = aux.replace(act_def[0][i-1], '"' + p[i].replace('-', '_') + '"')
             if aux.startswith('!'):
-                ltl = ltl + '(!' + aux[1:] + ' S ' + 'not_' + aux[1:] + ')'
+                ltl_pre = ltl_pre + '(!' + aux[1:] + ' S ' + 'not_' + aux[1:] + ')'
             else:
-                ltl = ltl + '(!' + 'not_' + aux + ' S ' + aux + ')'
-        ltl = ltl + ')'
-        ltl_list.append(ltl)
+                ltl_pre = ltl_pre + '(!' + 'not_' + aux + ' S ' + aux + ')'
+        if ltl_pre.endswith('-> '):
+            ltl_pre = ltl_pre + 'true'
+        ltl_pre = ltl_pre + ')'
+        ltl_post = ltl_post + ') -> '
+        for j in range(0, len(act_def[2])):
+            if j != 0: ltl_post = ltl_post + ' & '
+            aux = act_def[2][j]
+            vars = []
+            for i in range(1, len(p)):
+                if act_def[0][i-1] in aux:
+                    vars.append(act_def[0][i-1].replace('?', ''))
+                aux = aux.replace(act_def[0][i-1], '"' + p[i].replace('-', '_') + '"')
+            if aux.startswith('!'):
+                ltl_post = ltl_post + '(!' + aux[1:] + ' S ' + 'not_' + aux[1:] + ')'
+            else:
+                ltl_post = ltl_post + '(!' + 'not_' + aux + ' S ' + aux + ')'
+        if ltl_post.endswith('-> '):
+            ltl_post = ltl_post + 'true'
+        ltl_post = ltl_post + ')'
+        ltl_list.append((ltl_pre, ltl_post))
         count = count + 1
     return ltl_list
 
@@ -283,13 +307,17 @@ def main(args):
         ltl_list = instantiatedMonitor(args[1], args[2])
         for ltl in ltl_list:
             print(ltl)
-        f = open(EXPERIMENTS_PATH + './out/prop.qtl', 'w')
+        f_pre = open(EXPERIMENTS_PATH + './out/pre/prop.qtl', 'w')
+        f_post = open(EXPERIMENTS_PATH + './out/eff/prop.qtl', 'w')
         i = 0
-        for ltl in ltl_list:
-            f.write('prop ltl_' + str(i) + ' :\n')
-            f.write('\t' + ltl + '\n\n')
+        for (ltl_pre, ltl_post) in ltl_list:
+            f_pre.write('prop ltl_' + str(i) + ' :\n')
+            f_pre.write('\t' + ltl_pre + '\n\n')
+            f_post.write('prop ltl_' + str(i) + ' :\n')
+            f_post.write('\t' + ltl_post + '\n\n')
             i = i + 1
-        f.close()
+        f_pre.close()
+        f_post.close()
         prop_time = (time.time() - start_time)
         print("#Property generation# --- %s seconds ---" % (time.time() - start_time))
         return prop_time

@@ -72,12 +72,7 @@ def main(args):
     initial_planning_time = time.time() - start
 
     with open(EXPERIMENTS_PATH + './out/log', 'w') as file:
-        file.write('')
-
-    # Translation from PDDL to Failure handling monitor (RVPlan paper)
-    if not args.no_monitor_synthesis:
-        synthesise_decentralised_monitors(args.domain_file, None)
-        
+        file.write('')        
     
     # Create snapshot
     # createSnapshot(args.problem_file)
@@ -97,6 +92,12 @@ def main(args):
     with open('./sas_plan', 'r') as plan:
         actions = plan.readlines()
         actions = actions[:-1]
+
+    # Translation from PDDL to Failure handling monitor (RVPlan paper)
+    if not args.no_monitor_synthesis:
+        # synthesise_decentralised_monitors(args.domain_file, None)
+        synthesise_centralised_monitor(args.domain_file, './sas_plan', None)
+
     # initial_propositions = connector.get_initial_propositions()
     # here I am setting the initial propositions to the same ones used in the Problem file
     # however, in general, the initial propositions should come from the system
@@ -193,13 +194,15 @@ def callbackNewProps(RESULTCODE, props):
             to_remove = -2
             monitor_input.write('end_' + str(prev_action))
     current_path = os.getcwd()
-    os.chdir(EXPERIMENTS_PATH + './out/pre/' + str(action).split(',')[0])
-    monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+    # os.chdir(EXPERIMENTS_PATH + './out/pre/' + str(action).split(',')[0])
+    os.chdir(EXPERIMENTS_PATH + './out/pre/')
+    monitor_outcome_pre = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
     os.chdir(current_path)
     # POST CONDITIONS MONITOR STUFF
     if prev_action:
-        os.chdir(EXPERIMENTS_PATH + './out/eff/' + str(prev_action).split(',')[0])
-        monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
+        # os.chdir(EXPERIMENTS_PATH + './out/eff/' + str(prev_action).split(',')[0])
+        os.chdir(EXPERIMENTS_PATH + './out/eff/')
+        monitor_outcome_eff = os.popen('scala -J-Xmx32g -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor ../trace.csv 20  2>&1  | grep -v "Resizing" | grep -v "load BDD package" | grep -v "Garbage collection"').read()
         os.chdir(current_path)
     if '0 errors detected!' not in monitor_outcome_eff:
         print(monitor_outcome_eff)
@@ -337,6 +340,7 @@ def callbackNewProps(RESULTCODE, props):
             # run simulation with monitors 
             backup_prev_action = prev_action
             prev_action = None
+            actions.insert(0, act_str)
             if simulate([k.split(',')[0] for k in actions_to_modify.keys()], props_to_add, aux_dict_pre_eff, act_str):
                 prev_action = backup_prev_action
                 connector.perform(action, callbackNewProps)
@@ -378,7 +382,8 @@ def update_monitors(actions_to_modify, kind):
                         # aux_dict_pre_eff['begin_' + act.split(',')[0]] = dict_pre_eff['begin_' + act.split(',')[0]]
         else:
             aux_dict_pre_eff[prefix + act1.split(',')[0]] = (params, list(issues))
-    for k in copy.deepcopy(aux_dict_pre_eff):
+    # for k in copy.deepcopy(aux_dict_pre_eff):
+    for k in copy.deepcopy(dict_pre_eff):
         if 'begin_' in k:
             k = k.replace('begin_', 'end_')
         else:
@@ -393,12 +398,15 @@ def update_monitors(actions_to_modify, kind):
             prefix = 'begin_' if act.startswith('begin_') else 'end_'
             act = act.replace(prefix, '')
             if prefix == 'begin_':
-                if os.path.exists(EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop.qtl'):
-                    os.rename(EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop.qtl', EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop_old.qtl')
+                # if os.path.exists(EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop.qtl'):
+                #     os.rename(EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop.qtl', EXPERIMENTS_PATH + './out/pre/' + act.split(',')[0] + '/prop_old.qtl')
+                os.rename(EXPERIMENTS_PATH + './out/pre/prop.qtl', EXPERIMENTS_PATH + './out/pre/prop_old.qtl')
             else:
-                if os.path.exists(EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop.qtl'):
-                    os.rename(EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop.qtl', EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop_old.qtl')
-        synthesise_decentralised_monitors(DOMAIN_FILE.replace('.pddl', '_new.pddl'), aux_dict_pre_eff)
+                # if os.path.exists(EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop.qtl'):
+                    # os.rename(EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop.qtl', EXPERIMENTS_PATH + './out/eff/' + act.split(',')[0] + '/prop_old.qtl')
+                os.rename(EXPERIMENTS_PATH + './out/eff/prop.qtl', EXPERIMENTS_PATH + './out/eff/prop_old.qtl')
+        # synthesise_decentralised_monitors(DOMAIN_FILE.replace('.pddl', '_new.pddl'), aux_dict_pre_eff)
+        synthesise_centralised_monitor(DOMAIN_FILE.replace('.pddl', '_new.pddl'), './sas_plan', aux_dict_pre_eff)
     update_monitor_time += time.time() - start
     return aux_dict_pre_eff
 
@@ -430,12 +438,14 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
         for act in modified_actions:
             prefix = 'begin_' if act.startswith('begin_') else 'end_'
             act = act.replace(prefix, '')
-            if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl'):
-                os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl')
-            if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
-                os.rename(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl', EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl')
+            # if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl'):
+            #     os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl')
+            os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/prop.qtl')
+            # if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
+            #     os.rename(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl', EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop.qtl')
+            os.rename(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/prop_old.qtl', EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/prop.qtl')
             current_path = os.getcwd()
-            os.chdir(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act)
+            os.chdir(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/')
             os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
             os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
             os.chdir(current_path)
@@ -445,8 +455,9 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
         for act in modified_actions:
             prefix = 'begin_' if act.startswith('begin_') else 'end_'
             act = act.replace(prefix, '')
-            if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
-                os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl')   
+            # if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
+            #     os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl')   
+            os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/prop_old.qtl')   
         for act in aux_dict_pre_eff:
             dict_pre_eff[act] = aux_dict_pre_eff[act]
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
@@ -463,8 +474,9 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
         for act in modified_actions:
             prefix = 'begin_' if act.startswith('begin_') else 'end_'
             act = act.replace(prefix, '')
-            if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
-                os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl')   
+            # if os.path.exists(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl'):
+            #     os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/' + act + '/prop_old.qtl')   
+            os.remove(EXPERIMENTS_PATH + './out/' + ('pre' if prefix == 'begin_' else 'eff') + '/prop_old.qtl')   
         for act in aux_dict_pre_eff:
             dict_pre_eff[act] = aux_dict_pre_eff[act]
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
@@ -488,7 +500,7 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
 #     os.chdir('../../')
 
 def synthesise_decentralised_monitors(domain_file, aux_dict_pre_eff):
-    aux_dict_pre_eff = translate(domain_file, aux_dict_pre_eff)
+    aux_dict_pre_eff = translate_fol(domain_file, aux_dict_pre_eff)
     with open(EXPERIMENTS_PATH + './out/synthesised_properties', 'r') as file:
         synthesised_properties = file.read()
     synthesised_properties = synthesised_properties.replace(' ', '').replace('\'', '').replace('[', '').replace(']', '').split(',')
@@ -514,7 +526,23 @@ def synthesise_decentralised_monitors(domain_file, aux_dict_pre_eff):
         os.chdir('../')
     os.chdir(current_path)
 
-def translate(domain_file, aux_dict_pre_eff):
+def synthesise_centralised_monitor(domain_file, plan_file, aux_dict_pre_eff):
+    aux_dict_pre_eff = translate_fol(domain_file, aux_dict_pre_eff)
+    translate_ltl(domain_file, plan_file)
+    with open(EXPERIMENTS_PATH + './out/synthesised_properties', 'r') as file:
+        synthesised_properties = file.read()
+    synthesised_properties = synthesised_properties.replace(' ', '').replace('\'', '').replace('[', '').replace(']', '').split(',')
+    print(synthesised_properties)
+    current_path = os.getcwd()
+    os.chdir(EXPERIMENTS_PATH + './out/pre/')
+    os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+    os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+    os.chdir('../eff/')
+    os.system('java -cp ' + DEJAVU_PATH + '/dejavu.jar dejavu.Verify ./prop.qtl | grep -v "Elapsed total"')
+    os.system('scalac -cp .:' + DEJAVU_PATH + '/dejavu.jar TraceMonitor.scala 2>&1 | grep -v "warning"')
+    os.chdir(current_path)
+
+def translate_fol(domain_file, aux_dict_pre_eff):
     if aux_dict_pre_eff:
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff.json', 'r') as file:
             backup = file.read()
@@ -529,6 +557,8 @@ def translate(domain_file, aux_dict_pre_eff):
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff.json', 'r') as file:
             dict_pre_eff = json.load(file)
         return dict_pre_eff
+def translate_ltl(domain_file, plan_file):
+    os.system('python3 ' + EXPERIMENTS_PATH + 'translators/translator.py ' + domain_file + ' ' + plan_file)
 
 def get_instantiated_pre_eff_action(prefix, action):
     (params, cond) = dict_pre_eff[prefix + action._functor]
@@ -588,6 +618,7 @@ def replan():
         actions = actions[:-1]
     avg_size_replanning_plans += len(actions)
     replanning_time += time.time() - start
+    translate_ltl(DOMAIN_FILE, './sas_plan')
     # props = connector.get_errors()
     prev_action = None
     past_actions = []

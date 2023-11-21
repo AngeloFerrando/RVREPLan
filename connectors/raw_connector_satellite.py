@@ -31,7 +31,8 @@ class RawConnectorRover(abstract_connector.AbstractConnector):
         self.__trigger_add = {}
 
     def get_initial_propositions(self):
-        props = self.get_errors()
+        # props = self.get_errors()
+        props = set()
 #        props.add(Proposition(False, 'at', ['obj12', 'pos1']))
 #        props.add(Proposition(True, 'at', ['obj12', 'pos2']))
         return props
