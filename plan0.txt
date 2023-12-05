@@ -1,2 +1,0 @@
-(act1 arg1 arg2)
-(act2 arg1 arg2)

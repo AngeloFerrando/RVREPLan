@@ -9,7 +9,7 @@
             "console": "integratedTerminal",
             // "args": ["./benchmarks/logistics/domain.pddl", "./benchmarks/logistics/problem.pddl", "connectors.raw_connector_logistics", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "3"]
             // "args": ["./benchmarks/depot/domain.pddl", "./benchmarks/depot/problem.pddl", "connectors.raw_connector_depot", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "3"]
-            "args": ["./benchmarks/satellite/domain.pddl", "./benchmarks/satellite/problem.pddl", "connectors.raw_connector_satellite", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "3"]
+            "args": ["./benchmarks/satellite/domain.pddl", "./benchmarks/satellite/problem.pddl", "connectors.raw_connector_satellite", "/home/angelo/dejavu/", "/home/angelo/downward/fast-downward.sif --alias lama-first", "--inject_errors", "2"]
         }
     ]
 }

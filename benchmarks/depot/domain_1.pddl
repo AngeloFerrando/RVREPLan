@@ -3,8 +3,6 @@
 (:predicates
 	 (facing_up ?x) (at ?x ?y) (on ?x ?y) (in ?x ?y) (lifting ?x ?y) (available ?x) (clear ?x)(place ?x) (locatable ?x) (depot ?x) (distributor ?x) (truck ?x) (hoist ?x) (surface ?x) (pallet ?x) (crate ?x) )
 
-
-
 (:action drive
 	:parameters
 	(?x		
@@ -58,7 +56,7 @@
 :precondition
 (and (hoist ?x) (crate ?y) (surface ?z) (place ?p) (truck ?q) (at ?q ?p) (at ?x ?p) (available ?x) (at ?y ?p) (on ?y ?z) (clear ?y) )
 :effect
-(and (available ?x) )
+(and (in ?y ?q) (available ?x) (clear ?z) (not (at ?y ?p)) (not (clear ?y)) (not (on ?y ?z)) )
 )
 (:action unload
 	:parameters
@@ -69,7 +67,7 @@
 :precondition
 (and (hoist ?x) (crate ?y) (truck ?z) (place ?p) (at ?x ?p) (at ?z ?p) (available ?x) (in ?y ?z) )
 :effect
-(and (lifting ?x ?y) (not (facing_up ?y)) (not (in ?y ?z)) (not (available ?x)) )
+(and (not (facing_up ?y)) (not (available ?x)) (not (in ?y ?z)) (lifting ?x ?y) )
 )
 (:action turn_crate
 	:parameters

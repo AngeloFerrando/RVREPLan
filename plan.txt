@@ -1,5 +1,0 @@
-(act_right rover cell0 cell1)
-(act_inspect-right rover cell1 cell2 tank1)
-(act_down rover cell1 cell4)
-(act_down rover cell4 cell7)
-(act_inspect-right rover cell7 cell8 tank2)

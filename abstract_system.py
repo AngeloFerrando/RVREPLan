@@ -55,8 +55,8 @@ def main(args):
 
     simulating = False
 
-    # EXPERIMENTS_PATH = '/home/angelo/Desktop/git/RvEPLan/'
-    EXPERIMENTS_PATH = './'
+    EXPERIMENTS_PATH = '/home/angelo/Desktop/git/RvEPLan/'
+    # EXPERIMENTS_PATH = './'
 
     # setup instructions
     os.system('rm ' + EXPERIMENTS_PATH + './out/*.csv')
@@ -97,7 +97,7 @@ def main(args):
     if not args.no_monitor_synthesis:
         # synthesise_decentralised_monitors(args.domain_file, None)
         synthesise_centralised_monitor(args.domain_file, './sas_plan', None)
-
+    
     # initial_propositions = connector.get_initial_propositions()
     # here I am setting the initial propositions to the same ones used in the Problem file
     # however, in general, the initial propositions should come from the system
@@ -353,7 +353,6 @@ def callbackNewProps(RESULTCODE, props):
 
 def update_monitors(actions_to_modify, kind):
     global update_monitor_time
-    start = time.time()
     aux_dict_pre_eff = {}
     for act in actions_to_modify:
         prefix = 'begin_' if act.startswith('begin_') else 'end_'
@@ -390,6 +389,7 @@ def update_monitors(actions_to_modify, kind):
             k = k.replace('end_', 'begin_')
         if k not in aux_dict_pre_eff:
             aux_dict_pre_eff[k] = dict_pre_eff[k]
+    start = time.time()
     if len(aux_dict_pre_eff.keys()) != 0:
         with open(EXPERIMENTS_PATH + './out/dict_pre_eff_new.json', 'w') as file:
             json.dump(aux_dict_pre_eff, file)

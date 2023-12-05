@@ -16,7 +16,6 @@
 )
 
 
-
 (:action call_human
 	:parameters
 	(?human		
@@ -56,7 +55,7 @@
 :precondition
 (and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
 :effect
-(and (not (at ?obj ?loc)) (not (balanced ?airplane)) (in ?obj ?airplane) )
+(and (not (at ?obj ?loc)) (in ?obj ?airplane) )
 )
 (:action unload_truck
 	:parameters
