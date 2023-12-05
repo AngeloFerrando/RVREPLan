@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-
-rosrun gazebo_ros gzserver -s "$<TARGET_FILE:custom_sensor_preloader>" "$@"

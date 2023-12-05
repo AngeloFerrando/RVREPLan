@@ -1,8 +1,0 @@
-string folder
-string world_filename
-string model_subset_filename
-float32 default_bend
-float32 default_rust
-float32 default_radiation
----
-
