@@ -134,9 +134,14 @@ dmypy.json
 # Temporary files
 out/*
 sas_plan
+sas_plan_1
 
 .vscode/
 
 LICENSE
 
 case-studies/
+
+./ros_node.py
+
+./*.csv
