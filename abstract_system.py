@@ -55,8 +55,7 @@ def main(args):
 
     simulating = False
 
-    EXPERIMENTS_PATH = '/home/angelo/Desktop/git/RvEPLan/'
-    # EXPERIMENTS_PATH = './'
+    EXPERIMENTS_PATH = './'
 
     # setup instructions
     os.system('rm ' + EXPERIMENTS_PATH + './out/*.csv')
