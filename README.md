@@ -77,11 +77,18 @@ python3 abstract_system.py DOMAIN PROBLEM CONNECTOR DEJAVU PLANNER --inject_erro
 
 where the N parameter denotes the kind of failures to introduce:
 - 0 no failures (this is the default if no --inject_errors flag is passed)
-- 1 one failure that causes a postcondition violation
-- 2 one failure that causes a precondition violation
-- 3 two failures that cause both a precondition and postcondition violations
+- 1 one failure on the precondition of an action if added
+- 2 one failure on the postcondition of an action if added
 
 ## Other useful flags
 
 In addition to the other parameters and flags, it is also possible to pass:
 - --no_monitor_synthesis: this flag causes RVReplan to not synthesise a new monitor, but to use an existing one (i.e., the one available in the folder); this is useful when running multiple times on the same domain, since the monitor would be the same.
+
+## To run experiments
+
+To run the experiments on all benchmarks using all three Fast-Downward options (lama-first, bjolp, and lmcut)
+
+```bash
+sh ./experiments.sh
+```
