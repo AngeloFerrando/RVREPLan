@@ -87,8 +87,10 @@ In addition to the other parameters and flags, it is also possible to pass:
 
 ## To run experiments
 
-To run the experiments on all benchmarks using all three Fast-Downward options (lama-first, bjolp, and lmcut)
+To run the experiments on all benchmarks using all three Fast-Downward options (lama-first, bjolp, and lmcut).
 
 ```bash
 sh ./experiments.sh
 ```
+
+Once the script is done, you should find in each sub-folder of the experiments folder the CSV containing the experimental results.
