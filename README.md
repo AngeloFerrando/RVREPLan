@@ -77,8 +77,10 @@ python3 abstract_system.py DOMAIN PROBLEM CONNECTOR DEJAVU PLANNER --inject_erro
 
 where the N parameter denotes the kind of failures to introduce:
 - 0 no failures (this is the default if no --inject_errors flag is passed)
-- 1 one failure on the precondition of an action if added
-- 2 one failure on the postcondition of an action if added
+- 1 one failure on the precondition of an action
+- 2 one failure on the postcondition of an action
+- 3 both previous failures are added
+Note that, the addition of a failure may cause more replanning calls.
 
 ## Other useful flags
 

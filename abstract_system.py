@@ -10,9 +10,10 @@ import os
 import argparse
 import importlib
 import copy
+import shutil
 
 def main(args):
-    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, update_monitor_time, simulation_time, errors_to_inject, dict_pre_eff, counter, past_actions, simulating, simulation_violations, GLOBAL_PATH
+    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, update_monitor_time, simulation_time, errors_to_inject, dict_pre_eff, counter, counter_store_plans, past_actions, simulating, simulation_violations, GLOBAL_PATH
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -39,6 +40,7 @@ def main(args):
 
     replanning_calls = 0
     counter = 0
+    counter_store_plans = 1
     avg_size_replanning_plans = 0
     replanning_time = 0
     update_monitor_time = 0
@@ -102,6 +104,10 @@ def main(args):
     if not exists('./sas_plan'):
         print('No plan found, stop execution')
         return
+    
+    os.system('rm ./plans/*')
+    store_plans() # store the plans for plan stability evaluation
+    
     with open('./sas_plan', 'r') as plan:
         actions = plan.readlines()
         actions = actions[:-1]
@@ -121,8 +127,9 @@ def main(args):
 
 prev_action = None
 def callbackNewProps(RESULTCODE, props):
-    global prev_action, counter
+    global prev_action, counter, counter_store_plans
     counter += 1
+    if not simulating: counter_store_plans += 1
 
     # check whether the previous action failed
     if RESULTCODE == ResultCode.FAILURE:
@@ -603,6 +610,25 @@ def log(*things):
             file.write(str(t).replace('\n', '').replace(' ', '') + ' ')
         file.write('\n')
 
+def store_plans():
+    global replanning_calls, counter_store_plans
+    os.makedirs('./plans/', exist_ok=True)
+    if replanning_calls > 0:
+        name = f'replan_{replanning_calls}'
+    else:
+        name = 'original'
+    shutil.copy('./sas_plan', './plans/')
+    shutil.move('./plans/sas_plan', f'./plans/{name}')
+    if replanning_calls > 0:
+        if replanning_calls > 1:
+            previous = f'replan_{replanning_calls-1}'
+        else:
+            previous = 'original'
+        with open('./plans/dictionary_plans.txt', 'a+') as f:
+            f.write(f'{previous}: {counter_store_plans}\n')
+    counter_store_plans = 1
+        
+
 def replan():
     global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action, past_actions
     replanning_calls += 1
@@ -623,6 +649,7 @@ def replan():
             updated_problem_file.write(str(snapshot) + '\n)')
     # Generation of a new plan (given the Domain and the updated Problem PDDL files)
     os.system(PLANNER_PATH + ' ' + DOMAIN_FILE + ' ' + GLOBAL_PATH + './out/updated_problem.pddl')
+    store_plans()
     if not exists('./sas_plan'):
         print('No plan found, stop execution')
         exit()
