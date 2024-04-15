@@ -105,7 +105,7 @@ def main(args):
         print('No plan found, stop execution')
         return
     
-    os.system('rm ./plans/*')
+    os.system(f'rm ./plans_injected_errors_{errors_to_inject}/*')
     store_plans() # store the plans for plan stability evaluation
     
     with open('./sas_plan', 'r') as plan:
@@ -611,21 +611,21 @@ def log(*things):
         file.write('\n')
 
 def store_plans():
-    global replanning_calls, counter_store_plans
-    os.makedirs('./plans/', exist_ok=True)
+    global counter_store_plans
+    os.makedirs(f'./plans_injected_errors_{errors_to_inject}/', exist_ok=True)
     if replanning_calls > 0:
         name = f'replan_{replanning_calls}'
     else:
         name = 'original'
-    shutil.copy('./sas_plan', './plans/')
-    shutil.move('./plans/sas_plan', f'./plans/{name}')
+    shutil.copy('./sas_plan', f'./plans_injected_errors_{errors_to_inject}/')
+    shutil.move(f'./plans_injected_errors_{errors_to_inject}/sas_plan', f'./plans_injected_errors_{errors_to_inject}/{name}')
     if replanning_calls > 0:
         if replanning_calls > 1:
             previous = f'replan_{replanning_calls-1}'
         else:
             previous = 'original'
-        with open('./plans/dictionary_plans.txt', 'a+') as f:
-            f.write(f'{previous}: {counter_store_plans}\n')
+        with open(f'./plans_injected_errors_{errors_to_inject}/dictionary_plans.txt', 'a+') as f:
+            f.write(f'{previous}: LINE {counter_store_plans}\n')
     counter_store_plans = 1
         
 

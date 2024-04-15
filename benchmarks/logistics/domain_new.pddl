@@ -16,15 +16,15 @@
 )
 
 
-(:action load_airplane
+(:action load_truck
 	:parameters
 	(?obj		
-?airplane		
+?truck		
 ?loc	)
 :precondition
-(and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
+(and (package ?obj) (truck ?truck) (location ?loc) (at ?truck ?loc) (at ?obj ?loc) )
 :effect
-(and (not (balanced ?airplane)) (in ?obj ?airplane) (not (at ?obj ?loc)) )
+(and )
 )
 (:action call_human
 	:parameters
@@ -47,15 +47,15 @@
 :effect
 (and (not (at ?obj ?loc)) (in ?obj ?truck) (not (at ?human ?truck)) (at ?human ?loc) )
 )
-(:action load_truck
+(:action load_airplane
 	:parameters
 	(?obj		
-?truck		
+?airplane		
 ?loc	)
 :precondition
-(and (package ?obj) (truck ?truck) (location ?loc) (at ?truck ?loc) (at ?obj ?loc) )
+(and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
 :effect
-(and (not (at ?obj ?loc)) (in ?obj ?truck) )
+(and (not (at ?obj ?loc)) (in ?obj ?airplane) )
 )
 (:action unload_truck
 	:parameters

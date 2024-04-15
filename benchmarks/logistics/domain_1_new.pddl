@@ -25,7 +25,7 @@
 :precondition
 (and (package ?obj) (airplane ?airplane) (location ?loc) (at ?obj ?loc) (at ?airplane ?loc) )
 :effect
-(and (not (at ?obj ?loc)) (in ?obj ?airplane) (not (balanced ?airplane)) )
+(and (not (balanced ?airplane)) (in ?obj ?airplane) (not (at ?obj ?loc)) )
 )
 (:action call_human
 	:parameters
