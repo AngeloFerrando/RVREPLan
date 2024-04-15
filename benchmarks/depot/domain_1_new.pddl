@@ -13,7 +13,7 @@
 :precondition
 (and (hoist ?x) (crate ?y) (truck ?z) (place ?p) (at ?x ?p) (at ?z ?p) (available ?x) (in ?y ?z) )
 :effect
-(and (not (in ?y ?z)) (lifting ?x ?y) (not (available ?x)) (not (facing_up ?y)) )
+(and (not (available ?x)) (not (facing_up ?y)) (not (in ?y ?z)) (lifting ?x ?y) )
 )
 (:action drive
 	:parameters
