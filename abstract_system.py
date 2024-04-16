@@ -11,9 +11,10 @@ import argparse
 import importlib
 import copy
 import shutil
+import filecmp
 
 def main(args):
-    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, avg_size_replanning_plans, update_monitor_time, simulation_time, errors_to_inject, dict_pre_eff, counter, counter_store_plans, past_actions, simulating, simulation_violations, GLOBAL_PATH
+    global actions, DEJAVU_PATH, connector, snapshot, PLANNER_PATH, DOMAIN_FILE, PROBLEM_FILE, initial_planning_time, replanning_time, replanning_calls, replanning_calls_store, avg_size_replanning_plans, update_monitor_time, simulation_time, errors_to_inject, dict_pre_eff, counter, counter_store_plans, past_actions, simulating, simulation_violations, GLOBAL_PATH
     parser = argparse.ArgumentParser(
         description='RvEPlan python implementation',
         formatter_class=argparse.RawTextHelpFormatter)
@@ -39,6 +40,7 @@ def main(args):
     args = parser.parse_args() # maybe in the future we will need more arguments, for now it's just one
 
     replanning_calls = 0
+    replanning_calls_store = 0
     counter = 0
     counter_store_plans = 1
     avg_size_replanning_plans = 0
@@ -611,22 +613,26 @@ def log(*things):
         file.write('\n')
 
 def store_plans():
-    global counter_store_plans
-    os.makedirs(f'./plans_injected_errors_{errors_to_inject}/', exist_ok=True)
-    if replanning_calls > 0:
-        name = f'replan_{replanning_calls}'
-    else:
-        name = 'original'
-    shutil.copy('./sas_plan', f'./plans_injected_errors_{errors_to_inject}/')
-    shutil.move(f'./plans_injected_errors_{errors_to_inject}/sas_plan', f'./plans_injected_errors_{errors_to_inject}/{name}')
-    if replanning_calls > 0:
-        if replanning_calls > 1:
-            previous = f'replan_{replanning_calls-1}'
+    global counter_store_plans, replanning_calls_store
+    if not simulating:
+        os.makedirs(f'./plans_injected_errors_{errors_to_inject}/', exist_ok=True)
+        if replanning_calls_store > 0:
+            name = f'replan_{replanning_calls_store}'
+        else:
+            name = 'original'
+        if replanning_calls_store > 1:
+            previous = f'replan_{replanning_calls_store-1}'
         else:
             previous = 'original'
-        with open(f'./plans_injected_errors_{errors_to_inject}/dictionary_plans.txt', 'a+') as f:
-            f.write(f'{previous}: LINE {counter_store_plans}\n')
-    counter_store_plans = 1
+        if replanning_calls_store > 0 and filecmp.cmp('./sas_plan', f'./plans_injected_errors_{errors_to_inject}/{previous}'):
+            return
+        shutil.copy('./sas_plan', f'./plans_injected_errors_{errors_to_inject}/')
+        shutil.move(f'./plans_injected_errors_{errors_to_inject}/sas_plan', f'./plans_injected_errors_{errors_to_inject}/{name}')
+        if replanning_calls_store > 0:
+            with open(f'./plans_injected_errors_{errors_to_inject}/dictionary_plans.txt', 'a+') as f:
+                f.write(f'{previous}: LINE {counter_store_plans}\n')
+        counter_store_plans = 1
+        replanning_calls_store += 1
         
 
 def replan():
