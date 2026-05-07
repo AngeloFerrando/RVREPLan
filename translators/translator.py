@@ -6,6 +6,7 @@ import json
 EXPERIMENTS_PATH = '/home/angelo/Desktop/git/RvEPLan/'
 
 def parameterisedMonitor(domain_file_name):
+    """Extract action schemas and build parameterised monitor properties."""
     domain = open(domain_file_name, 'r')
     domain_text = domain.read()
     domain.close()
@@ -30,6 +31,7 @@ def parameterisedMonitor(domain_file_name):
     return fo_ltl_list, dict_pre_eff
 
 def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_file_name):
+    """Write a PDDL domain from the current learned pre/effect dictionary."""
     with open(domain_file_name, 'r') as domain:
         domain_text = domain.read()
     act_index = domain_text.find('(:action', 0)
@@ -77,6 +79,7 @@ def from_monitor_to_domain(domain_file_name, new_domain_file_name, dict_pre_eff_
         file.write(')')
 
 def extract_fo_ltl(action, parameters_list, pre_eff_list):
+    """Render one action precondition/effect list as a Dejavu FO-LTL formula."""
     fo_ltl = ''
     for p in parameters_list:
         fo_ltl = fo_ltl + 'Forall ' + p.replace('?', '') + ' . '
@@ -106,6 +109,7 @@ def extract_fo_ltl(action, parameters_list, pre_eff_list):
     return fo_ltl
 
 def instantiatedMonitor(domain_file_name, plan_file_name):
+    """Build monitor properties for the concrete action instances in a plan."""
     domain = open(domain_file_name, 'r')
     domain_text = domain.read()
     domain.close()
@@ -185,6 +189,7 @@ def instantiatedMonitor(domain_file_name, plan_file_name):
     return ltl_list
 
 def extract_info(domain_text, act, par, pre, eff, next_act):
+    """Parse one PDDL action block into action name, parameters, preconditions, and effects."""
     # action = 'act_' + domain_text[act+7:par].replace('\n', '').replace('-', '_').strip()
     action = domain_text[act+7:par].replace('\n', '').replace('-', '_').strip()
     parameters = domain_text[par+11:pre].replace('\n', '').strip()

@@ -374,6 +374,7 @@ def callbackNewProps(RESULTCODE, props):
         connector.perform(action, callbackNewProps)
 
 def update_monitors(actions_to_modify, kind):
+    """Regenerate monitors after learning missing preconditions or effects."""
     global update_monitor_time
     aux_dict_pre_eff = {}
     for act in actions_to_modify:
@@ -433,6 +434,7 @@ def update_monitors(actions_to_modify, kind):
     return aux_dict_pre_eff
 
 def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
+    """Replay the current suffix in memory before accepting monitor updates."""
     global simulating, snapshot, actions, connector, DOMAIN_FILE, simulation_time, simulation_violations
     simulating = True
     snapshot_backup = copy.deepcopy(snapshot)
@@ -522,6 +524,7 @@ def simulate(modified_actions, props_to_add, aux_dict_pre_eff, action):
 #     os.chdir('../../')
 
 def synthesise_decentralised_monitors(domain_file, aux_dict_pre_eff):
+    """Generate and compile one pre/effect monitor per affected action."""
     aux_dict_pre_eff = translate_fol(domain_file, aux_dict_pre_eff)
     with open(GLOBAL_PATH + './out/synthesised_properties', 'r') as file:
         synthesised_properties = file.read()
@@ -549,6 +552,7 @@ def synthesise_decentralised_monitors(domain_file, aux_dict_pre_eff):
     os.chdir(current_path)
 
 def synthesise_centralised_monitor(domain_file, plan_file, aux_dict_pre_eff):
+    """Generate and compile centralised monitors for the current plan."""
     aux_dict_pre_eff = translate_fol(domain_file, aux_dict_pre_eff)
     translate_ltl(domain_file, plan_file)
     with open(GLOBAL_PATH + './out/synthesised_properties', 'r') as file:
@@ -565,6 +569,7 @@ def synthesise_centralised_monitor(domain_file, plan_file, aux_dict_pre_eff):
     os.chdir(current_path)
 
 def translate_fol(domain_file, aux_dict_pre_eff):
+    """Build first-order monitor properties from the PDDL domain."""
     if aux_dict_pre_eff:
         with open(GLOBAL_PATH + './out/dict_pre_eff.json', 'r') as file:
             backup = file.read()
@@ -580,9 +585,11 @@ def translate_fol(domain_file, aux_dict_pre_eff):
             dict_pre_eff = json.load(file)
         return dict_pre_eff
 def translate_ltl(domain_file, plan_file):
+    """Build plan-instantiated LTL monitor properties."""
     os.system('python3 ' + GLOBAL_PATH + 'translators/translator.py ' + domain_file + ' ' + plan_file)
 
 def get_instantiated_pre_eff_action(prefix, action):
+    """Instantiate stored precondition/effect templates for a grounded action."""
     (params, cond) = dict_pre_eff[prefix + action._functor]
     auxMap = {}
     for i in range(0, len(params)):
@@ -595,11 +602,13 @@ def get_instantiated_pre_eff_action(prefix, action):
     return cond, auxMap
 
 def detect_issue(prefix, action, props):
+    """Compare expected action conditions with the propositions currently known."""
     cond, _ = get_instantiated_pre_eff_action(prefix, action)
     props = set([str(p) for p in props])
     return cond.difference(props), props.difference(cond)
 
 def log(*things):
+    """Append a compact event record, or raise during speculative simulation."""
     if simulating:
         if things[0] == 'PRE':
             raise Exception('begin_' + str(things[3]).split(',')[0])
@@ -613,6 +622,7 @@ def log(*things):
         file.write('\n')
 
 def store_plans():
+    """Persist distinct original and replanned plans for stability evaluation."""
     global counter_store_plans, replanning_calls_store
     if not simulating:
         os.makedirs(f'./plans_injected_errors_{errors_to_inject}/', exist_ok=True)
@@ -636,6 +646,7 @@ def store_plans():
         
 
 def replan():
+    """Create an updated problem from the snapshot and ask the planner again."""
     global actions, replanning_time, replanning_calls, avg_size_replanning_plans, prev_action, past_actions
     replanning_calls += 1
     if os.path.exists('./sas_plan'):
@@ -671,6 +682,7 @@ def replan():
     callbackNewProps(None, set())
 
 def log_metrics():
+    """Append one semicolon-separated experiment result row."""
     # (initial solution planning time,  replanning time, total plan size of executed actions, replanning calls, monitor synthesis runtime, simulation time, kind of simulation violations, average size of replanning plans)
     with open('./res_'+ str(errors_to_inject) +'.csv', 'a') as f:
         f.write(str(initial_planning_time) + ';')

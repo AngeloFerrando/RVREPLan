@@ -1,11 +1,15 @@
 import json
 
 class Proposition(object):
+    """Grounded predicate instance tracked in the execution snapshot."""
+
     def __init__(self, truth, functor, args):
         self._truth = truth
         self._functor = functor
         self._args = args
+
     def __str__(self):
+        """Return the monitor/log representation, prefixing false facts with not_."""
         res = ''
         if not self._truth:
             res = res + 'not_'
@@ -14,9 +18,11 @@ class Proposition(object):
             aux_args = [str(arg) for arg in self._args]
             res = res + ',' + ','.join(aux_args)
         return res
+
     def toJSON(self):
         return json.dumps(self, default=lambda o: o.__dict__,
             sort_keys=True, indent=4)
+
     def __eq__(self, other):
         if isinstance(other, Proposition):
             if self._truth != other._truth or self._functor != other._functor:
@@ -27,9 +33,12 @@ class Proposition(object):
             return True
         else:
             return False
+
     def __ne__(self, other):
         return (not self.__eq__(other))
+
     def __hash__(self):
         return hash(self.__repr__())
+
     def __repr__(self):
         return 'Proposition({t}, {f}, {a})'.format(t=self._truth, f=self._functor, a=self._args)

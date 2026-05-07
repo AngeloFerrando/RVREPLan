@@ -1,5 +1,25 @@
 # RVRepLan
 
+RVRepLan is a prototype implementation of runtime verification guided replanning.
+It combines PDDL planning, generated Dejavu monitors, and domain-specific
+connectors to detect when an execution diverges from the expected action
+preconditions or effects and to trigger replanning from the current snapshot.
+
+## Repository structure
+
+- `abstract_system.py`: orchestration entry point for planning, monitor synthesis,
+  execution monitoring, issue detection, and replanning.
+- `translators/`: conversion utilities from PDDL action definitions and plans to
+  the monitor properties consumed by Dejavu.
+- `connectors/`: interfaces and benchmark connectors that simulate interaction
+  with the external system.
+- `mappers/`: translation layer between planner actions/perceptions and connector
+  commands/propositions.
+- `data/`: small data model for actions, propositions, and the current execution
+  snapshot.
+- `benchmarks/`: PDDL domains and problems used in the experiments.
+- `experiments/`: experiment outputs and stored plans used for stability analysis.
+
 ## What to install
 - Download and Install DEJAVU (https://github.com/havelund/dejavu) and be sure it works [tested on version 1.0].
 - Download and Install Fast-Downward (https://www.fast-downward.org) and be sure it works [tested on version 22.12+]
@@ -96,3 +116,11 @@ sh ./experiments.sh
 ```
 
 Once the script is done, you should find in each sub-folder of the experiments folder the CSV containing the experimental results.
+
+## Reproducibility notes
+
+The prototype expects external installations of Dejavu and Fast-Downward. The
+paths in `experiments.sh` are local placeholders and should be adapted before
+running the experiments on another machine. Generated runtime artifacts are
+written under `out/` during execution, while replanning traces and CSV metrics
+are stored in the corresponding experiment folders.

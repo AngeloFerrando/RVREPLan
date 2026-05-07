@@ -1,6 +1,8 @@
 from data.proposition import *
 
 class Snapshot(object):
+    """Current world state and remaining goals derived from a PDDL problem file."""
+
     def __init__(self, problem_file):
         self._propositions = set()
         self._goals = set()
@@ -19,7 +21,9 @@ class Snapshot(object):
             goal = goal.replace('(', '').replace(')', '').replace('\n', '').strip()
             if not goal: continue
             self._goals.add(Proposition(True, goal[:goal.index(' ')], goal[goal.index(' ')+1:].split(' ')))
+
     def update(self, propositions):
+        """Apply observed propositions, replacing the opposite truth value."""
         for prop in propositions:
             # self._propositions.discard(Proposition(prop._truth, prop._functor, prop._args))
             self._propositions.discard(Proposition(not prop._truth, prop._functor, prop._args))
@@ -32,9 +36,12 @@ class Snapshot(object):
             # self._propositions = self._propositions.difference(props_to_remove)
             self._propositions.add(prop)
             self._goals.discard(prop)
+
     def get_props(self):
         return self._propositions
+
     def __str__(self):
+        """Serialize the snapshot fragment used to build updated PDDL problems."""
         res = '(:init\n'
         for prop in self._propositions:
             res = res + '  (' + str(prop).replace(',', ' ') + ')\n'
